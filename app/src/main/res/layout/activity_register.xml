@@ -24,10 +24,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Фамилия"
         android:layout_marginHorizontal="30dp"
-        android:textColor="#616667"
-        />
+        android:text="Фамилия"
+        android:textColor="#616667" />
 
     <EditText
         android:layout_width="match_parent"
@@ -52,8 +51,7 @@
         android:layout_marginHorizontal="30dp"
         android:layout_marginBottom="20dp"
         android:backgroundTint="#616667"
-        android:textColor="#616667"
-        />
+        android:textColor="#616667"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -82,6 +80,7 @@
         />
 
     <EditText
+        android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
@@ -100,7 +99,7 @@
 
     <EditText
         android:inputType="textPassword"
-        android:id="@+id/Psw"
+        android:id="@+id/Pwd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
@@ -119,7 +118,7 @@
 
     <EditText
         android:inputType="textPassword"
-        android:id="@+id/RepeatPsw"
+        android:id="@+id/RepeatPwd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"

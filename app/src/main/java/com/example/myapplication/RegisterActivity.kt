@@ -7,12 +7,16 @@ import android.text.TextUtils
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.util.Log
 import android.widget.*
 import com.google.android.material.textfield.TextInputLayout
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 
 
 class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
+    private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var lastname: EditText
     private lateinit var firstname: EditText
     private lateinit var editdate: EditText
@@ -63,6 +67,7 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
         }
         }
     private fun validateEmptyForm() {
+        firebaseAuth = FirebaseAuth.getInstance()
         when{
             TextUtils.isEmpty(lastname.text.toString().trim())->lastname.setError("Пожалуйста введите фамилию")
             TextUtils.isEmpty(firstname.text.toString().trim())->firstname.setError("Пожалуйста введите имя")
@@ -81,6 +86,15 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                             if (pwd.text.toString().length >= 5) {
                                 if (pwd.text.toString() == c_pwd.text.toString()) {
                                     Toast.makeText(this, "Успех", Toast.LENGTH_LONG).show()
+                                    firebaseAuth.createUserWithEmailAndPassword(username.text.toString(),
+                                    pwd.text.toString()).addOnCompleteListener{
+                                        if(it.isSuccessful){
+                                            val intent = Intent(this,MainActivity::class.java)
+                                            startActivity(intent)
+                                        }else{
+                                            Toast.makeText(this, it.exception.toString(), Toast.LENGTH_LONG).show()
+                                        }
+                                    }
                                 } else {
                                     c_pwd.setError("Не совпадают пароли")
                                 }

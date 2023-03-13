@@ -39,6 +39,7 @@
         />
 
     <EditText
+        android:id="@+id/Email_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
@@ -56,6 +57,7 @@
         />
 
     <EditText
+        android:id="@+id/Pwd_field"
         android:inputType="textPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

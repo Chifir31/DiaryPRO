@@ -80,9 +80,7 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
             lastname.text.toString().isNotEmpty() && firstname.text.toString().isNotEmpty() && (role1.isChecked || role2.isChecked) && editdate.text.toString().isNotEmpty() && username.text.toString().isNotEmpty() &&  pwd.text.toString().isNotEmpty() && c_pwd.text.toString().isNotEmpty() -> {
                 if (lastname.text.toString().matches(Regex("(^[А-Яа-яЁё]{1,25})"))) {
                     if (firstname.text.toString().matches(Regex("(^[А-Яа-яЁё]{1,25})"))) {
-                        if (username.text.toString()
-                                .matches(Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))
-                        ) {
+                        if (username.text.toString().matches(Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))) {
                             if (pwd.text.toString().length >= 5) {
                                 if (pwd.text.toString() == c_pwd.text.toString()) {
                                     Toast.makeText(this, "Успех", Toast.LENGTH_LONG).show()

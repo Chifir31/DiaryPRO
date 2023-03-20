@@ -188,7 +188,7 @@
         android:layout_below="@id/r_pwd"
         android:text="Зарегистрироваться"
         android:layout_marginHorizontal="30sp"
-        android:backgroundTint="#008000"
+        android:backgroundTint="@color/green"
         />
 </RelativeLayout>
 </ScrollView>

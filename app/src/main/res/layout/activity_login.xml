@@ -29,44 +29,47 @@
         android:layout_marginHorizontal="30dp"
         />
 
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lastname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Логин"
-        android:layout_marginHorizontal="30dp"
+        android:textColorHint="@color/gray"
+        android:hint="Логин"
         android:textColor="#616667"
+        app:counterEnabled="true"
+        app:counterMaxLength="25"
+        app:counterTextColor="@color/white">
 
-        />
-
-    <EditText
-        android:id="@+id/Email_field"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/Email_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30sp"
+            android:backgroundTint="@color/black"
+            android:maxLength="25"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/pwd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="#616667"
+        android:textColorHint="@color/gray"
+        android:hint="Пароль"
         android:textColor="#616667"
-        />
+        app:counterEnabled="true"
+        app:counterMaxLength="25"
+        app:counterTextColor="@color/white">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Пароль"
-        android:textColor="#616667"
-        android:layout_marginHorizontal="30dp"
-        />
-
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/Pwd_field"
-        android:inputType="textPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="#616667"
-        android:textColor="#616667"
+        android:layout_marginHorizontal="30sp"
+        android:backgroundTint="@color/black"
+        android:inputType="textPassword"
+        android:maxLength="25"
         />
-
+    </com.google.android.material.textfield.TextInputLayout>
     <Button
         android:id="@+id/LoginBtn"
         android:layout_width="match_parent"

@@ -4,13 +4,10 @@ import android.annotation.SuppressLint
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import android.app.DatePickerDialog
 import android.content.Intent
-import android.util.Log
 import android.widget.*
-import com.google.android.material.textfield.TextInputLayout
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 
@@ -29,11 +26,12 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register1)
+        setContentView(R.layout.activity_register)
 
         val users: Map<String, String>
 
         val btn_complete_register = findViewById(R.id.RegisterCompleteBtn) as Button
+        val btn_back = findViewById(R.id.BackBtn) as Button
         lastname = findViewById(R.id.lname)
         firstname = findViewById(R.id.fname)
         editdate = findViewById(R.id.editdate)
@@ -46,7 +44,9 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
         btn_complete_register.setOnClickListener {
             validateEmptyForm()
             }
-
+        btn_back.setOnClickListener {
+            onBackPressed()
+        }
         role1.setOnClickListener {
             onCheckboxClicked(true)
             role1.setError(null)

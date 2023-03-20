@@ -42,16 +42,24 @@ class LoginActivity : AppCompatActivity() {
 
             email_field.text.toString().isNotEmpty() && pwd_field.text.toString().isNotEmpty() -> {
                 if (email_field.text.toString().matches(Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))) {
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-//                    firebaseAuth.signInWithEmailAndPassword(email_field.text.toString(), pwd_field.text.toString()).addOnCompleteListener {
-//                        if (it.isSuccessful) {
-//                            val intent = Intent(this, MainActivity::class.java)
-//                            startActivity(intent)
-//                        } else {
-//                            Toast.makeText(this, it.exception.toString(), Toast.LENGTH_LONG).show()
+                    if (pwd_field.text.toString().length >= 5) {
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+//                        firebaseAuth.signInWithEmailAndPassword(
+//                            email_field.text.toString(),
+//                            pwd_field.text.toString()
+//                        ).addOnCompleteListener {
+//                            if (it.isSuccessful) {
+//                                val intent = Intent(this, MainActivity::class.java)
+//                                startActivity(intent)
+//                            } else {
+//                                Toast.makeText(this, it.exception.toString(), Toast.LENGTH_LONG)
+//                                    .show()
+//                            }
 //                        }
-//                    }
+                    }else{
+                        pwd_field.setError("Слишком короткий пароль")
+                    }
                 }
                 else {
                     email_field.setError("Некорректный email")

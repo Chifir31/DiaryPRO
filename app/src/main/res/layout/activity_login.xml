@@ -37,22 +37,28 @@
         android:layout_marginHorizontal="30dp"
         android:background="@color/dark_gray"
         android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/Email_field"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:layout_marginBottom="20dp"
             android:layout_marginTop="10dp"
-
-            android:backgroundTint="@color/gray"
-            android:hint="@string/login"
             android:textColorHint="@color/gray"
-            android:textColor="@color/gray" />
+            android:hint="@string/login"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
+            app:counterTextColor="@color/gray"
+            android:textColor="@color/gray">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/Email_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_gray"
+                android:maxLength="25"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
 
-        <EditText
-            android:id="@+id/Pwd_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
@@ -62,7 +68,18 @@
             android:hint="@string/password"
             android:textColorHint="@color/gray"
             android:textColor="@color/gray"
-            android:backgroundTint="@color/gray"/>
+            android:backgroundTint="@color/gray"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
+            app:counterTextColor="@color/gray">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/Pwd_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_gray"
+                android:maxLength="25"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

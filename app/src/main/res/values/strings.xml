@@ -1,6 +1,18 @@
 <resources>
     <string name="app_name">My Application</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="auth">Авторизация</string>
+    <string name="diaryPRO">DiaryPRO</string>
+    <string name="sign_in">Войти</string>
+    <string name="register">Зарегистрироваться</string>
+    <string name="registration">Регистрация</string>
+    <string name="name">Имя</string>
+    <string name="lastname">Фамилия</string>
+    <string name="surname">Отчество</string>
+    
+    <string name="sportsman">Спортсмен</string>
+    <string name="coach">Тренер</string>
+    <string name="back">Назад</string>
 </resources>

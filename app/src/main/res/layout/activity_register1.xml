@@ -8,187 +8,197 @@
     android:fillViewport="true">
 <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".LoginActivity"
     android:background="@color/black">
 
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="80sp"
-        android:text="Регистрация"
+        android:layout_height="90dp"
+        android:paddingVertical="30dp"
+        android:background="@color/dark_gray"
+        android:text="@string/registration"
         android:textAlignment="center"
-        android:textColor="#008000"
-        android:layout_marginTop="70sp"
-        android:textSize="30sp"
-        android:fontFamily="cursive"
-        android:layout_marginBottom="2sp"
+        android:textColor="@color/teal_200"
+        android:textSize="25sp"
         />
 
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lastname"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <LinearLayout
         android:layout_below="@id/title"
-        android:layout_marginHorizontal="30sp"
-        android:textColorHint="@color/gray"
-        android:hint="Фамилия"
-        app:counterEnabled="true"
-        app:counterMaxLength="25"
-        app:counterTextColor="@color/white">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/lname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="30sp"
-            android:backgroundTint="@color/black"
-            android:maxLength="25"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/firstname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/lastname"
-        android:layout_marginHorizontal="30sp"
-        android:textColorHint="@color/gray"
-        android:hint="Имя"
-        app:counterEnabled="true"
-        app:counterMaxLength="25"
-        app:counterTextColor="@color/white">
+        android:orientation="vertical"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/dark_gray">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/fname"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lastname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="30sp"
-            android:layout_marginBottom="20sp"
-            android:backgroundTint="@color/black"
-            android:maxLength="25"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-    <CheckBox
-        android:id="@+id/role2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/firstname"
-        android:text="Спортсмен"
-        android:textColor="@color/gray"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="80sp"
-        android:onClick="onCheckboxClicked"
-        />
-    <CheckBox
-        android:id="@+id/role1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/firstname"
-        android:text="Тренер"
-        android:textColor="@color/gray"
-        android:layout_toLeftOf="@id/role2"
-        android:layout_marginEnd="90sp"
-        android:layout_alignParentEnd="false"
-        android:onClick="onCheckboxClicked"
-        />
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/role1"
-        android:layout_marginHorizontal="30sp"
-        android:hint="Дата рождения"
-        android:textColorHint="@color/gray">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editdate"
+            android:layout_marginHorizontal="10dp"
+            android:textColorHint="@color/gray"
+            android:hint="@string/lastname"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
+            app:counterTextColor="@color/gray">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/lname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_gray"
+                android:maxLength="25"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/firstname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="false"
-            android:layout_marginHorizontal="30sp"
-            android:layout_marginBottom="20sp"
-            android:backgroundTint="@color/black" />
-    </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/date"
-        android:layout_marginHorizontal="30sp"
-        android:textColorHint="@color/gray"
-        android:hint="Логин"
-        app:counterEnabled="true"
-        app:counterMaxLength="25"
-        >
+            android:layout_marginHorizontal="10dp"
+            android:textColorHint="@color/gray"
+            android:hint="@string/name"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
+            app:counterTextColor="@color/gray">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/username"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/fname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_gray"
+                android:maxLength="25"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="30sp"
-            android:layout_marginBottom="20sp"
+            android:layout_marginHorizontal="10dp"
+            android:hint="Дата рождения"
+            android:textColorHint="@color/gray">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="false"
+                android:backgroundTint="@color/dark_gray"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            android:backgroundTint="@color/black"
-            android:textColorHint="#616667"
-            android:maxLength="25"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/pwd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/login"
-        android:layout_marginHorizontal="30sp"
-        android:textColorHint="@color/gray"
-        android:hint="Пароль"
-        app:counterEnabled="true"
-        app:counterMaxLength="25"
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:inputType="textPassword"
-            android:id="@+id/Pwd"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="30sp"
-            android:layout_marginBottom="20sp"
-            android:backgroundTint="@color/black"
-            android:textColorHint="#616667"
-            android:maxLength="25"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/r_pwd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/pwd"
-        android:layout_marginHorizontal="30sp"
-        android:textColorHint="@color/gray"
-        android:hint="Повторите пароль"
-        app:counterEnabled="true"
-        app:counterMaxLength="25"
-        >
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="30dp"
+            android:textColorHint="@color/gray"
+            android:hint="@string/login"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
+            app:counterTextColor="@color/gray">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:inputType="textPassword"
-            android:id="@+id/RepeatPwd"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:backgroundTint="@color/dark_gray"
+                android:textColorHint="@color/gray"
+                android:maxLength="25"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/pwd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="30sp"
-            android:layout_marginBottom="20sp"
-            android:backgroundTint="@color/black"
-            android:maxLength="25"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
-    <Button
-        android:id="@+id/RegisterCompleteBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/r_pwd"
-        android:text="Зарегистрироваться"
-        android:layout_marginHorizontal="30sp"
-        android:backgroundTint="@color/green"
-        />
+            android:layout_marginHorizontal="10dp"
+            android:textColorHint="@color/gray"
+            android:hint="@string/password"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
+            app:counterTextColor="@color/gray"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="textPassword"
+                android:id="@+id/Pwd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_gray"
+                android:textColorHint="@color/gray"
+                android:maxLength="25"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/r_pwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:textColorHint="@color/gray"
+            android:hint="Повторите пароль"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
+            app:counterTextColor="@color/gray">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:inputType="textPassword"
+                android:id="@+id/RepeatPwd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_gray"
+                android:maxLength="25"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="10dp">
+
+            <CheckBox
+                android:id="@+id/role2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onCheckboxClicked"
+                android:text="@string/sportsman"
+                android:textColor="@color/gray"/>
+
+            <CheckBox
+                android:id="@+id/role1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onCheckboxClicked"
+                android:text="@string/coach"
+                android:textColor="@color/gray" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/BackBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/back"
+                android:backgroundTint="@color/dark_gray"
+                android:textColor="@color/blue"
+                />
+
+            <Button
+                android:id="@+id/RegisterCompleteBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/register"
+                android:backgroundTint="@color/dark_gray"
+                android:textColor="@color/teal_200"
+                />
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>
 </ScrollView>

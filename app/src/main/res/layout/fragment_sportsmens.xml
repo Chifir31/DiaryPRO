@@ -30,10 +30,14 @@
             android:layout_marginHorizontal="40dp"
             />
     </androidx.appcompat.widget.Toolbar>
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_sportsmens"
         android:layout_below="@id/toolbar"
+        android:scrollbars="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="90dp">
+    </androidx.recyclerview.widget.RecyclerView>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +45,5 @@
         android:layout_centerInParent="true"
         android:textSize="30sp"
         android:textColor="@color/gray"/>
-    </ScrollView>
-
 
 </RelativeLayout>

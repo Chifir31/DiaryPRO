@@ -6,16 +6,19 @@
     tools:context=".navigation_pages.GroupsFragment"
     android:background="@color/black">
 
-    <Button
+    <ImageButton
         android:id="@+id/addgroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/baseline_add_24"
         android:layout_alignParentRight="true"
         />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@id/addgroup"
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
         tools:listitem="@layout/group_item"/>
 </RelativeLayout>

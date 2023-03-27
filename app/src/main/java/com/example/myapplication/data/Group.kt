@@ -6,3 +6,4 @@ package com.example.myapplication.data
  * @author Севастьянов Иван
  */
 data class Group(var name: String)
+data class Role(var role: String)

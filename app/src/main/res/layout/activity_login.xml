@@ -11,77 +11,118 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:text="Авторизация"
-        android:textAlignment="center"
-        android:textColor="#008000"
-        android:paddingVertical="70dp"
-        android:textSize="30sp"
+        android:layout_height="90dp"
+        android:background="@color/dark_gray"
         android:fontFamily="cursive"
-        android:layout_marginBottom="2dp"
-        />
+        android:paddingVertical="30dp"
+        android:text="@string/auth"
+        android:textAlignment="center"
+        android:textColor="@color/teal_200"
+        android:textSize="25sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="110dp"
+        android:layout_marginHorizontal="40dp"
         android:text="Войти в аккаунт"
-        android:textColor="#616667"
-        android:layout_marginHorizontal="30dp"
+        android:textColor="@color/gray"
+        android:textSize="20sp"
         />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Логин"
-        android:layout_marginHorizontal="30dp"
-        android:textColor="#616667"
-
-        />
-
-    <EditText
-        android:id="@+id/Email_field"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="#616667"
-        android:textColor="#616667"
-        />
+        android:background="@color/dark_gray"
+        android:orientation="vertical">
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:textColorHint="@color/gray"
+            android:hint="@string/login"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
+            app:counterTextColor="@color/gray"
+            android:textColor="@color/gray">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/Email_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_gray"
+                android:maxLength="25"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Пароль"
-        android:textColor="#616667"
-        android:layout_marginHorizontal="30dp"
-        />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginHorizontal="10dp"
 
-    <EditText
-        android:id="@+id/Pwd_field"
-        android:inputType="textPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="#616667"
-        android:textColor="#616667"
-        />
+            android:inputType="textPassword"
+            android:hint="@string/password"
+            android:textColorHint="@color/gray"
+            android:textColor="@color/gray"
+            android:backgroundTint="@color/gray"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
+            app:counterTextColor="@color/gray">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/Pwd_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_gray"
+                android:maxLength="25"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/LoginBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Войти"
-        android:layout_marginHorizontal="30dp"
-        android:backgroundTint="#008000"
-        />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/RegisterBtn"
+            <Button
+                android:id="@+id/RegisterBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_gray"
+                android:text="@string/register"
+                android:textSize="13sp"
+                android:textColor="@color/blue"/>
+
+            <Button
+                android:id="@+id/LoginBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/dark_gray"
+                android:text="@string/sign_in"
+                android:textSize="15sp"
+                android:textColor="@color/teal_200"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Зарегистрироваться"
-        android:layout_marginHorizontal="30dp"
-        android:backgroundTint="#008000"
-        />
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="90dp"
+                android:paddingVertical="30dp"
+                android:text="@string/diaryPRO"
+                android:textAlignment="center"
+                android:textColor="@color/teal_200"
+                android:textSize="25sp"
+                android:background="@color/dark_gray"/>
+        </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="15dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/r_pwd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColorHint="@color/white"
-        app:boxBackgroundColor="@color/gray"
+        android:textColorHint="@color/gray"
+        app:boxBackgroundColor="@color/dark_gray"
         android:hint="Название"
         app:counterEnabled="true"
         app:counterMaxLength="25"
@@ -20,9 +21,10 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="30sp"
             android:layout_marginBottom="20sp"
+            android:textColor="@color/teal_200"
             android:maxLength="25"
-            android:outlineAmbientShadowColor="@color/white"
-            android:outlineSpotShadowColor="@color/white"
+            android:outlineAmbientShadowColor="@color/gray"
+            android:outlineSpotShadowColor="@color/gray"
             />
         <!--android:backgroundTint="@color/black"-->
     </com.google.android.material.textfield.TextInputLayout>

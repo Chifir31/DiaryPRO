@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:textColorHint="@color/gray"
         app:boxBackgroundColor="@color/dark_gray"
-        android:hint="ID"
+        android:hint="Название"
         app:counterEnabled="true"
         app:counterMaxLength="25"
         >
@@ -21,10 +21,10 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="30sp"
             android:layout_marginBottom="20sp"
-            android:maxLength="25"
             android:textColor="@color/teal_200"
-            android:outlineAmbientShadowColor="@color/white"
-            android:outlineSpotShadowColor="@color/white"
+            android:maxLength="25"
+            android:outlineAmbientShadowColor="@color/gray"
+            android:outlineSpotShadowColor="@color/gray"
             />
         <!--android:backgroundTint="@color/black"-->
     </com.google.android.material.textfield.TextInputLayout>

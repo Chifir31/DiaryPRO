@@ -15,4 +15,5 @@
     <string name="sportsman">Спортсмен</string>
     <string name="coach">Тренер</string>
     <string name="back">Назад</string>
+    <string name="delete">Удалить</string>
 </resources>

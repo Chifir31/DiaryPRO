@@ -1,5 +1,6 @@
 package com.example.myapplication.navigation_pages
 
+import android.graphics.Canvas
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -32,6 +33,8 @@ class GroupsFragment : Fragment() {
     private lateinit var adapter: GroupsAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var groupsArrayList: ArrayList<Group>
+    private lateinit var dateTextView: TextView
+    private lateinit var addBtn: ImageButton
 
     /**
      * Функция для инициализации фрагмента
@@ -56,6 +59,11 @@ class GroupsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         dataInit()
 
+        dateTextView = view.findViewById(R.id.date_textview)
+        val currentDate = Date()
+        val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
+        dateTextView.text = dateFormat.format(currentDate)
+
         val layoutManager = LinearLayoutManager(context)
         recyclerView = view.findViewById(R.id.recyclerview)
         recyclerView.layoutManager = layoutManager
@@ -68,12 +76,36 @@ class GroupsFragment : Fragment() {
                 val position = viewHolder.absoluteAdapterPosition
                 ConfirmDelete(position)
             }
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    // Set the delete button visibility based on the swipe direction
+                    val itemView = viewHolder.itemView
+                    val deleteBtn = itemView.findViewById<Button>(R.id.group_delete_button)
+                    if (dX > 0) {
+                        deleteBtn.visibility= View.VISIBLE
+                    } else if (dX < 0) {
+                        deleteBtn.visibility = View.GONE
+                    }
+                    itemView.translationX = dX
+                    // Draw the swipe background color
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                }
+            }
         }
 
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
-        val addBtn = view.findViewById<ImageButton>(R.id.addgroup)
+        addBtn = view.findViewById<ImageButton>(R.id.addgroup)
         addBtn.setOnClickListener{
             ShowInput()
         }

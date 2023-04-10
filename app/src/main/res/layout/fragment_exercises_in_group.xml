@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ExerciseGroupFragment"
+    android:background="@color/black">
+
+    <ImageButton
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_arrow_back_24"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/back"
+        android:id="@+id/diary_label"
+        android:text="Дневник тренировок"
+        android:textAlignment="center"
+        android:textColor="@color/gray"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Place Holder"
+        android:layout_below="@+id/diary_label"
+        android:layout_toRightOf="@+id/back"
+        android:textColor="@color/gray"
+        android:id="@+id/groupName_label"
+        />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_account_box_24"
+        android:layout_toRightOf="@+id/diary_label"
+        />
+
+    <CalendarView
+        android:id="@+id/CalendarView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/diary_label"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/exerciseList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/CalendarView"
+        tools:listitem="@layout/item_layout"
+        />
+</RelativeLayout>

@@ -5,10 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.GroupsAdapter
+import com.example.myapplication.Adapters.GroupsAdapter
 import com.example.myapplication.R
 import com.example.myapplication.data.Group
 import android.util.Log
@@ -16,9 +15,8 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.ItemTouchHelper
+import com.example.myapplication.ExerciseGroupFragment
 import com.example.myapplication.SwipeGesture
 import java.text.SimpleDateFormat
 import java.util.*
@@ -63,11 +61,49 @@ class GroupsFragment : Fragment() {
 
         recyclerView.adapter = adapter
 
+        adapter.setOnItemClickListener(object : GroupsAdapter.onItemClickListener {
+            override fun onItemClicked(position: Int) {
+                getParentFragmentManager().beginTransaction()
+                    .replace(R.id.container,ExerciseGroupFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
+
+        })
+
+
         val swipeToDeleteCallback = object : SwipeGesture(){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.absoluteAdapterPosition
                 ConfirmDelete(position)
             }
+<<<<<<< Updated upstream
+=======
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    // Set the delete button visibility based on the swipe direction
+                    val itemView = viewHolder.itemView
+                    val deleteBtn = itemView.findViewById<TextView>(R.id.group_delete_button)
+                    if (dX > 0) {
+                        deleteBtn.visibility= View.VISIBLE
+                    } else if (dX < 0) {
+                        deleteBtn.visibility = View.GONE
+                    }
+                    itemView.translationX = dX
+                    // Draw the swipe background color
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                }
+            }
+>>>>>>> Stashed changes
         }
 
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)

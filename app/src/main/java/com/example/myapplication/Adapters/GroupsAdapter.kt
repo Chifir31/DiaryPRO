@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.Adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.R
 import com.example.myapplication.data.Group
 
 /**
@@ -16,6 +17,15 @@ import com.example.myapplication.data.Group
 class GroupsAdapter(
     private val groupsList: ArrayList<Group>): RecyclerView.Adapter<GroupsAdapter.GroupsView>() {
 
+    private lateinit var mListener: onItemClickListener
+    interface onItemClickListener{
+        fun onItemClicked(position: Int)
+    }
+
+    fun setOnItemClickListener(listener: onItemClickListener){
+        mListener = listener
+    }
+
     /**
      * Создает новый объект ViewHolder
      * @param parent - где создаем
@@ -24,7 +34,7 @@ class GroupsAdapter(
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupsView {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.group_item,parent,false)
-        return  GroupsView(itemView)
+        return  GroupsView(itemView,mListener)
     }
 
     /**
@@ -50,8 +60,14 @@ class GroupsAdapter(
     }
 
 
-    class GroupsView(itemView: View):RecyclerView.ViewHolder(itemView){
+    class GroupsView(itemView: View, listener: onItemClickListener):RecyclerView.ViewHolder(itemView){
         val groupName: TextView = itemView.findViewById(R.id.groupName)
         val detailsBtn: ImageButton = itemView.findViewById(R.id.options)
+
+        init {
+            itemView.setOnClickListener {
+                listener.onItemClicked(absoluteAdapterPosition)
+            }
+        }
     }
 }

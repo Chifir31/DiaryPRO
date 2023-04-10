@@ -23,7 +23,6 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
     private lateinit var role1: CheckBox
     private lateinit var role2: CheckBox
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)

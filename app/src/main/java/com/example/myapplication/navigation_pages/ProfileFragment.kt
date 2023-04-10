@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.myapplication.R
 
 class ProfileFragment : Fragment() {
@@ -21,6 +22,7 @@ override fun onCreateView(
     val randomImageUrl = "https://picsum.photos/200" // Replace with URL of your image
     Glide.with(this)
         .load(randomImageUrl)
+        .transform(CircleCrop())
         .placeholder(R.drawable.circular_background) // placeholder image while the actual image loads
         //.error(R.drawable.error_image) // image to display if there is an error loading the actual image
         .into(myImageView)

@@ -1,6 +1,3 @@
-import android.content.ClipData
-import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,18 +6,17 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.myapplication.R
 import com.example.myapplication.data.Item
-import com.example.myapplication.navigation_pages.SportsmensFragment
+import com.example.myapplication.navigation_pages.SportsmensFragmentDialog
 import java.util.*
 
 
-class MyAdapter(private val itemList: MutableList<Item>) : RecyclerView.Adapter<MyAdapter.ItemViewHolder>() {
+class AdapterSportsmens(private val itemList: MutableList<Item>) : RecyclerView.Adapter<AdapterSportsmens.ItemViewHolder>() {
     private val deleteButtonsVisible = mutableSetOf<String>()
     private var onDeleteClickListener: OnDeleteClickListener? = null
     interface OnDeleteClickListener {
@@ -49,6 +45,36 @@ class MyAdapter(private val itemList: MutableList<Item>) : RecyclerView.Adapter<
         holder.itemOpenButton.setOnClickListener {
             // Open separate window
             Log.d("TAG", itemList.size.toString())
+
+//            val builder = AlertDialog.Builder(holder.itemView.context)
+//            val inflater = LayoutInflater.from(holder.itemView.context)
+//            val dialogView = inflater.inflate(R.layout.fragment_sportsments_dialog, null)
+//            builder.setView(dialogView)
+//            val dialog = builder.create()
+//
+//            // Set the title to the item name and today's date
+//            val toolbar: androidx.appcompat.widget.Toolbar = dialogView.findViewById(R.id.toolbar)
+//            toolbar.title = "Дневник тренировок\n"+currentItem.text
+//            val todayDate = SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault()).format(Calendar.getInstance().time)
+//            toolbar.subtitle = todayDate
+//
+//            // Set the cancel button to close the dialog
+//            val cancelBtn: TextView = dialogView.findViewById(R.id.cancel_btn)
+//            cancelBtn.setOnClickListener { dialog.dismiss() }
+//            val addBtn: TextView = dialogView.findViewById(R.id.add_btn)
+//            addBtn.setOnClickListener {  }
+//            val recyclerView: RecyclerView = dialogView.findViewById(R.id.recycler_sportsmens_dialog)
+//            itemList = (requireActivity() as MainActivity).sportsmensList
+//            // Show the dialog
+//            dialog.show()
+            val exercise = itemList[position]
+            val fragment = SportsmensFragmentDialog.newInstance(currentItem.text, currentItem.itemId)
+
+            val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
+            fragmentManager.beginTransaction()
+                .replace(R.id.fragment_sportsmens, fragment)
+                .addToBackStack(null)
+                .commit()
         }
         holder.itemDeleteButton.setOnClickListener {
             // Delete item from list and update RecyclerView

@@ -80,6 +80,7 @@
                 android:backgroundTint="@color/dark_gray"
                 android:textColor="@color/teal_200"
                 android:maxLength="25"
+                android:inputType="textPassword"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 

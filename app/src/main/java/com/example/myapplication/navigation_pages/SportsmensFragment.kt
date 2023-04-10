@@ -1,6 +1,6 @@
 package com.example.myapplication.navigation_pages
 
-import MyAdapter
+import AdapterSportsmens
 import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +18,7 @@ import androidx.core.content.ContentProviderCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
@@ -29,59 +30,13 @@ class SportsmensFragment : Fragment() {
     private lateinit var dateTextView: TextView
     private lateinit var add_button: Button
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: MyAdapter
+    private lateinit var adapter: AdapterSportsmens
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var itemList: MutableList<Item>
     private var size : Int = 0
-    private fun ShowInput(position: Int) {
-        add_button.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
-            val inflater = requireActivity().layoutInflater
-            val dialogLayout = inflater.inflate(R.layout.c_activity_input, null)
-            val edit = dialogLayout.findViewById<EditText>(R.id.input)
 
-            with(builder){
-                setTitle("Введите ID спортсмена")
-                setPositiveButton("Добавить"){dialog, which-> itemList.add(Item(edit.text.toString(), "https://example.com/image1.jpg", "Item"+(size++).toString()))
-                    adapter.notifyItemInserted(position)
-                    Log.d("SportsmensFragment", adapter.itemCount.toString())
-                    Log.d("SportsmensFragment", "Item list: $itemList")
-                    Log.d("SportsmensFragment", "New item added at position: $position")
-                }//Log.d("Main","Positive")}
-                setNegativeButton("Отмена"){dialog, which-> Log.d("Main","Negative")}
-            }
-            builder.setView(dialogLayout)
-            builder.show()
-
-        }
-    }
-
-    fun ConfirmDelete(position: Int){
-        val builder = AlertDialog.Builder(requireContext())
-        with(builder){
-            setTitle("Подтвердите удаление")
-            setPositiveButton("Подтвердить"){dialog, which->
-                //adapter.hideDeleteButton(position)
-                //notifyItemRemoved(position)
-                Log.d("Main","Pos")
-                adapter.removeItem(position)
-                //recyclerView.adapter?.notifyItemRemoved(position)
-            }
-            setNegativeButton("Отмена"){dialog, which->
-                dialog.dismiss()
-                //recyclerView.adapter?.notifyDataSetChanged()
-            }
-            builder.show()
-        }
-    }
-
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_sportsmens, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         toolbar = view.findViewById(R.id.toolbar)
 
         dateTextView = view.findViewById(R.id.date_textview)
@@ -92,22 +47,15 @@ class SportsmensFragment : Fragment() {
         val currentDate = Date()
         val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
         dateTextView.text = dateFormat.format(currentDate)
-
-        itemList = arrayListOf<com.example.myapplication.data.Item>(
-            Item("Item 1", "https://example.com/image1.jpg", "Item 1"),
-            Item("Item 2", "https://example.com/image2.jpg", "Item 2"),
-            Item("Item 3", "https://example.com/image3.jpg", "Item 3"),
-            Item("Item 4", "https://example.com/image4.jpg", "Item 4"),
-            Item("Item 5", "https://example.com/image5.jpg", "Item 5")
-        )
+        itemList = (requireActivity() as MainActivity).sportsmensList
         size = itemList.size+1
         recyclerView = view.findViewById(R.id.recycler_sportsmens)
         layoutManager = LinearLayoutManager(activity)
-        adapter = MyAdapter(itemList)
+        adapter = AdapterSportsmens(itemList)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
-        ShowInput(itemList.size)
-        adapter.setOnDeleteClickListener(object : MyAdapter.OnDeleteClickListener {
+        ShowInput()
+        adapter.setOnDeleteClickListener(object : AdapterSportsmens.OnDeleteClickListener {
             override fun onDeleteClick(position: Int) {
                 Log.d("Pos", "$position")
                 ConfirmDelete(position)
@@ -155,11 +103,11 @@ class SportsmensFragment : Fragment() {
                 dY: Float,
                 actionState: Int,
                 isCurrentlyActive: Boolean
-            ) {Log.d("SportsmensFragment", "onChildDraw called")
+            ) {//Log.d("SportsmensFragment", "onChildDraw called")
 
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                // Set the delete button visibility based on the swipe direction
-                    Log.d("SportsmensFragment", "onChildDraw surely called")
+                    // Set the delete button visibility based on the swipe direction
+                    //Log.d("SportsmensFragment", "onChildDraw surely called")
                     val itemView = viewHolder.itemView
                     itemView.translationY = 0f
                     //l deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
@@ -167,17 +115,75 @@ class SportsmensFragment : Fragment() {
                     itemView.translationX = dX
                     // Draw the swipe background color
 
-            }
+                }
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
         }
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_sportsmens, container, false)
         // Inflate the layout for this fragment
         return view
     }
-}
+    /* This function shows an AlertDialog with an EditText view to allow the user to input data.
+    The data is then added to the itemList and the adapter is notified of the change.
+    The size and elements of the itemList are logged for debugging purposes.*/
+    private fun ShowInput() {
+        add_button.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            val inflater = requireActivity().layoutInflater
+            val dialogLayout = inflater.inflate(R.layout.c_activity_input, null)
+            val edit = dialogLayout.findViewById<EditText>(R.id.input)
 
+            with(builder){
+                setTitle("Введите ID спортсмена")
+                setPositiveButton("Добавить"){dialog, which->
+                    val random = Random()
+                    val randomNumber = random.nextInt(1000)
+                    itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
+                    adapter.notifyItemInserted(itemList.size)
+                    Log.d("SportsmensFragment size", adapter.itemCount.toString())
+                    Log.d("SportsmensFragment elements", "Item list: $itemList")
+                }//Log.d("Main","Positive")}
+                setNegativeButton("Отмена"){dialog, which-> Log.d("Main","Negative")}
+            }
+            builder.setView(dialogLayout)
+            builder.show()
+
+        }
+    }
+    /* This function shows an AlertDialog to confirm the deletion of an item.
+    If the user confirms the deletion, the adapter is notified to remove the item
+    and the position, size, and elements of the itemList are logged for debugging purposes.*/
+    fun ConfirmDelete(position: Int){
+        val builder = AlertDialog.Builder(requireContext())
+        with(builder){
+            setTitle("Подтвердите удаление")
+            setPositiveButton("Подтвердить"){dialog, which->
+                //adapter.hideDeleteButton(position)
+
+                Log.d("Main","Pos")
+                Log.d("SportsmensFragment position", position.toString())
+                Log.d("SportsmensFragment size", adapter.itemCount.toString())
+                Log.d("SportsmensFragment elements", "Item list: $itemList")
+                adapter.removeItem(position)
+                //adapter.notifyItemRemoved(position)
+                //recyclerView.adapter?.notifyItemRemoved(position)
+            }
+            setNegativeButton("Отмена"){dialog, which->
+                dialog.dismiss()
+                //recyclerView.adapter?.notifyDataSetChanged()
+            }
+            builder.show()
+        }
+    }
+}
+// This is an InputActivity class that sets the content view to R.layout.c_activity_input.
 class InputActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

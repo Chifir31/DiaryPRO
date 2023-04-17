@@ -43,33 +43,9 @@ class AdapterSportsmens(private val itemList: MutableList<Item>) : RecyclerView.
             .into(holder.itemPicture)
         //holder.itemPicture.setImageResource(currentItem.)
         holder.itemOpenButton.setOnClickListener {
-            // Open separate window
             Log.d("TAG", itemList.size.toString())
-
-//            val builder = AlertDialog.Builder(holder.itemView.context)
-//            val inflater = LayoutInflater.from(holder.itemView.context)
-//            val dialogView = inflater.inflate(R.layout.fragment_sportsments_dialog, null)
-//            builder.setView(dialogView)
-//            val dialog = builder.create()
-//
-//            // Set the title to the item name and today's date
-//            val toolbar: androidx.appcompat.widget.Toolbar = dialogView.findViewById(R.id.toolbar)
-//            toolbar.title = "Дневник тренировок\n"+currentItem.text
-//            val todayDate = SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault()).format(Calendar.getInstance().time)
-//            toolbar.subtitle = todayDate
-//
-//            // Set the cancel button to close the dialog
-//            val cancelBtn: TextView = dialogView.findViewById(R.id.cancel_btn)
-//            cancelBtn.setOnClickListener { dialog.dismiss() }
-//            val addBtn: TextView = dialogView.findViewById(R.id.add_btn)
-//            addBtn.setOnClickListener {  }
-//            val recyclerView: RecyclerView = dialogView.findViewById(R.id.recycler_sportsmens_dialog)
-//            itemList = (requireActivity() as MainActivity).sportsmensList
-//            // Show the dialog
-//            dialog.show()
             val exercise = itemList[position]
             val fragment = SportsmensFragmentDialog.newInstance(currentItem.text, currentItem.itemId)
-
             val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_sportsmens, fragment)
@@ -79,10 +55,6 @@ class AdapterSportsmens(private val itemList: MutableList<Item>) : RecyclerView.
         holder.itemDeleteButton.setOnClickListener {
             // Delete item from list and update RecyclerView
             onDeleteClickListener?.onDeleteClick(position)
-            //removeItem(position)
-            //deleteButtonsVisible.remove(position)
-            //notifyItemRemoved(position)
-            //holder.itemDeleteButton.visibility=GONE
         }
         holder.itemDeleteButton.visibility = if (deleteButtonsVisible.contains(getItem(position))) VISIBLE else GONE
 
@@ -116,7 +88,6 @@ class AdapterSportsmens(private val itemList: MutableList<Item>) : RecyclerView.
     }
     fun removeItem(position: Int) {
         hideDeleteButton(position)
-        notifyItemRemoved(position)
         itemList.removeAt(position)
         notifyDataSetChanged()
     }

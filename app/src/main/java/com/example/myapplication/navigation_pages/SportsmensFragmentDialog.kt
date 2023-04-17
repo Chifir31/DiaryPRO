@@ -104,7 +104,16 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 setPositiveButton("Добавить"){dialog, which->
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
-                    itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, "Item "+(size++).toString()))
+
+                    itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.text.toString(), "Item "+(size++).toString()))
+                    adapter = AdapterExercise(itemList[param2]?.filter {
+                        val calendar = Calendar.getInstance()
+                        calendar.time = it.itemDate
+                        calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+                                calendar.get(Calendar.MONTH) == selectedDate.month &&
+                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
+                    } as MutableList<Exercise>?)
+
                     adapter.notifyItemInserted(itemList[param2]?.size ?: 0)
                     Log.d("SportsmensFragment size", adapter.itemCount.toString())
                     Log.d("SportsmensFragment elements", "Item list: $itemList")

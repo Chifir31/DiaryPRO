@@ -40,7 +40,7 @@ class MainActivity: AppCompatActivity()  {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
+        val user = "S" //Тип пользователя, в дальнейшем будет считываться с firebase
         if (user == "C"){
             setContentView(R.layout.c_activity_main)
             val navView : BottomNavigationView = findViewById(R.id.bottom_navigation)

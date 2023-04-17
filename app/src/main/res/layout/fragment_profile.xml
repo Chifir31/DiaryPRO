@@ -2,21 +2,98 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     tools:context=".navigation_pages.ProfileFragment"
     android:background="@color/black">
 
-<<<<<<< Updated upstream
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Snake, are you alive out there?\n Snake?\n SNAKEEEEEE!"
-        android:layout_centerInParent="true"
-        android:textSize="25sp"
-        android:textColor="@color/gray"/>
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="@color/dark_gray"
+        app:titleTextColor="@color/gray">
+        <TextView
+            android:id="@+id/profile_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/gray"
+            android:textStyle="bold"
+            android:text="Профиль"
+            android:layout_gravity="center"/>
+        <ImageButton
+            android:id="@+id/options_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="20dp"
+            android:layout_toLeftOf="@id/profile_textview"
+            android:src="@drawable/baseline_settings_24"
+            android:background="@android:color/transparent"
+            android:layout_gravity="right"
+            />
+    </androidx.appcompat.widget.Toolbar>
 
-=======
+    <RelativeLayout
+        android:id="@+id/photoAndID"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@+id/toolbar"
+        >
+        <ImageView
+            android:id="@+id/circle_image"
+            android:layout_width="100sp"
+            android:layout_height="100sp"
+            android:layout_gravity="left"
+            android:layout_marginTop="30sp"
+            android:layout_marginStart="30sp"
+            android:background="@drawable/circular_background" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/circle_image"
+            android:paddingVertical="45dp"
+            android:layout_marginStart="50sp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/profile_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ID:blablabla"
+                android:textSize="20sp"
+                android:textColor="@color/white"/>
+            <TextView
+                android:layout_below="@id/profile_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="a@gmail.com"
+                android:textSize="20sp"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/profile_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginHorizontal="15dp"
+        android:layout_below="@+id/photoAndID"
+        android:text="Профиль"
+        android:textSize="15sp"
+        android:background="@color/black"
+        android:textColor="@color/gray"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/profile_text"
+        android:background="@color/dark_gray"
+        android:orientation="vertical">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -90,32 +167,35 @@
             android:background="@color/black"
             android:textColor="@color/gray"
             />
+
         <TextView
             android:id="@+id/profile_lastname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingVertical="7dp"
+            android:layout_marginStart="15dp"
             android:text="Фамилия:"
-            android:textSize="25sp"
-            android:textColor="@color/gray"
-            android:layout_below="@id/profile_text"
+            android:textSize="18sp"
+            android:textColor="@color/white"
             />
         <TextView
             android:id="@+id/profile_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingVertical="7dp"
+            android:layout_marginStart="15dp"
             android:text="Имя:"
-            android:textSize="25sp"
-            android:textColor="@color/gray"
-            android:layout_below="@id/profile_lastname"/>
+            android:textSize="18sp"
+            android:textColor="@color/white"/>
         <TextView
             android:id="@+id/profile_datebirth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingVertical="7dp"
+            android:layout_marginStart="15dp"
             android:text="Дата рождения:"
-            android:textSize="25sp"
-            android:textColor="@color/gray"
-            android:layout_below="@id/profile_name"/>
-    </RelativeLayout>
->>>>>>> Stashed changes
+            android:textSize="18sp"
+            android:textColor="@color/white"/>
+    </LinearLayout>
 
 </RelativeLayout>

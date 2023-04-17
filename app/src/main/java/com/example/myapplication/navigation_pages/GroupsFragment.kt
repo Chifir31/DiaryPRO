@@ -1,5 +1,6 @@
 package com.example.myapplication.navigation_pages
 
+import android.graphics.Canvas
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,11 +17,8 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
-<<<<<<< Updated upstream
 import com.example.myapplication.ExerciseGroupFragment
-=======
 import com.example.myapplication.MainActivity
->>>>>>> Stashed changes
 import com.example.myapplication.SwipeGesture
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,6 +32,8 @@ class GroupsFragment : Fragment() {
     private lateinit var adapter: GroupsAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var groupsArrayList: ArrayList<Group>
+    private lateinit var dateTextView: TextView
+    private lateinit var addBtn: ImageButton
 
     /**
      * Функция для инициализации фрагмента
@@ -58,6 +58,11 @@ class GroupsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         dataInit()
 
+        dateTextView = view.findViewById(R.id.date_textview)
+        val currentDate = Date()
+        val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
+        dateTextView.text = dateFormat.format(currentDate)
+
         val layoutManager = LinearLayoutManager(context)
         recyclerView = view.findViewById(R.id.recyclerview)
         recyclerView.layoutManager = layoutManager
@@ -65,7 +70,7 @@ class GroupsFragment : Fragment() {
 
         recyclerView.adapter = adapter
 
-<<<<<<< Updated upstream
+
         adapter.setOnItemClickListener(object : GroupsAdapter.onItemClickListener {
             override fun onItemClicked(position: Int) {
                 getParentFragmentManager().beginTransaction()
@@ -76,16 +81,12 @@ class GroupsFragment : Fragment() {
 
         })
 
-=======
->>>>>>> Stashed changes
-
         val swipeToDeleteCallback = object : SwipeGesture(){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.absoluteAdapterPosition
                 ConfirmDelete(position)
             }
-<<<<<<< Updated upstream
-=======
+
             override fun onChildDraw(
                 c: Canvas,
                 recyclerView: RecyclerView,
@@ -99,7 +100,9 @@ class GroupsFragment : Fragment() {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     // Set the delete button visibility based on the swipe direction
                     val itemView = viewHolder.itemView
+
                     val deleteBtn = itemView.findViewById<TextView>(R.id.group_delete_button)
+
                     if (dX > 0) {
                         deleteBtn.visibility= View.VISIBLE
                     } else if (dX < 0) {
@@ -110,13 +113,12 @@ class GroupsFragment : Fragment() {
                     super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                 }
             }
->>>>>>> Stashed changes
         }
 
         val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
-        val addBtn = view.findViewById<ImageButton>(R.id.addgroup)
+        addBtn = view.findViewById<ImageButton>(R.id.addgroup)
         addBtn.setOnClickListener{
             ShowInput()
         }

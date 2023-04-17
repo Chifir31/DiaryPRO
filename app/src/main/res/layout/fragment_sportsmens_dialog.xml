@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:id="@+id/sportsmensfragmentdialog">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/gray"
+        android:elevation="4dp"
+        android:titleTextColor="@color/white"
+        android:subtitleTextColor="@color/white"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+/>
+    <CalendarView
+        android:id="@+id/CalendarView"
+        android:layout_below="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+         />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_sportsmens_dialog"
+        android:layout_below="@+id/CalendarView"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="200sp"
+        >
+    </androidx.recyclerview.widget.RecyclerView>
+    <TextView
+        android:id="@+id/cancel_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recycler_sportsmens_dialog"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:text="Cancel"
+        android:textColor="@color/white" />
+    <TextView
+        android:id="@+id/add_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recycler_sportsmens_dialog"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:text="Добавить тренировку"
+        android:textColor="@color/red" />
+</RelativeLayout>

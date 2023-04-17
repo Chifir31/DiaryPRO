@@ -1,14 +1,17 @@
 package com.example.myapplication.navigation_pages
 
+
 import AdapterExercise
 import android.os.Bundle
 import android.util.ArrayMap
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CalendarView
 import android.widget.TextView
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.MainActivity
@@ -28,6 +31,7 @@ class DiaryFragment : Fragment() {
     private lateinit var adapter: AdapterExercise
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

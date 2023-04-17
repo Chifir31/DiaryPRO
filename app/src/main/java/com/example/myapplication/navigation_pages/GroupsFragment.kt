@@ -16,7 +16,11 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
+<<<<<<< Updated upstream
 import com.example.myapplication.ExerciseGroupFragment
+=======
+import com.example.myapplication.MainActivity
+>>>>>>> Stashed changes
 import com.example.myapplication.SwipeGesture
 import java.text.SimpleDateFormat
 import java.util.*
@@ -61,6 +65,7 @@ class GroupsFragment : Fragment() {
 
         recyclerView.adapter = adapter
 
+<<<<<<< Updated upstream
         adapter.setOnItemClickListener(object : GroupsAdapter.onItemClickListener {
             override fun onItemClicked(position: Int) {
                 getParentFragmentManager().beginTransaction()
@@ -71,6 +76,8 @@ class GroupsFragment : Fragment() {
 
         })
 
+=======
+>>>>>>> Stashed changes
 
         val swipeToDeleteCallback = object : SwipeGesture(){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -166,7 +173,7 @@ class GroupsFragment : Fragment() {
      * @author Севастьянов Иван
      */
     private fun InsertGroup(name: String){
-        val newGroup = Group(name)
+        val newGroup = Group(name,name)
         groupsArrayList.add(0,newGroup)
         adapter.notifyItemInserted(0)
     }
@@ -176,14 +183,6 @@ class GroupsFragment : Fragment() {
      * @author Севастьянов Иван
      */
     private fun dataInit(){
-        groupsArrayList = arrayListOf<Group>()
-
-        groupsArrayList.add(Group("Name1"))
-        groupsArrayList.add(Group("Name2"))
-        groupsArrayList.add(Group("Name3"))
-        groupsArrayList.add(Group("Name4"))
-        groupsArrayList.add(Group("Name5"))
-        groupsArrayList.add(Group("Name6"))
-
+        groupsArrayList = (requireActivity() as MainActivity).GroupsList
     }
 }

@@ -3,7 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< Updated upstream
     tools:context="ExerciseGroupFragment"
+=======
+    tools:context="fragment_exercises_in_group"
+>>>>>>> Stashed changes
     android:background="@color/black">
 
     <ImageButton
@@ -53,4 +57,17 @@
         android:layout_below="@id/CalendarView"
         tools:listitem="@layout/item_layout"
         />
+<<<<<<< Updated upstream
+=======
+
+    <TextView
+        android:id="@+id/add_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/exerciseList"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:text="Добавить тренировку"
+        android:textColor="@color/red" />
+>>>>>>> Stashed changes
 </RelativeLayout>

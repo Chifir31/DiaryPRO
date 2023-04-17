@@ -19,18 +19,14 @@ import java.util.*
 class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerView.Adapter<AdapterExercise.ItemViewHolder>() {
     private val deleteButtonsVisible = mutableSetOf<String>()
     private var onDeleteClickListener: OnDeleteClickListener? = null
-    private var onOpenClickListener: OnOpenClickListener? = null
+
     interface OnDeleteClickListener {
         fun onDeleteClick(position: Int)
     }
-    interface OnOpenClickListener {
-        fun onOpenClick(position: Int)
-    }
+
+
     fun setOnDeleteClickListener(listener: OnDeleteClickListener) {
         onDeleteClickListener = listener
-    }
-    fun setOnOpenClickListener(listener: OnOpenClickListener) {
-        onOpenClickListener = listener
     }
     // Create a new view holder for each item in the list
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -52,12 +48,14 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
         holder.itemOpenButton.setOnClickListener {
             // Open separate window
             Log.d("TAG", itemList?.size.toString())
-            onOpenClickListener?.onOpenClick(position)
         }
         holder.itemDeleteButton.setOnClickListener {
             // Delete item from list and update RecyclerView
-            Log.d("Check", itemList.toString() + " "+ currentItem.toString())
             onDeleteClickListener?.onDeleteClick(position)
+            //removeItem(position)
+            //deleteButtonsVisible.remove(position)
+            //notifyItemRemoved(position)
+            //holder.itemDeleteButton.visibility=GONE
         }
         Log.d("Set check", deleteButtonsVisible.toString())
         holder.itemDeleteButton.visibility = if (deleteButtonsVisible.contains(getItem(position))) VISIBLE else GONE
@@ -95,9 +93,8 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
     }
     fun removeItem(position: Int) {
         hideDeleteButton(position)
-        Log.d("Check", itemList.toString())
         itemList?.removeAt(position)
-        Log.d("Check", itemList.toString())
         notifyDataSetChanged()
     }
+    //class ClipData.Item(val text: String, val imageResourceId: Int, var itemId: String)
 }

@@ -2,18 +2,19 @@ package com.example.myapplication
 
 import android.os.Bundle
 import android.util.ArrayMap
-import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myapplication.data.Exercise
 import com.example.myapplication.data.Item
-import com.example.myapplication.navigation_pages.*
+import com.example.myapplication.navigation_pages.GroupsFragment
+import com.example.myapplication.navigation_pages.ProfileFragment
+import com.example.myapplication.navigation_pages.Exercisefragment
+import com.example.myapplication.navigation_pages.DiaryFragment
+import com.example.myapplication.navigation_pages.SportsmensFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
 
 class MainActivity: AppCompatActivity()  {
-    private lateinit var navView : BottomNavigationView
     val random = Random()
     val randomNumber = random.nextInt(1000)
     var sportsmensList = arrayListOf<Item>(
@@ -24,29 +25,30 @@ class MainActivity: AppCompatActivity()  {
         Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))
 
     var tmp = arrayListOf<Exercise>(
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", "Item 1"),
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", "Item 2"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", "Item 3"))
+        Exercise("Push-ups", "https://picsum.photos/200?random=$randomNumber+5", Date(), "Item 1"),
+        Exercise("Squats", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Item 2"),
+        Exercise("Lunges", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Item 3"))
     var tmp1 = arrayListOf<Exercise>(
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", "Item 1"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date(), "DO IT", "Item 2"),
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAWAWAWWw", "Item 3")
+        Exercise("Bench press", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Item 1"),
+        Exercise("Deadlifts", "https://picsum.photos/200?random=$randomNumber+9", Date(), "Item 2"),
+        Exercise("Rows", "https://picsum.photos/200?random=$randomNumber+10", Date(), "Item 3")
     )
     var exerciseList = ArrayMap<String, MutableList<Exercise>>().apply{
         put("Item 1", tmp)
         put("Item 2", tmp1)
     }
-    val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
         if (user == "C"){
             setContentView(R.layout.c_activity_main)
-            navView = findViewById(R.id.c_bottom_navigation)
+            val navView : BottomNavigationView = findViewById(R.id.bottom_navigation)
             loadFragment(SportsmensFragment())
-            navView?.setOnItemSelectedListener {
+            navView.setOnItemSelectedListener {
                 when(it.itemId){
                     R.id.sportsmens->loadFragment(SportsmensFragment())
-                    R.id.groups->loadFragment(GroupsFragment())
+                    R.id.groups-> loadFragment(GroupsFragment())
                     R.id.profile->loadFragment(ProfileFragment())
                     else -> {
 
@@ -56,9 +58,9 @@ class MainActivity: AppCompatActivity()  {
             }
         }else if (user == "S"){
             setContentView(R.layout.s_activity_main)
-            navView = findViewById(R.id.s_bottom_navigation)
+            val navView : BottomNavigationView = findViewById(R.id.bottom_navigation)
             loadFragment(Exercisefragment())
-            navView?.setOnItemSelectedListener {
+            navView.setOnItemSelectedListener {
                 when(it.itemId){
                     R.id.exercise->loadFragment(Exercisefragment())
                     R.id.diary-> loadFragment(DiaryFragment())
@@ -71,34 +73,10 @@ class MainActivity: AppCompatActivity()  {
             }
         }
 
-
     }
-    override fun onBackPressed() {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
-        Log.d("MainActivity", "currentFragment: $currentFragment")
-        if (user == "C" && R.id.sportsmens != navView.selectedItemId){
-            navView.selectedItemId = R.id.sportsmens
-            loadFragment(SportsmensFragment())}
-        else if (currentFragment is SportsmensFragmentDialog) {
-            // Handle back button press inside the dialog fragment
-            super.onBackPressed()
-            setNavViewVisibility(true)}
-        else if (user == "S" && R.id.exercise != navView.selectedItemId) {
-            navView.selectedItemId = R.id.exercise
-            loadFragment(Exercisefragment())
-        }
-        else{
-            super.onBackPressed()
-            finishAffinity()
-        }
-    }
-    private  fun loadFragment(fragment: Fragment) {
+    private  fun loadFragment(fragment: Fragment){
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.container, fragment)
+        transaction.replace(R.id.container,fragment)
         transaction.commit()
-    }
-    // Add a method to hide/show the navigation view
-    fun setNavViewVisibility(visible: Boolean) {
-        navView.visibility = if (visible) View.VISIBLE else View.GONE
     }
 }

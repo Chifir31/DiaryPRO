@@ -6,9 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.Adapters.GroupsAdapter
+import com.example.myapplication.GroupsAdapter
 import com.example.myapplication.R
 import com.example.myapplication.data.Group
 import android.util.Log
@@ -16,9 +17,9 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.ItemTouchHelper
-import com.example.myapplication.ExerciseGroupFragment
-import com.example.myapplication.MainActivity
 import com.example.myapplication.SwipeGesture
 import java.text.SimpleDateFormat
 import java.util.*
@@ -70,23 +71,11 @@ class GroupsFragment : Fragment() {
 
         recyclerView.adapter = adapter
 
-
-        adapter.setOnItemClickListener(object : GroupsAdapter.onItemClickListener {
-            override fun onItemClicked(position: Int) {
-                getParentFragmentManager().beginTransaction()
-                    .replace(R.id.container,ExerciseGroupFragment())
-                    .addToBackStack(null)
-                    .commit()
-            }
-
-        })
-
         val swipeToDeleteCallback = object : SwipeGesture(){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.absoluteAdapterPosition
                 ConfirmDelete(position)
             }
-
             override fun onChildDraw(
                 c: Canvas,
                 recyclerView: RecyclerView,
@@ -100,9 +89,7 @@ class GroupsFragment : Fragment() {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     // Set the delete button visibility based on the swipe direction
                     val itemView = viewHolder.itemView
-
-                    val deleteBtn = itemView.findViewById<TextView>(R.id.group_delete_button)
-
+                    val deleteBtn = itemView.findViewById<Button>(R.id.group_delete_button)
                     if (dX > 0) {
                         deleteBtn.visibility= View.VISIBLE
                     } else if (dX < 0) {
@@ -175,7 +162,7 @@ class GroupsFragment : Fragment() {
      * @author Севастьянов Иван
      */
     private fun InsertGroup(name: String){
-        val newGroup = Group(name,name)
+        val newGroup = Group(name)
         groupsArrayList.add(0,newGroup)
         adapter.notifyItemInserted(0)
     }
@@ -185,6 +172,14 @@ class GroupsFragment : Fragment() {
      * @author Севастьянов Иван
      */
     private fun dataInit(){
-        groupsArrayList = (requireActivity() as MainActivity).GroupsList
+        groupsArrayList = arrayListOf<Group>()
+
+        groupsArrayList.add(Group("Name1"))
+        groupsArrayList.add(Group("Name2"))
+        groupsArrayList.add(Group("Name3"))
+        groupsArrayList.add(Group("Name4"))
+        groupsArrayList.add(Group("Name5"))
+        groupsArrayList.add(Group("Name6"))
+
     }
 }

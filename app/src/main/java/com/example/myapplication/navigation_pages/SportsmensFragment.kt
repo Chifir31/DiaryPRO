@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContentProviderCompat
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,9 +35,10 @@ class SportsmensFragment : Fragment() {
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var itemList: MutableList<Item>
     private var size : Int = 0
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Set up the listener for back stack changes
+
         toolbar = view.findViewById(R.id.toolbar)
 
         dateTextView = view.findViewById(R.id.date_textview)
@@ -110,7 +112,7 @@ class SportsmensFragment : Fragment() {
                     //Log.d("SportsmensFragment", "onChildDraw surely called")
                     val itemView = viewHolder.itemView
                     itemView.translationY = 0f
-                    //l deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
+                    // deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
 
                     itemView.translationX = dX
                     // Draw the swipe background color

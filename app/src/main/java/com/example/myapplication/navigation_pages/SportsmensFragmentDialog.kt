@@ -4,6 +4,7 @@ import AdapterExercise
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.os.Bundle
 import android.util.ArrayMap
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
+import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -55,6 +57,8 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var mainActivity: MainActivity
+    lateinit var preferences: SharedPreferences
+    lateinit var editor :  SharedPreferences.Editor
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -78,6 +82,8 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
                 itemList[param2]?.removeAt(position)
                 adapter.removeItem(position)
+                editor.putString("exerciseList", Gson().toJson(itemList))
+                editor.apply()
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
                 //adapter.notifyItemRemoved(position)
                 //recyclerView.adapter?.notifyItemRemoved(position)
@@ -122,7 +128,37 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 setPositiveButton("Добавить"){dialog, which->
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
-                    itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.text.toString(), "Item "+(size++).toString()))
+                    if(itemList[param2]==null){
+                        var newsize = size++
+                        itemList.apply {
+                            put(
+                                param2.toString(),
+                                mutableListOf(
+                                    Exercise(
+                                        type.selectedItem.toString(),
+                                        "https://picsum.photos/200?random=$randomNumber",
+                                        dateSelected,
+                                        plan.text.toString(),
+                                        "Item " + (newsize).toString()
+                                    )
+                                )
+                            )
+
+                        }
+                        }
+                    else {
+                        itemList[param2]?.add(
+                            Exercise(
+                                type.selectedItem.toString(),
+                                "https://picsum.photos/200?random=$randomNumber",
+                                dateSelected,
+                                plan.text.toString(),
+                                "Item " + (size++).toString()
+                            )
+                        )
+                    }
+                    editor.putString("exerciseList", Gson().toJson(itemList))
+                    editor.apply()
                     adapter = AdapterExercise(itemList[param2]?.filter {
                         val calendar = Calendar.getInstance()
                         calendar.time = it.itemDate
@@ -161,9 +197,11 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        preferences= requireContext().getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
+        editor= preferences.edit()
         itemList = (requireActivity() as MainActivity).exerciseList
-        Log.d("Check param", param1.toString() + " "+ param2.toString())
-        Log.d("Check getting list\n", itemList[param2].toString())
+        //Log.d("Check param", param1.toString() + " "+ param2.toString())
+        //Log.d("Check getting list\n", itemList[param2].toString())
         toolbar = view.findViewById(R.id.toolbar)
         toolbar_text=view.findViewById(R.id.toolbar_text)
         toolbar_text.setText("Дневник тренировок\n"+param1.toString())
@@ -187,7 +225,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 set(year, month, dayOfMonth)
             }.time
             val calendar = Calendar.getInstance()
-            calendar.time = itemList[param2]?.get(0)?.itemDate
+            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
             Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
             Log.d("list", (itemList[param2]?.filter {
                 calendar.time = it.itemDate

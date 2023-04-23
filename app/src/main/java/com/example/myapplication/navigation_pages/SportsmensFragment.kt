@@ -1,6 +1,7 @@
 package com.example.myapplication.navigation_pages
 
 import AdapterSportsmens
+import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,7 @@ import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
+import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,10 +37,13 @@ class SportsmensFragment : Fragment() {
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var itemList: MutableList<Item>
     private var size : Int = 0
+    lateinit var preferences: SharedPreferences
+    lateinit var editor :  SharedPreferences.Editor
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Set up the listener for back stack changes
-
+        preferences= requireContext().getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
+        editor= preferences.edit()
         toolbar = view.findViewById(R.id.toolbar)
 
         dateTextView = view.findViewById(R.id.date_textview)
@@ -149,6 +154,8 @@ class SportsmensFragment : Fragment() {
                     val randomNumber = random.nextInt(1000)
                     itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
                     adapter.notifyItemInserted(itemList.size)
+                    editor.putString("sportsmensList", Gson().toJson(itemList))
+                    editor.apply()
                     Log.d("SportsmensFragment size", adapter.itemCount.toString())
                     Log.d("SportsmensFragment elements", "Item list: $itemList")
                 }//Log.d("Main","Positive")}
@@ -174,6 +181,9 @@ class SportsmensFragment : Fragment() {
                 Log.d("SportsmensFragment size", adapter.itemCount.toString())
                 Log.d("SportsmensFragment elements", "Item list: $itemList")
                 adapter.removeItem(position)
+                Log.d("SportsmensFragment elements", "Item list: $itemList")
+                editor.putString("sportsmensList", Gson().toJson(itemList))
+                editor.apply()
                 //adapter.notifyItemRemoved(position)
                 //recyclerView.adapter?.notifyItemRemoved(position)
             }

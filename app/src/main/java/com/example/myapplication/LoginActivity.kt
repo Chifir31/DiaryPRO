@@ -1,13 +1,13 @@
 package com.example.myapplication
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.widget.Button
 import android.content.Intent
+import android.os.Bundle
 import android.text.TextUtils
+import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import android.widget.Toast
+
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
@@ -43,6 +43,10 @@ class LoginActivity : AppCompatActivity() {
             email_field.text.toString().isNotEmpty() && pwd_field.text.toString().isNotEmpty() -> {
                 if (email_field.text.toString().matches(Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))) {
                     if (pwd_field.text.toString().length >= 5) {
+                        val preferences = getSharedPreferences("my_prefs", MODE_PRIVATE)
+                        val editor = preferences.edit()
+                        editor.putBoolean("isLoggedIn", true)
+                        editor.apply()
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
 //                        firebaseAuth.signInWithEmailAndPassword(

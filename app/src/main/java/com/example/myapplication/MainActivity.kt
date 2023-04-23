@@ -52,10 +52,13 @@ class MainActivity: AppCompatActivity()  {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
         val sportsmensListJson = (preferences.getString("sportsmensList", null))
-        sportsmensList = Gson().fromJson<MutableList<Item>>(sportsmensListJson, object : TypeToken<ArrayList<Item>>() {}.type)
+        sportsmensList = sportsmensListJson?.let {
+            Gson().fromJson<MutableList<Item>>(it, object : TypeToken<ArrayList<Item>>() {}.type)
+        } ?: arrayListOf()
         val exerciseListJson = (preferences.getString("exerciseList", null))
-        exerciseList = Gson().fromJson<ArrayMap<String, MutableList<Exercise>>>(exerciseListJson, object : TypeToken<ArrayMap<String, MutableList<Exercise>>>() {}.type)
-        val preferences = getSharedPreferences("my_prefs", MODE_PRIVATE)
+        exerciseList =  exerciseListJson?.let {
+            Gson().fromJson<ArrayMap<String, MutableList<Exercise>>>(it, object : TypeToken<ArrayMap<String, MutableList<Exercise>>>() {}.type)
+        } ?: ArrayMap()
         val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
         if (!isLoggedIn) {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)

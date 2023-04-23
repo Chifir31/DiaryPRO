@@ -10,6 +10,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myapplication.data.Exercise
+import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
 import com.example.myapplication.navigation_pages.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -28,6 +29,11 @@ class MainActivity: AppCompatActivity()  {
         Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
         Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
         Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))
+
+    var GroupsList = arrayListOf<Group>(
+        Group("Item 1", "Item 1"),
+        Group("Item 2", "Item 2")
+    )
 
     var tmp = arrayListOf<Exercise>(
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", "Item 1"),

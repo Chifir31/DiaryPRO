@@ -7,11 +7,11 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/gray"
+        android:layout_height="90dp"
+        android:background="@color/dark_gray"
         android:elevation="4dp"
-        android:titleTextColor="@color/white"
-        android:subtitleTextColor="@color/white"
+        android:titleTextColor="@color/gray"
+        android:subtitleTextColor="@color/gray"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
 >
         <TextView
@@ -44,5 +44,6 @@
         android:layout_centerHorizontal="true"
         android:background="@android:color/transparent"
         android:text="Добавить тренировку"
+        android:textSize="20sp"
         android:textColor="@color/red" />
 </RelativeLayout>

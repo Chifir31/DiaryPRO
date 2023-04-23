@@ -20,7 +20,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.ItemTouchHelper
+import com.example.myapplication.MainActivity
 import com.example.myapplication.SwipeGesture
+import com.example.myapplication.data.Item
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -32,7 +34,7 @@ import kotlin.collections.ArrayList
 class GroupsFragment : Fragment() {
     private lateinit var adapter: GroupsAdapter
     private lateinit var recyclerView: RecyclerView
-    private lateinit var groupsArrayList: ArrayList<Group>
+    private lateinit var groupsArrayList: MutableList<Group>
     private lateinit var dateTextView: TextView
     private lateinit var addBtn: ImageButton
 
@@ -162,7 +164,7 @@ class GroupsFragment : Fragment() {
      * @author Севастьянов Иван
      */
     private fun InsertGroup(name: String){
-        val newGroup = Group(name)
+        val newGroup = Group(name,name)
         groupsArrayList.add(0,newGroup)
         adapter.notifyItemInserted(0)
     }
@@ -172,14 +174,7 @@ class GroupsFragment : Fragment() {
      * @author Севастьянов Иван
      */
     private fun dataInit(){
-        groupsArrayList = arrayListOf<Group>()
-
-        groupsArrayList.add(Group("Name1"))
-        groupsArrayList.add(Group("Name2"))
-        groupsArrayList.add(Group("Name3"))
-        groupsArrayList.add(Group("Name4"))
-        groupsArrayList.add(Group("Name5"))
-        groupsArrayList.add(Group("Name6"))
+        groupsArrayList = (requireActivity() as MainActivity).GroupsList
 
     }
 }

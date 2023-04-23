@@ -5,8 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.data.Group
+import com.example.myapplication.navigation_pages.ExercisesInGroup
 
 /**
  * Класс, реализующий адаптер для RecyclerView
@@ -14,7 +16,7 @@ import com.example.myapplication.data.Group
  * @author Севастьянов Иван
  */
 class GroupsAdapter(
-    private val groupsList: ArrayList<Group>): RecyclerView.Adapter<GroupsAdapter.GroupsView>() {
+    private val groupsList: MutableList<Group>): RecyclerView.Adapter<GroupsAdapter.GroupsView>() {
 
     /**
      * Создает новый объект ViewHolder
@@ -46,6 +48,16 @@ class GroupsAdapter(
         val currentItem = groupsList[position]
         holder.groupName.text = currentItem.name
         holder.detailsBtn.tag = currentItem
+
+        holder.detailsBtn.setOnClickListener{
+            val fragment = ExercisesInGroup.newInstance(currentItem.name,currentItem.name)
+
+            val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
+            fragmentManager.beginTransaction()
+                .replace(R.id.Groups_fragment,fragment)
+                .addToBackStack(null)
+                .commit()
+        }
 
     }
 

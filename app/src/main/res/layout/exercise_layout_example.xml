@@ -59,7 +59,6 @@
             android:id="@+id/item_open_button"
             android:layout_width="80dp"
             android:layout_height="match_parent"
-
             android:layout_marginStart="330dp"
             android:drawableLeft="@drawable/baseline_arrow_btn_24"
             android:background="@android:color/transparent"

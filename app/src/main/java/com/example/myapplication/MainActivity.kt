@@ -40,6 +40,7 @@ class MainActivity: AppCompatActivity()  {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+<<<<<<< Updated upstream
         val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
         if (user == "C"){
             setContentView(R.layout.c_activity_main)
@@ -51,6 +52,37 @@ class MainActivity: AppCompatActivity()  {
                     R.id.groups-> loadFragment(GroupsFragment())
                     R.id.profile->loadFragment(ProfileFragment())
                     else -> {
+=======
+        preferences = getSharedPreferences("my_prefs", MODE_PRIVATE)
+        val sportsmensListJson = (preferences.getString("sportsmensList", null))
+        sportsmensList = sportsmensListJson?.let {
+            Gson().fromJson<MutableList<Item>>(it, object : TypeToken<ArrayList<Item>>() {}.type)
+        } ?: arrayListOf()
+        val exerciseListJson = (preferences.getString("exerciseList", null))
+        exerciseList =  exerciseListJson?.let {
+            Gson().fromJson<ArrayMap<String, MutableList<Exercise>>>(it, object : TypeToken<ArrayMap<String, MutableList<Exercise>>>() {}.type)
+        } ?: ArrayMap()
+        val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
+        if (!isLoggedIn) {
+            val intent = Intent(this@MainActivity, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        } else {
+            /*val editor = preferences.edit()
+            editor.putString("exerciseList", Gson().toJson(exerciseList))
+            editor.putString("sportsmensList", Gson().toJson(sportsmensList))
+            editor.apply()*/
+            if (user == "C") {
+                setContentView(R.layout.c_activity_main)
+                navView = findViewById(R.id.c_bottom_navigation)
+                loadFragment(SportsmensFragment())
+                navView?.setOnItemSelectedListener {
+                    when (it.itemId) {
+                        R.id.sportsmens -> loadFragment(SportsmensFragment())
+                        R.id.groups -> loadFragment(GroupsFragment())
+                        R.id.profile -> loadFragment(ProfileFragment())
+                        else -> {
+>>>>>>> Stashed changes
 
                     }
                 }

@@ -37,13 +37,12 @@
         <TextView
             android:id="@+id/item_text"
             android:layout_toRightOf="@id/item_image"
-            android:layout_width="170dp"
+            android:layout_width="180dp"
             android:paddingVertical="30dp"
             android:textColor="@color/gray"
             android:textStyle="bold"
-            android:textSize="23sp"
-            android:layout_height="match_parent"
-            >
+            android:textSize="15sp"
+            android:layout_height="match_parent">
         </TextView>
         
     </LinearLayout>

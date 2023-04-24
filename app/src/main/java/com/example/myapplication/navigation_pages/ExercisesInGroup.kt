@@ -40,7 +40,6 @@ class ExercisesInGroup : Fragment() {
     private lateinit var toolbar_text: TextView
     private lateinit var dateTextView: TextView
     private lateinit var add_button: TextView
-    private lateinit var back_btn: ImageButton
     private lateinit var members_btn: ImageButton
     private lateinit var edit_button: TextView
     private lateinit var recyclerView: RecyclerView
@@ -237,11 +236,7 @@ class ExercisesInGroup : Fragment() {
         toolbar = view.findViewById(R.id.toolbar)
         toolbar_text=view.findViewById(R.id.toolbar_text)
         toolbar_text.setText("Дневник тренировок\n"+param1.toString())
-        back_btn = view.findViewById(R.id.BackBtn)
 
-        back_btn.setOnClickListener{
-            print("null")
-        }
 
         members_btn = view.findViewById(R.id.members)
         members_btn.setOnClickListener{

@@ -36,13 +36,13 @@ class MainActivity: AppCompatActivity()  {
     )
 
     /*var tmp = arrayListOf<Exercise>(
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", "Item 1"),
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", "Item 2"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", "Item 3"))
+        Exercise("РџР»Р°РІР°РЅРёРµ", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", "Item 1"),
+        Exercise("РРЅС‚РµСЂРІР°Р»СЊРЅС‹Р№ Р±РµРі", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", "Item 2"),
+        Exercise("РџР»Р°РІР°РЅРёРµ", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", "Item 3"))
     var tmp1 = arrayListOf<Exercise>(
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", "Item 1"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date(), "DO IT", "Item 2"),
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAPATA", "Item 3")
+        Exercise("РРЅС‚РµСЂРІР°Р»СЊРЅС‹Р№ Р±РµРі", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", "Item 1"),
+        Exercise("РџР»Р°РІР°РЅРёРµ", "https://picsum.photos/200?random=$randomNumber+9", Date(), "DO IT", "Item 2"),
+        Exercise("РРЅС‚РµСЂРІР°Р»СЊРЅС‹Р№ Р±РµРі", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAPATA", "Item 3")
     )
     var exerciseList = ArrayMap<String, MutableList<Exercise>>().apply{
         put("Item 1", tmp)
@@ -54,7 +54,7 @@ class MainActivity: AppCompatActivity()  {
     lateinit var profileList: ArrayMap<String, String>
 
 
-    val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
+    val user = "C" //РўРёРї РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ, РІ РґР°Р»СЊРЅРµР№С€РµРј Р±СѓРґРµС‚ СЃС‡РёС‚С‹РІР°С‚СЊСЃСЏ СЃ firebase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)

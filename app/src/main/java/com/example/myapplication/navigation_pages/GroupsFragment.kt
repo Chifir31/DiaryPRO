@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.GroupsAdapter
+import com.example.myapplication.Adapters.GroupsAdapter
 import com.example.myapplication.R
 import com.example.myapplication.data.Group
 import android.util.Log
@@ -17,15 +17,11 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.myapplication.MainActivity
 import com.example.myapplication.SwipeGesture
-import com.example.myapplication.data.Item
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * Класс, реализующий фрагмент групп

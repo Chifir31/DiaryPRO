@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.Adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.R
 import com.example.myapplication.data.Group
 import com.example.myapplication.navigation_pages.ExercisesInGroup
 

@@ -243,7 +243,6 @@ class ExercisesInGroup : Fragment() {
             print("null")
         }
 
-        //Не работает
         members_btn = view.findViewById(R.id.members)
         members_btn.setOnClickListener{
             Log.d("D","test")
@@ -276,7 +275,7 @@ class ExercisesInGroup : Fragment() {
                 set(year, month, dayOfMonth)
             }.time
             val calendar = Calendar.getInstance()
-            calendar.time = itemList[param2]?.get(0)?.itemDate
+            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
             Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
             Log.d("list", (itemList[param2]?.filter {
                 calendar.time = it.itemDate

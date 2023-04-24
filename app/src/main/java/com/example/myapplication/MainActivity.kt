@@ -28,14 +28,14 @@ class MainActivity: AppCompatActivity()  {
         Item("Item 2", "https://picsum.photos/200?random=$randomNumber+1", "Item 2"),
         Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
         Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
-        Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))
+        Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
 
     var GroupsList = arrayListOf<Group>(
         Group("Item 1", "Item 1"),
         Group("Item 2", "Item 2")
     )
 
-    var tmp = arrayListOf<Exercise>(
+    /*var tmp = arrayListOf<Exercise>(
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", "Item 1"),
         Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", "Item 2"),
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", "Item 3"))

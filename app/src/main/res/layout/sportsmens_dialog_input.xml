@@ -9,10 +9,17 @@
         android:layout_height="90dp"
         android:background="@color/dark_gray"
         android:elevation="4dp"
-        android:titleTextColor="@color/white"
-        android:subtitleTextColor="@color/white"
+        android:titleTextColor="@color/gray"
+        android:subtitleTextColor="@color/gray"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:title="Добавление тренировки" />
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbar_text"
+            android:textColor="@color/white"
+            android:text="Дневник тренировок"/>
+    </androidx.appcompat.widget.Toolbar>
     <ImageView
         android:layout_width="80sp"
         android:layout_height="80sp"

@@ -51,6 +51,7 @@ class MainActivity: AppCompatActivity()  {
     lateinit var preferences: SharedPreferences
     lateinit var sportsmensList: MutableList<Item>
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
+    lateinit var profileList: ArrayMap<String, String>
 
 
     val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
@@ -64,6 +65,10 @@ class MainActivity: AppCompatActivity()  {
         val exerciseListJson = (preferences.getString("exerciseList", null))
         exerciseList =  exerciseListJson?.let {
             Gson().fromJson<ArrayMap<String, MutableList<Exercise>>>(it, object : TypeToken<ArrayMap<String, MutableList<Exercise>>>() {}.type)
+        } ?: ArrayMap()
+        val profileListJson = (preferences.getString("profileList", null))
+        profileList =  profileListJson?.let {
+            Gson().fromJson<ArrayMap<String, String>>(it, object : TypeToken<ArrayMap<String, String>>() {}.type)
         } ?: ArrayMap()
         val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
         if (!isLoggedIn) {

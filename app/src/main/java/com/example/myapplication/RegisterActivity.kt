@@ -7,9 +7,12 @@ import android.text.TextUtils
 import androidx.appcompat.app.AppCompatActivity
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.content.SharedPreferences
+import android.util.ArrayMap
 import android.widget.*
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
 
 
 class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
@@ -86,6 +89,16 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                                     firebaseAuth.createUserWithEmailAndPassword(username.text.toString(),
                                     pwd.text.toString()).addOnCompleteListener{
                                         if(it.isSuccessful){
+                                            var preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
+                                            var editor= preferences.edit()
+                                            var profileList = ArrayMap <String, String>().apply{
+                                                put("lastname", lastname.text.toString())
+                                                put("firsname", firstname.text.toString())
+                                                put("datebirth", editdate.text.toString())
+                                                put("role", role1.isChecked.toString())
+                                            }
+                                            editor.putString("profileList", Gson().toJson(profileList))
+                                            editor.apply()
                                             val intent = Intent(this,MainActivity::class.java)
                                             startActivity(intent)
                                         }else{
@@ -119,6 +132,6 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        editdate.setText("$year/$month/$dayOfMonth")
+        editdate.setText("$dayOfMonth/$month/$year")
     }
 }

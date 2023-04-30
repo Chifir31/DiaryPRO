@@ -55,7 +55,7 @@ class GroupsAdapter(
 
             val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
             fragmentManager.beginTransaction()
-                .replace(R.id.Groups_fragment,fragment)
+                .replace(R.id.fragment_groups,fragment)
                 .addToBackStack(null)
                 .commit()
         }

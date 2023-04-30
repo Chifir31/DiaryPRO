@@ -139,6 +139,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                                         "https://picsum.photos/200?random=$randomNumber",
                                         dateSelected,
                                         plan.text.toString(),
+                                        'p',
                                         "Item " + (newsize).toString()
                                     )
                                 )
@@ -153,6 +154,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                                 "https://picsum.photos/200?random=$randomNumber",
                                 dateSelected,
                                 plan.text.toString(),
+                                'p',
                                 "Item " + (size++).toString()
                             )
                         )
@@ -177,6 +179,114 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             builder.setView(dialogLayout)
             builder.show()
         }
+    }
+
+    fun EditWindow(position: Int){
+        val builder = AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen)
+        val inflater = requireActivity().layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.sportsmens_dialog_input, null)
+        val type = dialogLayout.findViewById<Spinner>(R.id.type_edit)
+        val sportsmen = dialogLayout.findViewById<TextView>(R.id.sportsmen_edit)
+        val toolbar_text = dialogLayout.findViewById<TextView>(R.id.toolbar_text)
+        val edit_btn = dialogLayout.findViewById<ImageButton>(R.id.edit_button)
+        val plan = dialogLayout.findViewById<EditText>(R.id.plan_edit)
+        var dateSelected = selectedDate
+        toolbar_text.setText("Тренировка")
+        date = dialogLayout.findViewById<TextView>(R.id.date_edit)
+        val array = arrayOf("Плавание", "Интервальный бег")
+        val adapterspinner =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
+        // Set the adapter for the Spinner
+        fun state(boolean: Boolean){
+            type.isEnabled=boolean
+            plan.isFocusable=boolean
+            plan.isFocusableInTouchMode=boolean
+            date.isEnabled=boolean
+        }
+        state(false)
+        type.adapter = adapterspinner
+        sportsmen.text = param1.toString()
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(android.icu.util.Calendar.YEAR)
+        val month = calendar.get(android.icu.util.Calendar.MONTH)
+        val day = calendar.get(android.icu.util.Calendar.DAY_OF_MONTH)
+        date.setOnClickListener {
+            val dpd = DatePickerDialog(
+                requireContext(),
+                DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                    calendar.set(year, monthOfYear, dayOfMonth)
+                    dateSelected = calendar.time
+                    date.text = SimpleDateFormat(
+                        "dd.MM.yyyy",
+                        Locale.getDefault()
+                    ).format(dateSelected!!)
+                    date.setError(null)
+                },
+                year,
+                month,
+                day
+            )
+            dpd.datePicker.minDate = calendar.timeInMillis
+            dpd.show()
+        }
+        var tmp = (itemList[param2]?.filter {
+            val calendar = Calendar.getInstance()
+            calendar.time = it.itemDate
+            calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+                    calendar.get(Calendar.MONTH) == selectedDate.month &&
+                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
+        } as MutableList<Exercise>?)
+        var tmp1 = tmp?.get(position)?.itemDate
+        date.setText(
+            tmp1?.date.toString() + '.' + tmp1?.month.toString() + '.' + (tmp1?.year?.plus(
+                1900
+            )).toString()
+        )
+        Log.d("item", tmp.toString())
+        type.setSelection(adapterspinner.getPosition(tmp?.get(position)?.text))
+        Log.d("ItemDesc", tmp?.get(position)?.itemDesc.toString())
+        plan.setText(tmp?.get(position)?.itemDesc.toString())
+
+        edit_btn.visibility= VISIBLE
+        edit_btn.setOnClickListener {
+            toolbar_text.setText("Изменение тренировки")
+            edit_btn.visibility= GONE
+            state(true)
+        }
+        with(builder) {
+            setPositiveButton("Сохранить") { dialog, which ->
+                val random = Random()
+                val randomNumber = random.nextInt(1000)
+                tmp?.get(position)?.text = type.selectedItem.toString()
+                tmp?.get(position)?.img = "https://picsum.photos/200?random=$randomNumber"
+                tmp?.get(position)?.itemDate = dateSelected
+                tmp?.get(position)?.itemDesc = plan.text.toString()
+                tmp?.get(position)?.itemId = "Item " + (size++).toString()
+                //(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString())
+                //itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString()))
+                adapter = AdapterExercise(itemList[param2]?.filter {
+                    val calendar = Calendar.getInstance()
+                    calendar.time = it.itemDate
+                    calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+                            calendar.get(Calendar.MONTH) == selectedDate.month &&
+                            calendar.get(Calendar.YEAR) == selectedDate.year + 1900
+                } as MutableList<Exercise>?)
+                adapter.notifyItemInserted(itemList[param2]?.size ?: 0)
+                recyclerView.adapter = adapter
+                setupListeners()
+                editor.putString("exerciseList", Gson().toJson(itemList))
+                editor.apply()
+                Log.d("SportsmensFragment size", adapter.itemCount.toString())
+                Log.d("SportsmensFragment elements", "Item list: $itemList")
+                edit_btn.visibility= VISIBLE
+                state(false)
+            }//Log.d("Main","Positive")}
+            setNegativeButton("Отмена") { dialog, which -> Log.d("Main", "Negative")
+                edit_btn.visibility= VISIBLE
+                state(false)}
+        }
+        builder.setView(dialogLayout)
+        builder.show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -362,112 +472,4 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             }
         })
     }
-    fun EditWindow(position: Int){
-        val builder = AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen)
-        val inflater = requireActivity().layoutInflater
-        val dialogLayout = inflater.inflate(R.layout.sportsmens_dialog_input, null)
-        val type = dialogLayout.findViewById<Spinner>(R.id.type_edit)
-        val sportsmen = dialogLayout.findViewById<TextView>(R.id.sportsmen_edit)
-        val toolbar_text = dialogLayout.findViewById<TextView>(R.id.toolbar_text)
-        val edit_btn = dialogLayout.findViewById<ImageButton>(R.id.edit_button)
-        val plan = dialogLayout.findViewById<EditText>(R.id.plan_edit)
-        var dateSelected = selectedDate
-        toolbar_text.setText("Тренировка")
-        date = dialogLayout.findViewById<TextView>(R.id.date_edit)
-        val array = arrayOf("Плавание", "Интервальный бег")
-        val adapterspinner =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
-        // Set the adapter for the Spinner
-        fun state(boolean: Boolean){
-            type.isEnabled=boolean
-            plan.isFocusable=boolean
-            plan.isFocusableInTouchMode=boolean
-            date.isEnabled=boolean
-        }
-        state(false)
-        type.adapter = adapterspinner
-        sportsmen.text = param1.toString()
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(android.icu.util.Calendar.YEAR)
-        val month = calendar.get(android.icu.util.Calendar.MONTH)
-        val day = calendar.get(android.icu.util.Calendar.DAY_OF_MONTH)
-        date.setOnClickListener {
-            val dpd = DatePickerDialog(
-                requireContext(),
-                DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                    calendar.set(year, monthOfYear, dayOfMonth)
-                    dateSelected = calendar.time
-                    date.text = SimpleDateFormat(
-                        "dd.MM.yyyy",
-                        Locale.getDefault()
-                    ).format(dateSelected!!)
-                    date.setError(null)
-                },
-                year,
-                month,
-                day
-            )
-            dpd.datePicker.minDate = calendar.timeInMillis
-            dpd.show()
-        }
-        var tmp = (itemList[param2]?.filter {
-            val calendar = Calendar.getInstance()
-            calendar.time = it.itemDate
-            calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                    calendar.get(Calendar.MONTH) == selectedDate.month &&
-                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
-        } as MutableList<Exercise>?)
-        var tmp1 = tmp?.get(position)?.itemDate
-        date.setText(
-            tmp1?.date.toString() + '.' + tmp1?.month.toString() + '.' + (tmp1?.year?.plus(
-                1900
-            )).toString()
-        )
-        Log.d("item", tmp.toString())
-        type.setSelection(adapterspinner.getPosition(tmp?.get(position)?.text))
-        Log.d("ItemDesc", tmp?.get(position)?.itemDesc.toString())
-        plan.setText(tmp?.get(position)?.itemDesc.toString())
-
-        edit_btn.visibility= VISIBLE
-        edit_btn.setOnClickListener {
-            toolbar_text.setText("Изменение тренировки")
-            edit_btn.visibility= GONE
-            state(true)
-        }
-            with(builder) {
-                setPositiveButton("Сохранить") { dialog, which ->
-                    val random = Random()
-                    val randomNumber = random.nextInt(1000)
-                    tmp?.get(position)?.text = type.selectedItem.toString()
-                    tmp?.get(position)?.img = "https://picsum.photos/200?random=$randomNumber"
-                    tmp?.get(position)?.itemDate = dateSelected
-                    tmp?.get(position)?.itemDesc = plan.text.toString()
-                    tmp?.get(position)?.itemId = "Item " + (size++).toString()
-                    //(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString())
-                    //itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString()))
-                    adapter = AdapterExercise(itemList[param2]?.filter {
-                        val calendar = Calendar.getInstance()
-                        calendar.time = it.itemDate
-                        calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                                calendar.get(Calendar.MONTH) == selectedDate.month &&
-                                calendar.get(Calendar.YEAR) == selectedDate.year + 1900
-                    } as MutableList<Exercise>?)
-                    adapter.notifyItemInserted(itemList[param2]?.size ?: 0)
-                    recyclerView.adapter = adapter
-                    setupListeners()
-                    editor.putString("exerciseList", Gson().toJson(itemList))
-                    editor.apply()
-                    Log.d("SportsmensFragment size", adapter.itemCount.toString())
-                    Log.d("SportsmensFragment elements", "Item list: $itemList")
-                    edit_btn.visibility= VISIBLE
-                    state(false)
-                }//Log.d("Main","Positive")}
-                setNegativeButton("Отмена") { dialog, which -> Log.d("Main", "Negative")
-                    edit_btn.visibility= VISIBLE
-                    state(false)}
-            }
-            builder.setView(dialogLayout)
-            builder.show()
-        }
-
 }

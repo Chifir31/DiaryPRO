@@ -3,6 +3,7 @@ package com.example.myapplication.navigation_pages
 import AdapterExercise
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Canvas
@@ -117,9 +118,15 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             date.setOnClickListener{
                 val dpd = DatePickerDialog(requireContext(), DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                 calendar.set(year, monthOfYear, dayOfMonth)
-                dateSelected = calendar.time
-                date.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(dateSelected!!)
-                date.setError(null)
+                val tpd = TimePickerDialog(requireContext(), TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                    val minuteInterval = (minute + 7) / 15 * 15
+                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                    calendar.set(Calendar.MINUTE, minuteInterval)
+                    dateSelected = calendar.time
+                    date.text = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(dateSelected!!)
+                    date.setError(null)
+                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),true)
+                tpd.show()
             }, year, month, day)
                 dpd.datePicker.minDate = calendar.timeInMillis
                 dpd.show()
@@ -140,6 +147,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                                         dateSelected,
                                         plan.text.toString(),
                                         'p',
+                                        "",
                                         "Item " + (newsize).toString()
                                     )
                                 )
@@ -155,6 +163,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                                 dateSelected,
                                 plan.text.toString(),
                                 'p',
+                                "",
                                 "Item " + (size++).toString()
                             )
                         )
@@ -215,11 +224,15 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                     calendar.set(year, monthOfYear, dayOfMonth)
-                    dateSelected = calendar.time
-                    date.text = SimpleDateFormat(
-                        "dd.MM.yyyy",
-                        Locale.getDefault()
-                    ).format(dateSelected!!)
+                    val tpd = TimePickerDialog(requireContext(), TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                        val minuteInterval = (minute + 7) / 15 * 15
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                        calendar.set(Calendar.MINUTE, minuteInterval)
+                        dateSelected = calendar.time
+                        date.text = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(dateSelected!!)
+                        date.setError(null)
+                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),true)
+                    tpd.show()
                     date.setError(null)
                 },
                 year,
@@ -240,7 +253,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         date.setText(
             tmp1?.date.toString() + '.' + tmp1?.month.toString() + '.' + (tmp1?.year?.plus(
                 1900
-            )).toString()
+            )).toString()+ ' ' + tmp1?.hours.toString() + ':' + tmp1?.minutes.toString()
         )
         Log.d("item", tmp.toString())
         type.setSelection(adapterspinner.getPosition(tmp?.get(position)?.text))

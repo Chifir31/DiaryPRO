@@ -1,6 +1,5 @@
 package com.example.myapplication
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -35,13 +34,13 @@ class MainActivity: AppCompatActivity()  {
         Group("Item 2", "Item 2")
     )
     /*var tmp = arrayListOf<Exercise>(
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", 'p', "Item 1"),
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", 'p', "Item 2"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", 'p', "Item 3"))
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", 'p', "",  "Item 1"),
+        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", 'p', "", "Item 2"),
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", 'p', "", "Item 3"))
     var tmp1 = arrayListOf<Exercise>(
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", 'p', "Item 1"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date(), "DO IT", 'p', "Item 2"),
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAPATA", 'p', "Item 3")
+        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", 'p', "", "Item 1"),
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date(), "DO IT", 'p', "", "Item 2"),
+        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAPATA", 'p', "", "Item 3")
     )
     var exerciseList1 = ArrayMap<String, MutableList<Exercise>>().apply{
         put("Item 1", tmp)
@@ -51,7 +50,12 @@ class MainActivity: AppCompatActivity()  {
     lateinit var sportsmensList: MutableList<Item>
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
     lateinit var profileList: ArrayMap<String, String>
-
+    var statemap = ArrayMap<Char, String>().apply {
+        put('p', "Запланирована")
+        put('c',"Выполнена")
+        put('h', "Выполнена частично")
+        put('f', "Не выполнена")
+    }
 
     val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +77,7 @@ class MainActivity: AppCompatActivity()  {
         profileList =  profileListJson?.let {
             Gson().fromJson<ArrayMap<String, String>>(it, object : TypeToken<ArrayMap<String, String>>() {}.type)
         } ?: ArrayMap()
+
         val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
         if (!isLoggedIn) {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
@@ -101,10 +106,10 @@ class MainActivity: AppCompatActivity()  {
             } else if (user == "S") {
                 setContentView(R.layout.s_activity_main)
                 navView = findViewById(R.id.s_bottom_navigation)
-                loadFragment(Exercisefragment())
+                loadFragment(ExerciseFragment())
                 navView?.setOnItemSelectedListener {
                     when (it.itemId) {
-                        R.id.exercise -> loadFragment(Exercisefragment())
+                        R.id.exercise -> loadFragment(ExerciseFragment())
                         R.id.diary -> loadFragment(DiaryFragment())
                         R.id.profile -> loadFragment(ProfileFragment())
                         else -> {
@@ -118,14 +123,11 @@ class MainActivity: AppCompatActivity()  {
         }
     }
         override fun onBackPressed() {
-            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
-            val currentFragment1 = supportFragmentManager.findFragmentById(R.id.fragment_groups)
+            var currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
+            var currentFragment1 = supportFragmentManager.findFragmentById(R.id.fragment_groups)
+            var currentFragment2 = supportFragmentManager.findFragmentById(R.id.fragment_exercise)
             Log.d("MainActivity", "currentFragment: $currentFragment")
             Log.d("MainActivity", "currentFragment: $currentFragment1")
-            if(currentFragment1 is ExercisesInGroup)
-                Log.d("success","success")
-            else
-                Log.d("FUCK", "FUCK")
             if (user == "C" && R.id.sportsmens != navView.selectedItemId) {
                 if(R.id.groups == navView.selectedItemId){
                     if(currentFragment1 is ExercisesInGroup){
@@ -141,15 +143,23 @@ class MainActivity: AppCompatActivity()  {
                     navView.selectedItemId = R.id.sportsmens
                     loadFragment(SportsmensFragment())
                 }
-            } else if (currentFragment is SportsmensFragmentDialog) {
+            }
+            else if (currentFragment is SportsmensFragmentDialog) {
                 // Handle back button press inside the dialog fragment
                 super.onBackPressed()
                 setNavViewVisibility(true)
             }
              else if (user == "S" && R.id.exercise != navView.selectedItemId) {
+
                 navView.selectedItemId = R.id.exercise
-                loadFragment(Exercisefragment())
-            } else {
+                loadFragment(ExerciseFragment())
+            }
+            else if (currentFragment2 is ExerciseFragmentDialog) {
+                // Handle back button press inside the dialog fragment
+                super.onBackPressed()
+                setNavViewVisibility(true)
+            }
+            else {
                 super.onBackPressed()
                 finishAffinity()
             }

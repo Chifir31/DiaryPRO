@@ -76,13 +76,13 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
     private fun validateEmptyForm() {
         firebaseAuth = FirebaseAuth.getInstance()
         when{
-            TextUtils.isEmpty(lastname.text.toString().trim())->lastname.setError("Пожалуйста введите фамилию")
-            TextUtils.isEmpty(firstname.text.toString().trim())->firstname.setError("Пожалуйста введите имя")
-            (!(role1.isChecked) && !(role2.isChecked))->role1.setError("Пожалуйста выберите роль")
-            TextUtils.isEmpty(editdate.text.toString().trim())->editdate.setError("Пожалуйста введите дату рождения")
-            TextUtils.isEmpty(username.text.toString().trim())->username.setError("Пожалуйста введите логин")
-            TextUtils.isEmpty(pwd.text.toString().trim())->pwd.setError("Пожалуйста введите пароль")
-            TextUtils.isEmpty(c_pwd.text.toString().trim())->c_pwd.setError("Пожалуйста подтвердите пароль")
+            TextUtils.isEmpty(lastname.text.toString().trim())->lastname.setError("Пожалуйста, введите фамилию")
+            TextUtils.isEmpty(firstname.text.toString().trim())->firstname.setError("Пожалуйста, введите имя")
+            (!(role1.isChecked) && !(role2.isChecked))->role1.setError("Пожалуйста, выберите роль")
+            TextUtils.isEmpty(editdate.text.toString().trim())->editdate.setError("Пожалуйста, введите дату рождения")
+            TextUtils.isEmpty(username.text.toString().trim())->username.setError("Пожалуйста, введите логин")
+            TextUtils.isEmpty(pwd.text.toString().trim())->pwd.setError("Пожалуйста, введите пароль")
+            TextUtils.isEmpty(c_pwd.text.toString().trim())->c_pwd.setError("Пожалуйста, подтвердите пароль")
 
             lastname.text.toString().isNotEmpty() && firstname.text.toString().isNotEmpty() && (role1.isChecked || role2.isChecked) && editdate.text.toString().isNotEmpty() && username.text.toString().isNotEmpty() &&  pwd.text.toString().isNotEmpty() && c_pwd.text.toString().isNotEmpty() -> {
                 if (lastname.text.toString().matches(Regex("(^[А-Яа-яЁё]{1,25})"))) {
@@ -132,10 +132,10 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                             username.setError("Некорректный адрес электронной почты")
                         }
                     } else {
-                        firstname.setError("Неккоректное имя")
+                        firstname.setError("Некорректное имя")
                     }
                 } else {
-                    lastname.setError("Неккоректная фамилия")
+                    lastname.setError("Некорректная фамилия")
                 }
             }
         }

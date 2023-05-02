@@ -13,14 +13,21 @@ import com.example.myapplication.data.Exercise
 import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
 import com.example.myapplication.navigation_pages.*
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.*
 
-
 class MainActivity: AppCompatActivity()  {
     private lateinit var navView : BottomNavigationView
+    private lateinit var database: DatabaseReference
     val random = Random()
     val randomNumber = random.nextInt(1000)
     /*var sportsmensList = arrayListOf<Item>(
@@ -30,10 +37,10 @@ class MainActivity: AppCompatActivity()  {
         Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
         Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
 
-    var GroupsList = arrayListOf<Group>(
+    /*var GroupsList = arrayListOf<Group>(
         Group("Item 1", "Item 1"),
         Group("Item 2", "Item 2")
-    )
+    )*/
 
     /*var tmp = arrayListOf<Exercise>(
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", "Item 1"),
@@ -53,7 +60,6 @@ class MainActivity: AppCompatActivity()  {
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
     lateinit var profileList: ArrayMap<String, String>
 
-
     val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +76,7 @@ class MainActivity: AppCompatActivity()  {
         profileList =  profileListJson?.let {
             Gson().fromJson<ArrayMap<String, String>>(it, object : TypeToken<ArrayMap<String, String>>() {}.type)
         } ?: ArrayMap()
+        database = FirebaseDatabase.getInstance().getReference("users")
         val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
         if (!isLoggedIn) {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)

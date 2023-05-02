@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "726279514603",
+    "firebase_url": "https://diarypro-fa4e8-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "diarypro-fa4e8",
+    "storage_bucket": "diarypro-fa4e8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:726279514603:android:d97681f7473799d44351ae",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "726279514603-g9bu6l6qrqngfjs6s3d2k456c310ptgj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG-y48TNxkAjHEkWZyucJFzOoqQOkCXrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "726279514603-g9bu6l6qrqngfjs6s3d2k456c310ptgj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -11,12 +11,17 @@ import android.content.SharedPreferences
 import android.util.ArrayMap
 import android.widget.*
 import android.widget.Toast
+import com.example.myapplication.data.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
 
 
 class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var rootNode: FirebaseDatabase
+    private lateinit var reference: DatabaseReference
     private lateinit var lastname: EditText
     private lateinit var firstname: EditText
     private lateinit var editdate: EditText
@@ -89,7 +94,7 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                                     firebaseAuth.createUserWithEmailAndPassword(username.text.toString(),
                                     pwd.text.toString()).addOnCompleteListener{
                                         if(it.isSuccessful){
-                                            var preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
+                                            /*var preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
                                             var editor= preferences.edit()
                                             var profileList = ArrayMap <String, String>().apply{
                                                 put("lastname", lastname.text.toString())
@@ -98,7 +103,19 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                                                 put("role", role1.isChecked.toString())
                                             }
                                             editor.putString("profileList", Gson().toJson(profileList))
-                                            editor.apply()
+                                            editor.apply()*/
+                                            rootNode = FirebaseDatabase.getInstance()
+                                            reference = rootNode.getReference("users")
+                                            val id = reference.push().key!!
+                                            //val id = "User1"
+                                            val user = User(id,lastname.text.toString(),firstname.text.toString(),
+                                            username.text.toString(),editdate.text.toString(),role1.isChecked.toString())
+                                            reference.child(username.text.toString()).setValue(user).addOnCompleteListener {
+                                                Toast.makeText(this,"Insert done",Toast.LENGTH_LONG).show()
+                                            }.addOnFailureListener{err ->
+                                                Toast.makeText(this,"Error ${err.message}",Toast.LENGTH_LONG).show()
+                                            }
+
                                             val intent = Intent(this,MainActivity::class.java)
                                             startActivity(intent)
                                         }else{

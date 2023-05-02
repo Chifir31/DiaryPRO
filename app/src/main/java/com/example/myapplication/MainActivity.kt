@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -12,14 +13,21 @@ import com.example.myapplication.data.Exercise
 import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
 import com.example.myapplication.navigation_pages.*
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.*
 
-
 class MainActivity: AppCompatActivity()  {
     private lateinit var navView : BottomNavigationView
+    private lateinit var database: DatabaseReference
     val random = Random()
     val randomNumber = random.nextInt(1000)
     /*var sportsmensList = arrayListOf<Item>(
@@ -29,20 +37,21 @@ class MainActivity: AppCompatActivity()  {
         Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
         Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
 
-    var GroupsList = arrayListOf<Group>(
+    /*var GroupsList = arrayListOf<Group>(
         Group("Item 1", "Item 1"),
         Group("Item 2", "Item 2")
-    )
+    )*/
+
     /*var tmp = arrayListOf<Exercise>(
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", 'p', "",  "Item 1"),
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", 'p', "", "Item 2"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", 'p', "", "Item 3"))
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", "Item 1"),
+        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", "Item 2"),
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", "Item 3"))
     var tmp1 = arrayListOf<Exercise>(
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", 'p', "", "Item 1"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date(), "DO IT", 'p', "", "Item 2"),
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAPATA", 'p', "", "Item 3")
+        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", "Item 1"),
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date(), "DO IT", "Item 2"),
+        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAPATA", "Item 3")
     )
-    var exerciseList1 = ArrayMap<String, MutableList<Exercise>>().apply{
+    var exerciseList = ArrayMap<String, MutableList<Exercise>>().apply{
         put("Item 1", tmp)
         put("Item 2", tmp1)
     }*/
@@ -50,21 +59,11 @@ class MainActivity: AppCompatActivity()  {
     lateinit var sportsmensList: MutableList<Item>
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
     lateinit var profileList: ArrayMap<String, String>
-    var statemap = ArrayMap<Char, String>().apply {
-        put('p', "Запланирована")
-        put('c',"Выполнена")
-        put('h', "Выполнена частично")
-        put('f', "Не выполнена")
-    }
 
     val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
-//!!!В виду изменения содержания класса Exercise нужно расскоментить при первом запуске этот фрагмент и exerciseList1!!!
-//        var editor = preferences.edit()
-//        editor.putString("exerciseList", Gson().toJson(exerciseList1))
-//        editor.apply()
         val sportsmensListJson = (preferences.getString("sportsmensList", null))
         sportsmensList = sportsmensListJson?.let {
             Gson().fromJson<MutableList<Item>>(it, object : TypeToken<ArrayList<Item>>() {}.type)
@@ -77,7 +76,7 @@ class MainActivity: AppCompatActivity()  {
         profileList =  profileListJson?.let {
             Gson().fromJson<ArrayMap<String, String>>(it, object : TypeToken<ArrayMap<String, String>>() {}.type)
         } ?: ArrayMap()
-
+        database = FirebaseDatabase.getInstance().getReference("users")
         val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
         if (!isLoggedIn) {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
@@ -106,10 +105,10 @@ class MainActivity: AppCompatActivity()  {
             } else if (user == "S") {
                 setContentView(R.layout.s_activity_main)
                 navView = findViewById(R.id.s_bottom_navigation)
-                loadFragment(ExerciseFragment())
+                loadFragment(Exercisefragment())
                 navView?.setOnItemSelectedListener {
                     when (it.itemId) {
-                        R.id.exercise -> loadFragment(ExerciseFragment())
+                        R.id.exercise -> loadFragment(Exercisefragment())
                         R.id.diary -> loadFragment(DiaryFragment())
                         R.id.profile -> loadFragment(ProfileFragment())
                         else -> {
@@ -123,43 +122,19 @@ class MainActivity: AppCompatActivity()  {
         }
     }
         override fun onBackPressed() {
-            var currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
-            var currentFragment1 = supportFragmentManager.findFragmentById(R.id.fragment_groups)
-            var currentFragment2 = supportFragmentManager.findFragmentById(R.id.fragment_exercise)
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
             Log.d("MainActivity", "currentFragment: $currentFragment")
-            Log.d("MainActivity", "currentFragment: $currentFragment1")
             if (user == "C" && R.id.sportsmens != navView.selectedItemId) {
-                if(R.id.groups == navView.selectedItemId){
-                    if(currentFragment1 is ExercisesInGroup){
-                        super.onBackPressed()
-                        setNavViewVisibility(true)
-                    }
-                    else {
-                        navView.selectedItemId = R.id.sportsmens
-                        loadFragment(SportsmensFragment())
-                    }
-                }
-                else{
-                    navView.selectedItemId = R.id.sportsmens
-                    loadFragment(SportsmensFragment())
-                }
-            }
-            else if (currentFragment is SportsmensFragmentDialog) {
+                navView.selectedItemId = R.id.sportsmens
+                loadFragment(SportsmensFragment())
+            } else if (currentFragment is SportsmensFragmentDialog) {
                 // Handle back button press inside the dialog fragment
                 super.onBackPressed()
                 setNavViewVisibility(true)
-            }
-             else if (user == "S" && R.id.exercise != navView.selectedItemId) {
-
+            } else if (user == "S" && R.id.exercise != navView.selectedItemId) {
                 navView.selectedItemId = R.id.exercise
-                loadFragment(ExerciseFragment())
-            }
-            else if (currentFragment2 is ExerciseFragmentDialog) {
-                // Handle back button press inside the dialog fragment
-                super.onBackPressed()
-                setNavViewVisibility(true)
-            }
-            else {
+                loadFragment(Exercisefragment())
+            } else {
                 super.onBackPressed()
                 finishAffinity()
             }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
@@ -47,20 +48,20 @@ class LoginActivity : AppCompatActivity() {
                         val editor = preferences.edit()
                         editor.putBoolean("isLoggedIn", true)
                         editor.apply()
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-//                        firebaseAuth.signInWithEmailAndPassword(
-//                            email_field.text.toString(),
-//                            pwd_field.text.toString()
-//                        ).addOnCompleteListener {
-//                            if (it.isSuccessful) {
-//                                val intent = Intent(this, MainActivity::class.java)
-//                                startActivity(intent)
-//                            } else {
-//                                Toast.makeText(this, it.exception.toString(), Toast.LENGTH_LONG)
-//                                    .show()
-//                            }
-//                        }
+                        //val intent = Intent(this, MainActivity::class.java)
+                        //startActivity(intent)
+                        firebaseAuth.signInWithEmailAndPassword(
+                            email_field.text.toString(),
+                            pwd_field.text.toString()
+                        ).addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                val intent = Intent(this, MainActivity::class.java)
+                                startActivity(intent)
+                            } else {
+                                Toast.makeText(this, it.exception.toString(), Toast.LENGTH_LONG)
+                                    .show()
+                            }
+                        }
                     }else{
                         pwd_field.setError("Слишком короткий пароль")
                     }

@@ -20,6 +20,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.myapplication.MainActivity
 import com.example.myapplication.SwipeGesture
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,6 +37,8 @@ class GroupsFragment : Fragment() {
     private lateinit var groupsArrayList: MutableList<Group>
     private lateinit var dateTextView: TextView
     private lateinit var addBtn: ImageButton
+    private lateinit var rootNode: FirebaseDatabase
+    private lateinit var database: DatabaseReference
 
     /**
      * Функция для инициализации фрагмента
@@ -163,6 +169,11 @@ class GroupsFragment : Fragment() {
         val newGroup = Group(name,name)
         groupsArrayList.add(0,newGroup)
         adapter.notifyItemInserted(0)
+
+        //rootNode = FirebaseDatabase.getInstance()
+        database = Firebase.database.reference
+
+        database.child("groups").child(name).setValue(newGroup)
     }
 
     /**

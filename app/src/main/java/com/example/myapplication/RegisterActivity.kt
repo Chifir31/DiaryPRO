@@ -15,13 +15,14 @@ import com.example.myapplication.data.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 
 
 class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener {
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var rootNode: FirebaseDatabase
-    private lateinit var reference: DatabaseReference
+    private lateinit var database: DatabaseReference
     private lateinit var lastname: EditText
     private lateinit var firstname: EditText
     private lateinit var editdate: EditText
@@ -104,13 +105,13 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                                             }
                                             editor.putString("profileList", Gson().toJson(profileList))
                                             editor.apply()*/
-                                            rootNode = FirebaseDatabase.getInstance()
-                                            reference = rootNode.getReference("users")
-                                            val id = reference.push().key!!
+                                            database = Firebase.database.reference
+                                            //reference = rootNode.getReference("users")
+                                            //val id = reference.push().key!!
                                             //val id = "User1"
-                                            val user = User(id,lastname.text.toString(),firstname.text.toString(),
+                                            val user = User(lastname.text.toString(),firstname.text.toString(),
                                             username.text.toString(),editdate.text.toString(),role1.isChecked.toString())
-                                            reference.child(username.text.toString()).setValue(user).addOnCompleteListener {
+                                            database.child("users").child(username.text.toString()).setValue(user).addOnCompleteListener {
                                                 Toast.makeText(this,"Insert done",Toast.LENGTH_LONG).show()
                                             }.addOnFailureListener{err ->
                                                 Toast.makeText(this,"Error ${err.message}",Toast.LENGTH_LONG).show()

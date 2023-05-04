@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.example.myapplication.data.Exercise
 import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
+import com.example.myapplication.data.User
 import com.example.myapplication.navigation_pages.*
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -20,6 +21,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -59,8 +61,17 @@ class MainActivity: AppCompatActivity()  {
     lateinit var sportsmensList: MutableList<Item>
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
     lateinit var profileList: ArrayMap<String, String>
+<<<<<<< Updated upstream
+=======
+    lateinit var user: String
+    var statemap = ArrayMap<Char, String>().apply {
+        put('p', "Запланирована")
+        put('c',"Выполнена")
+        put('h', "Выполнена частично")
+        put('f', "Не выполнена")
+    }
+>>>>>>> Stashed changes
 
-    val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
@@ -82,11 +93,13 @@ class MainActivity: AppCompatActivity()  {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
             startActivity(intent)
             finish()
+            getRole()
         } else {
-            /*val editor = preferences.edit()
+            val editor = preferences.edit()
             editor.putString("exerciseList", Gson().toJson(exerciseList))
             editor.putString("sportsmensList", Gson().toJson(sportsmensList))
-            editor.apply()*/
+            editor.apply()
+            getRole()
             if (user == "C") {
                 setContentView(R.layout.c_activity_main)
                 navView = findViewById(R.id.c_bottom_navigation)
@@ -121,10 +134,45 @@ class MainActivity: AppCompatActivity()  {
 
         }
     }
+<<<<<<< Updated upstream
         override fun onBackPressed() {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
             Log.d("MainActivity", "currentFragment: $currentFragment")
             if (user == "C" && R.id.sportsmens != navView.selectedItemId) {
+=======
+
+    fun getRole(){
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email:String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+        database = Firebase.database.reference
+        database.child("users").child(email).get().addOnSuccessListener {
+            val userData = it.getValue() as User
+            user = userData.role.toString()
+        }
+    }
+
+    override fun onBackPressed() {
+        var currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
+        var currentFragment1 = supportFragmentManager.findFragmentById(R.id.fragment_groups)
+        var currentFragment2 = supportFragmentManager.findFragmentById(R.id.fragment_exercise)
+        Log.d("MainActivity", "currentFragment: $currentFragment")
+        Log.d("MainActivity", "currentFragment: $currentFragment1")
+        if (user == "C" && R.id.sportsmens != navView.selectedItemId) {
+            if(R.id.groups == navView.selectedItemId){
+                if(currentFragment1 is ExercisesInGroup){
+                    super.onBackPressed()
+                    setNavViewVisibility(true)
+                }
+                else {
+                    navView.selectedItemId = R.id.sportsmens
+                    loadFragment(SportsmensFragment())
+                }
+            }
+            else{
+>>>>>>> Stashed changes
                 navView.selectedItemId = R.id.sportsmens
                 loadFragment(SportsmensFragment())
             } else if (currentFragment is SportsmensFragmentDialog) {

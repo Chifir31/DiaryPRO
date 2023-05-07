@@ -17,7 +17,7 @@ import java.util.*
 
 
 class AdapterSportsmens(private val itemList: MutableList<Item>) : RecyclerView.Adapter<AdapterSportsmens.ItemViewHolder>() {
-    private val deleteButtonsVisible = mutableSetOf<String>()
+    val deleteButtonsVisible = mutableSetOf<String>()
     private var onDeleteClickListener: OnDeleteClickListener? = null
     interface OnDeleteClickListener {
         fun onDeleteClick(position: Int)
@@ -57,26 +57,25 @@ class AdapterSportsmens(private val itemList: MutableList<Item>) : RecyclerView.
             onDeleteClickListener?.onDeleteClick(position)
         }
         holder.itemDeleteButton.visibility = if (deleteButtonsVisible.contains(getItem(position))) VISIBLE else GONE
-
+        Log.d("deleteButtonsVisible", deleteButtonsVisible.toString())
     }
     // Return the size of the list
     override fun getItemCount() = itemList.size
     fun getItem(position: Int): String {
-        Log.d("Id: ",itemList[position].itemId)
+        //Log.d("Id: ",itemList[position].itemId)
         return itemList[position].itemId
+    }
+    fun getVisibility(position: Int) : Boolean{
+        return deleteButtonsVisible.contains(getItem(position))
     }
     fun showDeleteButton(position: Int) {
         deleteButtonsVisible.add(getItem(position))
         notifyItemChanged(position)
-        //Log.d("Id: ",getItem(position))
-        //Log.d("Set: ","$deleteButtonsVisible")
     }
 
     fun hideDeleteButton(position: Int) {
         deleteButtonsVisible.remove(getItem(position))
         notifyItemChanged(position)
-        //Log.d("Id: ",getItem(position))
-        //Log.d("Set: ","$deleteButtonsVisible")
     }
 
     // Define the view holder class

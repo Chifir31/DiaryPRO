@@ -6,12 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.Adapters.GroupsAdapter
 import com.example.myapplication.R
-import com.example.myapplication.data.Group
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
@@ -19,7 +17,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.myapplication.MainActivity
-import com.example.myapplication.SwipeGesture
+import com.example.myapplication.data.Item
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
@@ -34,7 +32,10 @@ import java.util.*
 class GroupsFragment : Fragment() {
     private lateinit var adapter: GroupsAdapter
     private lateinit var recyclerView: RecyclerView
-    private lateinit var groupsArrayList: MutableList<Group>
+    //old
+    //private lateinit var groupsArrayList: MutableList<Group>
+    //new
+    private lateinit var groupsArrayList: MutableList<Item>
     private lateinit var dateTextView: TextView
     private lateinit var addBtn: ImageButton
     private lateinit var rootNode: FirebaseDatabase
@@ -74,8 +75,8 @@ class GroupsFragment : Fragment() {
         adapter = GroupsAdapter(groupsArrayList)
 
         recyclerView.adapter = adapter
-
-        val swipeToDeleteCallback = object : SwipeGesture(){
+        //old
+        /*val swipeToDeleteCallback = object : SwipeGesture(){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.absoluteAdapterPosition
                 ConfirmDelete(position)
@@ -106,7 +107,79 @@ class GroupsFragment : Fragment() {
             }
         }
 
-        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)*/
+        //new
+        adapter.setOnDeleteClickListener(object : GroupsAdapter.OnDeleteClickListener {
+            override fun onDeleteClick(position: Int) {
+                //Log.d("Pos", "$position")
+                ConfirmDelete(position)
+            }
+        })
+        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
+            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+                // disable item removal based on swipe gesture
+                return Float.MAX_VALUE
+            }
+            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+                val dragFlags = 0
+                val swipeFlags = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                return makeMovementFlags(dragFlags, swipeFlags)
+            }
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                // Do nothing, we don't support drag and drop
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // Remove the item from the dataset
+                val position = viewHolder.absoluteAdapterPosition
+                //adapter.ItemViewHolder(viewHolder.itemView).itemDeleteButton.visibility=VISIBLE
+                //adapter.removeItem(position)
+                if (direction==ItemTouchHelper.RIGHT) {
+                    //deleteBtn.visibility= VISIBLE
+                    adapter.showDeleteButton(position)
+                } else if (direction==ItemTouchHelper.LEFT) {
+                    //deleteBtn.visibility = GONE
+                    adapter.hideDeleteButton(position)
+                }
+                Log.d("TAG", "Item swiped")
+                adapter.notifyDataSetChanged()//viewHolder.absoluteAdapterPosition)
+            }
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {//Log.d("SportsmensFragment", "onChildDraw called")
+
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                    // Set the delete button visibility based on the swipe direction
+                    //Log.d("SportsmensFragment", "onChildDraw surely called")
+                    val itemView = viewHolder.itemView
+                    val itemPosition = viewHolder.absoluteAdapterPosition
+                    val deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
+                    if (dX > 0) {
+                        deleteBtn.visibility= View.VISIBLE
+                    } else if (dX <= 0) {
+                        deleteBtn.visibility = View.GONE
+                    }
+                    if(adapter.getVisibility(itemPosition))
+                        deleteBtn.visibility = View.VISIBLE
+                    itemView.translationX = dX
+                    // Draw the swipe background color
+
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
         addBtn = view.findViewById<ImageButton>(R.id.addgroup)
@@ -166,7 +239,10 @@ class GroupsFragment : Fragment() {
      * @author Севастьянов Иван
      */
     private fun InsertGroup(name: String){
-        val newGroup = Group(name,name)
+        //old
+        //val newGroup = Group(name,name)
+        //new
+        val newGroup = Item(name,"https://picsum.photos/200?random",name)
         groupsArrayList.add(0,newGroup)
         adapter.notifyItemInserted(0)
 

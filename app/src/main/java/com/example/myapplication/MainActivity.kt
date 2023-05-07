@@ -37,9 +37,9 @@ class MainActivity: AppCompatActivity()  {
         Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
         Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
 
-    var GroupsList = arrayListOf<Group>(
-        Group("Item 1", "Item 1"),
-        Group("Item 2", "Item 2")
+    var GroupsList = arrayListOf<Item>(
+        Item("Item 1","https://picsum.photos/200?random=$randomNumber+11", "Item 1"),
+        Item("Item 2","https://picsum.photos/200?random=$randomNumber+12", "Item 2")
     )
 
     var tmp = arrayListOf<Exercise>(

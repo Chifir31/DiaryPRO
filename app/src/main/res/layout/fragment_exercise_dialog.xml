@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="@color/black"
+    android:id="@+id/rel">
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -12,12 +13,12 @@
         android:titleTextColor="@color/white"
         android:subtitleTextColor="@color/white"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/toolbar_text"
-        android:textColor="@color/white"
-        android:text="Добавление тренировки"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbar_text"
+            android:textColor="@color/white"
+            android:text="Добавление тренировки"/>
         <ImageButton
             android:id="@+id/edit_button"
             android:layout_width="wrap_content"
@@ -44,7 +45,8 @@
         android:layout_below="@id/exercise_img"
         android:textColor="@color/gray"
         android:textSize="15sp"
-        android:text="Вид тренировки"/>
+        android:text="Статус выполнения тренировки"
+        android:visibility="gone"/>
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -54,44 +56,27 @@
         android:textSize="20sp"
         android:background="@color/dark_gray"
         android:popupBackground="@color/black"
+        android:visibility="gone"
         />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/sportsmen_text"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/com_text"
+        android:textSize="15sp"
         android:layout_below="@id/type_edit"
-        android:layout_marginTop="10dp"
         android:textColor="@color/gray"
-        android:layout_marginHorizontal="15dp"
-        android:textSize="15sp"
-        android:text="Спортсмен"/>
-    <TextView
+        android:text="Комментарий к тренировке"
+        android:visibility="gone"/>
+    <EditText
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:id="@+id/sportsmen_edit"
-        android:layout_below="@id/sportsmen_text"
-        android:textColor="@color/gray"
-        android:textSize="20sp"
-        android:background="@color/dark_gray"
-        />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="15dp"
-        android:layout_marginTop="10dp"
-        android:id="@+id/date_text"
-        android:layout_below="@id/sportsmen_edit"
-        android:textColor="@color/gray"
-        android:textSize="15sp"
-        android:text="Дата тренировки"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:id="@+id/date_edit"
-        android:layout_below="@id/date_text"
+        android:layout_height="110dp"
+        android:id="@+id/com_edit"
+        android:layout_below="@id/com_text"
         android:textColor="@color/white"
-        android:textSize="20sp"
         android:background="@color/dark_gray"
+        android:visibility="gone"
         />
     <TextView
         android:layout_width="match_parent"
@@ -100,10 +85,10 @@
         android:layout_marginTop="10dp"
         android:id="@+id/plan_text"
         android:textSize="15sp"
-        android:layout_below="@id/date_edit"
+        android:layout_below="@id/exercise_img"
         android:textColor="@color/gray"
         android:text="План тренировки"/>
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="110dp"
         android:id="@+id/plan_edit"
@@ -111,19 +96,64 @@
         android:textColor="@color/white"
         android:background="@color/dark_gray"
         />
-    <!--<TextView
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="10dp"
         android:id="@+id/state_text"
+        android:textSize="15sp"
         android:layout_below="@id/plan_edit"
-        android:textColor="@color/gray"/>
+        android:textColor="@color/gray"
+        android:text="Статус выполнения тренировки"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/state_edit"
         android:layout_below="@id/state_text"
+        android:textColor="@color/white"
+        android:background="@color/dark_gray"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/com1_text"
+        android:textSize="15sp"
+        android:layout_below="@id/state_edit"
         android:textColor="@color/gray"
-        android:background="@color/white"
-        />-->
-
+        android:text="Коментарий спортсмена"
+        android:visibility="gone"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/com1_edit"
+        android:layout_below="@id/com1_text"
+        android:textColor="@color/white"
+        android:background="@color/dark_gray"
+        android:visibility="gone"
+        />
+    <TextView
+        android:id="@+id/finish_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:text="Завершить тренировку"
+        android:textSize="20sp"
+        android:textColor="@color/red"
+        />
+    <TextView
+        android:id="@+id/save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:text="Сохранить"
+        android:textSize="20sp"
+        android:textColor="@color/red"
+        android:visibility="gone"/>
 </RelativeLayout>

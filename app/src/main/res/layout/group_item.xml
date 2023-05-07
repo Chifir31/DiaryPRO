@@ -20,13 +20,13 @@
         android:id="@+id/groupName"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:paddingVertical="30dp"
+        android:paddingVertical="35dp"
         android:paddingStart="70dp"
         android:text="Place Holder"
         app:layout_constraintBaseline_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         android:textColor="@color/gray"
-        android:textSize="23sp"
+        android:textSize="15sp"
         android:textStyle="bold"
         />
 

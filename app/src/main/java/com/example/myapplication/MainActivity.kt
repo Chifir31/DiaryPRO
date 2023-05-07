@@ -105,6 +105,7 @@ class MainActivity: AppCompatActivity()  {
             editor.putString("sportsmensList", Gson().toJson(sportsmensList))
             editor.apply()
             getRole()
+            user = "C" //Надо сделать чтение из бд
             if (user == "C") {
                 setContentView(R.layout.c_activity_main)
                 navView = findViewById(R.id.c_bottom_navigation)
@@ -147,8 +148,14 @@ class MainActivity: AppCompatActivity()  {
         }
         database = Firebase.database.reference
         database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
-            val userData = it.getValue() as User
-            user = userData.role.toString()
+            if (it.exists()){
+                user = it.child("role").value.toString()
+
+            }else{
+                Log.d("Huiy","User does not exist")
+            }
+        }.addOnFailureListener{
+            Log.d("Huiy","Pizdec")
         }
     }
     override fun onBackPressed() {

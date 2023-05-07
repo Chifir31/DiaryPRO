@@ -9,6 +9,7 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.util.ArrayMap
+import android.util.Log
 import android.widget.*
 import android.widget.Toast
 import com.example.myapplication.data.User
@@ -31,6 +32,7 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
     private lateinit var c_pwd: EditText
     private lateinit var role1: CheckBox
     private lateinit var role2: CheckBox
+    private lateinit var role: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,10 +60,12 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
         role1.setOnClickListener {
             onCheckboxClicked(true)
             role1.setError(null)
+            role = "C"
         }
         role2.setOnClickListener {
             onCheckboxClicked(false)
             role2.setError(null)
+            role = "S"
         }
 
         val c: Calendar
@@ -95,24 +99,23 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                                     firebaseAuth.createUserWithEmailAndPassword(username.text.toString(),
                                     pwd.text.toString()).addOnCompleteListener{
                                         if(it.isSuccessful){
-                                            /*var preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
+                                            var preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
                                             var editor= preferences.edit()
                                             var profileList = ArrayMap <String, String>().apply{
                                                 put("lastname", lastname.text.toString())
                                                 put("firsname", firstname.text.toString())
                                                 put("datebirth", editdate.text.toString())
-                                                put("role", role1.isChecked.toString())
+                                                put("role", role)
                                             }
                                             editor.putString("profileList", Gson().toJson(profileList))
-                                            editor.apply()*/
+                                            editor.apply()
+
                                             database = Firebase.database.reference
-                                            //reference = rootNode.getReference("users")
-                                            //val id = reference.push().key!!
-                                            //val id = "User1"
                                             val user = User(lastname.text.toString(),firstname.text.toString(),
-                                            username.text.toString(),editdate.text.toString(),role1.isChecked.toString())
-                                            database.child("users").child(username.text.toString()).setValue(user).addOnCompleteListener {
+                                            username.text.toString(),editdate.text.toString(),role)
+                                            database.child("users").child(username.text.toString().split("@")[0]).setValue(user).addOnCompleteListener {
                                                 Toast.makeText(this,"Insert done",Toast.LENGTH_LONG).show()
+                                                Log.d("Huiy","REG")
                                             }.addOnFailureListener{err ->
                                                 Toast.makeText(this,"Error ${err.message}",Toast.LENGTH_LONG).show()
                                             }

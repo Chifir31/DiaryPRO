@@ -65,7 +65,7 @@ class MainActivity: AppCompatActivity()  {
     lateinit var sportsmensList: MutableList<Item>
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
     lateinit var profileList: ArrayMap<String, String>
-    lateinit var user: String
+    var user = "C"
 
     var statemap = ArrayMap<Char, String>().apply {
         put('p', "Запланирована")
@@ -96,9 +96,9 @@ class MainActivity: AppCompatActivity()  {
         val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
         if (!isLoggedIn) {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
+            //getRole()
             startActivity(intent)
             finish()
-            getRole()
         } else {
             val editor = preferences.edit()
             editor.putString("exerciseList", Gson().toJson(exerciseList))
@@ -146,7 +146,7 @@ class MainActivity: AppCompatActivity()  {
             email = it.email.toString()
         }
         database = Firebase.database.reference
-        database.child("users").child(email).get().addOnSuccessListener {
+        database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
             val userData = it.getValue() as User
             user = userData.role.toString()
         }

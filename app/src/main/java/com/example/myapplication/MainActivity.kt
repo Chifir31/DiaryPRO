@@ -38,16 +38,15 @@ class MainActivity: AppCompatActivity()  {
         Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
         Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
         Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
-    var temp = arrayListOf<String>(
+    var temp = arrayOf<String>(
         "Anton",
-        "Alexey"
-    )
+        "Alexey")
 
     var GroupsList = arrayListOf<Group>(
         Group("Item 1", "Item 1", temp),
         Group("Item 2", "Item 2", temp)
     )
-
+/*
     var tmp = arrayListOf<Exercise>(
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", 'p', "", "Item 1"),
         Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", 'p', "", "Item 2"),
@@ -60,7 +59,7 @@ class MainActivity: AppCompatActivity()  {
     var exerciseList1 = ArrayMap<String, MutableList<Exercise>>().apply{
         put("Item 1", tmp)
         put("Item 2", tmp1)
-    }
+    }*/
 
     lateinit var preferences: SharedPreferences
     lateinit var sportsmensList: MutableList<Item>
@@ -79,9 +78,9 @@ class MainActivity: AppCompatActivity()  {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
         val sportsmensListJson = (preferences.getString("sportsmensList", null))
-        var editor = preferences.edit()
-        editor.putString("exerciseList", Gson().toJson(exerciseList1))
-        editor.apply()
+        //var editor = preferences.edit()
+        //editor.putString("exerciseList", Gson().toJson(exerciseList1))
+        //editor.apply()
         sportsmensList = sportsmensListJson?.let {
             Gson().fromJson<MutableList<Item>>(it, object : TypeToken<ArrayList<Item>>() {}.type)
         } ?: arrayListOf()
@@ -164,18 +163,23 @@ class MainActivity: AppCompatActivity()  {
                     super.onBackPressed()
                     setNavViewVisibility(true)
                 }
-                else{
+                else {
                     navView.selectedItemId = R.id.sportsmens
                     loadFragment(SportsmensFragment())
                 }
             }
+            else{
+                navView.selectedItemId = R.id.sportsmens
+                loadFragment(SportsmensFragment())
+            }
+        }
         else if (currentFragment is SportsmensFragmentDialog) {
 // Handle back button press inside the dialog fragment
             super.onBackPressed()
             setNavViewVisibility(true)
         }
-        }
         else if (user == "S" && R.id.exercise != navView.selectedItemId) {
+
             navView.selectedItemId = R.id.exercise
             loadFragment(ExerciseFragment())
         }

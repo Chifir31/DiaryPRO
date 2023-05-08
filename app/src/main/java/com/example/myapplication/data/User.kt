@@ -24,5 +24,5 @@ data class Coach(
     var login: String? = null,
     var BirthDate: String? = null,
     var role: String? = null,
-    var list_of_sportsmen: ArrayList<String>
+    var list_of_sportsmen: List<String>
 )

@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -24,6 +25,10 @@ import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,6 +44,7 @@ class SportsmensFragment : Fragment() {
     private var size : Int = 0
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
+    private lateinit var database: DatabaseReference
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Set up the listener for back stack changes
@@ -152,6 +158,41 @@ class SportsmensFragment : Fragment() {
                 setPositiveButton("Добавить"){dialog, which->
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
+
+                    //Поиск спортсмена в бд
+                    database = Firebase.database.reference
+                    database.child("users").child(edit.text.toString()).get().addOnSuccessListener {
+                        if (it.exists()){
+                            //user = it.child("role").value.toString()
+
+                            //Добавление спортсмена к тренеру
+                            val currentUser = Firebase.auth.currentUser
+                            lateinit var email:String
+                            currentUser?.let {
+                                email = it.email.toString()
+                            }
+                            database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
+                                if (it.exists()){
+                                    val sportsmen_list = database.child("users").child(email.split("@")[0])
+                                        .child("list_of_sportsmen").push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
+                                    sportsmen_list.setValue(edit.text.toString())
+                                }else{
+                                    Log.d("Huiy","User does not exist")
+                                }
+                            }
+
+                            itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
+                            adapter.notifyItemInserted(itemList.size)
+                            editor.putString("sportsmensList", Gson().toJson(itemList))
+                            editor.apply()
+                            Log.d("SportsmensFragment size", adapter.itemCount.toString())
+                            Log.d("SportsmensFragment elements", "Item list: $itemList")
+
+                        }else{
+                            Log.d("Huiy","No sportsmen with such login")//Добавить вывод сообщения об ошибки
+                        }
+                    }
+
                     itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
                     adapter.notifyItemInserted(itemList.size)
                     editor.putString("sportsmensList", Gson().toJson(itemList))

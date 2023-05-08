@@ -124,7 +124,7 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                                                 }
                                             }else{
                                                 val user = Coach(lastname.text.toString(),firstname.text.toString(),
-                                                    username.text.toString(),editdate.text.toString(),role, arrayListOf<String>()
+                                                    username.text.toString(),editdate.text.toString(),role, listOf<String>()
                                                 )
                                                 database.child("users").child(username.text.toString().split("@")[0]).setValue(user).addOnCompleteListener {
                                                     Toast.makeText(this,"Insert done",Toast.LENGTH_LONG).show()

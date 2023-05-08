@@ -166,7 +166,7 @@ class GroupsFragment : Fragment() {
      * @author Севастьянов Иван
      */
     private fun InsertGroup(name: String){
-        val newGroup = Group(name,name,arrayOf<String>())
+        val newGroup = Group(name,name, listOf<String>())
         groupsArrayList.add(0,newGroup)
         adapter.notifyItemInserted(0)
 

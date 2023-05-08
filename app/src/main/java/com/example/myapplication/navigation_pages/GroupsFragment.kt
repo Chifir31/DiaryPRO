@@ -36,7 +36,7 @@ class GroupsFragment : Fragment() {
     //old
     //private lateinit var groupsArrayList: MutableList<Group>
     //new
-    private lateinit var groupsArrayList: ArrayList<Group>
+    private lateinit var groupsArrayList: MutableList<Group>
     private lateinit var dateTextView: TextView
     private lateinit var addBtn: ImageButton
     private lateinit var rootNode: FirebaseDatabase
@@ -256,7 +256,7 @@ class GroupsFragment : Fragment() {
         //val newGroup = Group(name,name)
         //new
         //val newGroup = Item(name,"https://picsum.photos/200?random",name)
-        val newGroup = Group(name,name,arrayOf<String>())
+        val newGroup = Group(name,name,arrayListOf<String>())
         groupsArrayList.add(0,newGroup)
         adapter.notifyItemInserted(0)
 

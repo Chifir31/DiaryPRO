@@ -38,7 +38,7 @@ class MainActivity: AppCompatActivity()  {
         Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
         Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
         Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
-    var temp = arrayOf<String>(
+    var temp = arrayListOf<String>(
         "Anton",
         "Alexey")
 

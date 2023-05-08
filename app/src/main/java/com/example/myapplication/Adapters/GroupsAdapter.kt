@@ -23,7 +23,7 @@ import com.example.myapplication.navigation_pages.ExercisesInGroup
  * @author Севастьянов Иван
  */
 class GroupsAdapter(
-    private val groupsList: ArrayList<Group>): RecyclerView.Adapter<GroupsAdapter.GroupsView>() {
+    private val groupsList: MutableList<Group>): RecyclerView.Adapter<GroupsAdapter.GroupsView>() {
     //new
     private val deleteButtonsVisible = mutableSetOf<String>()
     private var onDeleteClickListener: OnDeleteClickListener? = null

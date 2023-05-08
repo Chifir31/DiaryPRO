@@ -5,4 +5,4 @@ package com.example.myapplication.data
  * @property name - имя группы
  * @author Севастьянов Иван
  */
-data class Group(var name: String, var itemId: String, var members: Array<String>)
+data class Group(var name: String, var itemId: String, var members: MutableList<String>)

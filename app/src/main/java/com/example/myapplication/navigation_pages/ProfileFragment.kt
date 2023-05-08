@@ -67,6 +67,7 @@ override fun onCreateView(
         edit_btn = view.findViewById(R.id.edit_button)
         logout_btn = view.findViewById(R.id.logout_btn)
         Log.d("profileList",itemList.toString())
+
         lastname.setText(itemList["lastname"].toString())
         name.setText(itemList["firsname"].toString())
         datebirth.setText(itemList["datebirth"].toString())
@@ -115,6 +116,7 @@ override fun onCreateView(
         }
 
     }
+
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         datebirth.setText("$dayOfMonth/$month/$year")
     }

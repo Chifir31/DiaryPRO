@@ -259,7 +259,6 @@ class GroupsFragment : Fragment() {
         groupsArrayList.add(0,newGroup)
         adapter.notifyItemInserted(0)
 
-        //rootNode = FirebaseDatabase.getInstance()
         database = Firebase.database.reference
 
         database.child("groups").child(name).setValue(newGroup)

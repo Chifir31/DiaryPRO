@@ -14,7 +14,8 @@ data class  Sportsmen(
     var login: String? = null,
     var BirthDate: String? = null,
     var role: String? = null,
-    var CSS: String? = null
+    var CSS: String? = null,
+    var coach: String? = null
 )
 
 data class Coach(

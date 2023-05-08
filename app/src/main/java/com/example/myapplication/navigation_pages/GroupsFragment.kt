@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.myapplication.MainActivity
+import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -35,7 +36,7 @@ class GroupsFragment : Fragment() {
     //old
     //private lateinit var groupsArrayList: MutableList<Group>
     //new
-    private lateinit var groupsArrayList: MutableList<Item>
+    private lateinit var groupsArrayList: ArrayList<Group>
     private lateinit var dateTextView: TextView
     private lateinit var addBtn: ImageButton
     private lateinit var rootNode: FirebaseDatabase
@@ -242,7 +243,8 @@ class GroupsFragment : Fragment() {
         //old
         //val newGroup = Group(name,name)
         //new
-        val newGroup = Item(name,"https://picsum.photos/200?random",name)
+        //val newGroup = Item(name,"https://picsum.photos/200?random",name)
+        val newGroup = Group(name,name,arrayOf<String>())
         groupsArrayList.add(0,newGroup)
         adapter.notifyItemInserted(0)
 

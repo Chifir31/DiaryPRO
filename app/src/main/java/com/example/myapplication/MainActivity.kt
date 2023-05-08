@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.example.myapplication.data.Exercise
 import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
+import com.example.myapplication.data.User
 import com.example.myapplication.navigation_pages.*
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -20,6 +21,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -36,12 +38,15 @@ class MainActivity: AppCompatActivity()  {
         Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
         Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
         Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
+    var temp = arrayOf<String>(
+        "Anton",
+        "Alexey")
 
-    var GroupsList = arrayListOf<Item>(
-        Item("Item 1","https://picsum.photos/200?random=$randomNumber+11", "Item 1"),
-        Item("Item 2","https://picsum.photos/200?random=$randomNumber+12", "Item 2")
+    var GroupsList = arrayListOf<Group>(
+        Group("Item 1", "Item 1", temp),
+        Group("Item 2", "Item 2", temp)
     )
-
+/*
     var tmp = arrayListOf<Exercise>(
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", 'p', "", "Item 1"),
         Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", 'p', "", "Item 2"),
@@ -54,12 +59,14 @@ class MainActivity: AppCompatActivity()  {
     var exerciseList1 = ArrayMap<String, MutableList<Exercise>>().apply{
         put("Item 1", tmp)
         put("Item 2", tmp1)
-    }
+    }*/
 
     lateinit var preferences: SharedPreferences
     lateinit var sportsmensList: MutableList<Item>
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
     lateinit var profileList: ArrayMap<String, String>
+    var user = "C"
+
     var statemap = ArrayMap<Char, String>().apply {
         put('p', "Запланирована")
         put('c',"Выполнена")
@@ -67,14 +74,13 @@ class MainActivity: AppCompatActivity()  {
         put('f', "Не выполнена")
     }
 
-    val user = "C" //Тип пользователя, в дальнейшем будет считываться с firebase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
         val sportsmensListJson = (preferences.getString("sportsmensList", null))
-        var editor = preferences.edit()
-        editor.putString("exerciseList", Gson().toJson(exerciseList1))
-        editor.apply()
+        //var editor = preferences.edit()
+        //editor.putString("exerciseList", Gson().toJson(exerciseList1))
+        //editor.apply()
         sportsmensList = sportsmensListJson?.let {
             Gson().fromJson<MutableList<Item>>(it, object : TypeToken<ArrayList<Item>>() {}.type)
         } ?: arrayListOf()
@@ -90,13 +96,16 @@ class MainActivity: AppCompatActivity()  {
         val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
         if (!isLoggedIn) {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
+            //getRole()
             startActivity(intent)
             finish()
         } else {
-            /*val editor = preferences.edit()
+            val editor = preferences.edit()
             editor.putString("exerciseList", Gson().toJson(exerciseList))
             editor.putString("sportsmensList", Gson().toJson(sportsmensList))
-            editor.apply()*/
+            editor.apply()
+            getRole()
+            user = "C" //Надо сделать чтение из бд
             if (user == "C") {
                 setContentView(R.layout.c_activity_main)
                 navView = findViewById(R.id.c_bottom_navigation)
@@ -129,6 +138,24 @@ class MainActivity: AppCompatActivity()  {
                 }
             }
 
+        }
+    }
+    fun getRole(){
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email:String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+        database = Firebase.database.reference
+        database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
+            if (it.exists()){
+                user = it.child("role").value.toString()
+
+            }else{
+                Log.d("Huiy","User does not exist")
+            }
+        }.addOnFailureListener{
+            Log.d("Huiy","Pizdec")
         }
     }
     override fun onBackPressed() {

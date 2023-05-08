@@ -36,7 +36,7 @@ class AdapterSportsmens(private val itemList: MutableList<Item>) : RecyclerView.
     // Bind the data to the views in each item view holder
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val currentItem = itemList[position]
-        holder.itemName.text = currentItem.text
+        holder.itemName.text = currentItem.name
         Glide.with(holder.itemView)
             .load(currentItem.img)
             .transform(CircleCrop())
@@ -45,7 +45,8 @@ class AdapterSportsmens(private val itemList: MutableList<Item>) : RecyclerView.
         holder.itemOpenButton.setOnClickListener {
             Log.d("TAG", itemList.size.toString())
             val exercise = itemList[position]
-            val fragment = SportsmensFragmentDialog.newInstance(currentItem.text, currentItem.itemId)
+            Log.d("check", currentItem.name.toString() + " " + currentItem.itemId.toString())
+            val fragment = SportsmensFragmentDialog.newInstance(currentItem.name, currentItem.itemId)
             val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_sportsmens, fragment)

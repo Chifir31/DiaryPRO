@@ -116,14 +116,7 @@ class SportsmensFragment : Fragment() {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
 
                     // Adjust the maximum swipe distance here
-                    val maxSwipeDistance = 500f  // Set your desired distance
-
-                    // Restrict the item movement to the defined maximum swipe distance
-                    var dX = when {
-                        dX > maxSwipeDistance -> maxSwipeDistance
-                        dX < -maxSwipeDistance -> -maxSwipeDistance
-                        else -> dX
-                    }
+                    val maxSwipeDistance = 400f  // Set your desired distance
                     val itemView = viewHolder.itemView
                     val itemPosition = viewHolder.absoluteAdapterPosition
                     val deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
@@ -136,13 +129,13 @@ class SportsmensFragment : Fragment() {
                     //In case when deleteButton still in set when swipe to the right was weak
                     if(adapter.getVisibility(itemPosition))
                         deleteBtn.visibility = VISIBLE
+
+                    // Restrict the item movement to the defined maximum swipe distance
                     val limitedDX = when {
                         dX > maxSwipeDistance -> maxSwipeDistance
                         dX < -maxSwipeDistance -> -maxSwipeDistance
                         else -> dX
                     }
-                    itemView.translationX = limitedDX
-
                     super.onChildDraw(c, recyclerView, viewHolder, limitedDX, dY, actionState, isCurrentlyActive)
                 }
             }

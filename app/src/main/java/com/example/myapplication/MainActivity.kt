@@ -80,6 +80,7 @@ class MainActivity: AppCompatActivity()  {
         val sportsmensListJson = (preferences.getString("sportsmensList", null))
         //var editor = preferences.edit()
         //editor.putString("exerciseList", Gson().toJson(exerciseList1))
+        //editor.putBoolean("isLoggedIn", false)
         //editor.apply()
         sportsmensList = sportsmensListJson?.let {
             Gson().fromJson<MutableList<Item>>(it, object : TypeToken<ArrayList<Item>>() {}.type)
@@ -103,59 +104,60 @@ class MainActivity: AppCompatActivity()  {
             val editor = preferences.edit()
             editor.putString("exerciseList", Gson().toJson(exerciseList))
             editor.putString("sportsmensList", Gson().toJson(sportsmensList))
+            Log.d("check", sportsmensList.toString())
             editor.apply()
-            getRole()
-            user = "C" //Надо сделать чтение из бд
-            if (user == "C") {
-                setContentView(R.layout.c_activity_main)
-                navView = findViewById(R.id.c_bottom_navigation)
-                loadFragment(SportsmensFragment())
-                navView?.setOnItemSelectedListener {
-                    when (it.itemId) {
-                        R.id.sportsmens -> loadFragment(SportsmensFragment())
-                        R.id.groups -> loadFragment(GroupsFragment())
-                        R.id.profile -> loadFragment(ProfileFragment())
-                        else -> {
+            //было сделано чтение из бд ^
+            //user = "C" //Надо сделать чтение из бд
+            val currentUser = Firebase.auth.currentUser
+            lateinit var email:String
+            currentUser?.let {
+                email = it.email.toString()
+            }
+            database = Firebase.database.reference
+            database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
+                if (it.exists()){
+                    user = it.child("role").value.toString()
+                    Log.d("ROLE = ", user)
+                    if (user == "C") {
+                        Log.d("WAT", "WAT")
+                        setContentView(R.layout.c_activity_main)
+                        navView = findViewById(R.id.c_bottom_navigation)
+                        loadFragment(SportsmensFragment())
+                        navView?.setOnItemSelectedListener {
+                            when (it.itemId) {
+                                R.id.sportsmens -> loadFragment(SportsmensFragment())
+                                R.id.groups -> loadFragment(GroupsFragment())
+                                R.id.profile -> loadFragment(ProfileFragment())
+                                else -> {
 
+                                }
+                            }
+                            true
+                        }
+                    } else if (user == "S") {
+                        setContentView(R.layout.s_activity_main)
+                        navView = findViewById(R.id.s_bottom_navigation)
+                        loadFragment(ExerciseFragment())
+                        navView?.setOnItemSelectedListener {
+                            when (it.itemId) {
+                                R.id.exercise -> loadFragment(ExerciseFragment())
+                                R.id.diary -> loadFragment(DiaryFragment())
+                                R.id.profile -> loadFragment(ProfileFragment())
+                                else -> {
+
+                                }
+                            }
+                            true
                         }
                     }
-                    true
+
+                }else{
+                    Log.d("Huiy","User does not exist")
                 }
-            } else if (user == "S") {
-                setContentView(R.layout.s_activity_main)
-                navView = findViewById(R.id.s_bottom_navigation)
-                loadFragment(ExerciseFragment())
-                navView?.setOnItemSelectedListener {
-                    when (it.itemId) {
-                        R.id.exercise -> loadFragment(ExerciseFragment())
-                        R.id.diary -> loadFragment(DiaryFragment())
-                        R.id.profile -> loadFragment(ProfileFragment())
-                        else -> {
-
-                        }
-                    }
-                    true
-                }
+            }.addOnFailureListener{
+                Log.d("Huiy","Pizdec")
             }
-
-        }
-    }
-    fun getRole(){
-        val currentUser = Firebase.auth.currentUser
-        lateinit var email:String
-        currentUser?.let {
-            email = it.email.toString()
-        }
-        database = Firebase.database.reference
-        database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
-            if (it.exists()){
-                user = it.child("role").value.toString()
-
-            }else{
-                Log.d("Huiy","User does not exist")
-            }
-        }.addOnFailureListener{
-            Log.d("Huiy","Pizdec")
+            Log.d("ROLE1 = ", user)
         }
     }
     override fun onBackPressed() {

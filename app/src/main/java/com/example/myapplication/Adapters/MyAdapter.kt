@@ -40,7 +40,7 @@ class MyAdapter(private val itemList: MutableList<Item>) : RecyclerView.Adapter<
     // Bind the data to the views in each item view holder
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val currentItem = itemList[position]
-        holder.itemName.text = currentItem.text
+        holder.itemName.text = currentItem.name
         Glide.with(holder.itemView)
             .load(currentItem.img)
             .transform(CircleCrop())

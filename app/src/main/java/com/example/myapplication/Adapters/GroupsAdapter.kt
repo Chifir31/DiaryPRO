@@ -23,7 +23,7 @@ import com.example.myapplication.navigation_pages.ExercisesInGroup
  * @author Севастьянов Иван
  */
 class GroupsAdapter(
-    private val groupsList: MutableList<Item>): RecyclerView.Adapter<GroupsAdapter.GroupsView>() {
+    private val groupsList: ArrayList<Group>): RecyclerView.Adapter<GroupsAdapter.GroupsView>() {
     //new
     private val deleteButtonsVisible = mutableSetOf<String>()
     private var onDeleteClickListener: OnDeleteClickListener? = null
@@ -45,7 +45,7 @@ class GroupsAdapter(
         //old
         // val itemView = LayoutInflater.from(parent.context).inflate(R.layout.group_item,parent,false)
         //new
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_layout_example,parent,false)
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.group_item_layout_example,parent,false)
         return  GroupsView(itemView)
     }
 
@@ -83,20 +83,14 @@ class GroupsAdapter(
      */
     override fun onBindViewHolder(holder: GroupsView, position: Int) {
         val currentItem = groupsList[position]
-        holder.groupName.text = currentItem.text
-        //new
-        //holder.itemPicture.visibility=GONE
-        Glide.with(holder.itemView)
-            .load(currentItem.img)
-            .transform(CircleCrop())
-            .into(holder.itemPicture)
+        holder.groupName.text = currentItem.name
         holder.detailsBtn.tag = currentItem
 
         holder.detailsBtn.setOnClickListener{
             //old
             //val fragment = ExercisesInGroup.newInstance(currentItem.name,currentItem.name)
             //new
-            val fragment = ExercisesInGroup.newInstance(currentItem.text,currentItem.itemId)
+            val fragment = ExercisesInGroup.newInstance(currentItem.name, currentItem.itemId)
             val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_groups,fragment)
@@ -119,7 +113,7 @@ class GroupsAdapter(
         //val detailsBtn: ImageButton = itemView.findViewById(R.id.options)
         //new
         val groupName: TextView = itemView.findViewById(R.id.item_text)
-        val itemPicture: ImageView = itemView.findViewById(R.id.item_image)
+        //val itemPicture: ImageView = itemView.findViewById(R.id.item_image)
         val detailsBtn: TextView = itemView.findViewById(R.id.item_open_button)
         val itemDeleteButton: TextView = itemView.findViewById(R.id.item_delete_button)
     }

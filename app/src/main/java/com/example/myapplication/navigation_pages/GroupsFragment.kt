@@ -118,8 +118,7 @@ class GroupsFragment : Fragment() {
         })
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-                // disable item removal based on swipe gesture
-                return Float.MAX_VALUE
+                return 0.5f
             }
             override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
                 val dragFlags = 0
@@ -137,7 +136,7 @@ class GroupsFragment : Fragment() {
 
             override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
                 // Adjust the swipe velocity threshold here (default is 2000f)
-                return 250f
+                return 1000f
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -168,7 +167,7 @@ class GroupsFragment : Fragment() {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
 
                     // Adjust the maximum swipe distance here
-                    val maxSwipeDistance = 500f  // Set your desired distance
+                    val maxSwipeDistance = 400f  // Set your desired distance
                     val itemView = viewHolder.itemView
                     val itemPosition = viewHolder.absoluteAdapterPosition
                     val deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)

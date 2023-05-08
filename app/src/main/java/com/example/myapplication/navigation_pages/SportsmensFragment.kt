@@ -70,8 +70,7 @@ class SportsmensFragment : Fragment() {
         })
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-                // disable item removal based on swipe gesture
-                return Float.MAX_VALUE
+                return 0.5f
             }
             override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
                 val dragFlags = 0

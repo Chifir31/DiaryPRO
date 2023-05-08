@@ -105,7 +105,7 @@ class MainActivity: AppCompatActivity()  {
             editor.putString("sportsmensList", Gson().toJson(sportsmensList))
             editor.apply()
             getRole()
-            user = "C" //Надо сделать чтение из бд
+            //user = "C" //Надо сделать чтение из бд
             if (user == "C") {
                 setContentView(R.layout.c_activity_main)
                 navView = findViewById(R.id.c_bottom_navigation)

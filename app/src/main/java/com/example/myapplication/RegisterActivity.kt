@@ -12,6 +12,8 @@ import android.util.ArrayMap
 import android.util.Log
 import android.widget.*
 import android.widget.Toast
+import com.example.myapplication.data.Coach
+import com.example.myapplication.data.Sportsmen
 import com.example.myapplication.data.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -111,13 +113,25 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                                             editor.apply()
 
                                             database = Firebase.database.reference
-                                            val user = User(lastname.text.toString(),firstname.text.toString(),
-                                            username.text.toString(),editdate.text.toString(),role)
-                                            database.child("users").child(username.text.toString().split("@")[0]).setValue(user).addOnCompleteListener {
-                                                Toast.makeText(this,"Insert done",Toast.LENGTH_LONG).show()
-                                                Log.d("Huiy","REG")
-                                            }.addOnFailureListener{err ->
-                                                Toast.makeText(this,"Error ${err.message}",Toast.LENGTH_LONG).show()
+                                            if (role == "S"){
+                                                val user = Sportsmen(lastname.text.toString(),firstname.text.toString(),
+                                                    username.text.toString(),editdate.text.toString(),role,"0")
+                                                database.child("users").child(username.text.toString().split("@")[0]).setValue(user).addOnCompleteListener {
+                                                    Toast.makeText(this,"Insert done",Toast.LENGTH_LONG).show()
+                                                    Log.d("Huiy","REG")
+                                                }.addOnFailureListener{err ->
+                                                    Toast.makeText(this,"Error ${err.message}",Toast.LENGTH_LONG).show()
+                                                }
+                                            }else{
+                                                val user = Coach(lastname.text.toString(),firstname.text.toString(),
+                                                    username.text.toString(),editdate.text.toString(),role, arrayListOf<String>()
+                                                )
+                                                database.child("users").child(username.text.toString().split("@")[0]).setValue(user).addOnCompleteListener {
+                                                    Toast.makeText(this,"Insert done",Toast.LENGTH_LONG).show()
+                                                    Log.d("Huiy","REG")
+                                                }.addOnFailureListener{err ->
+                                                    Toast.makeText(this,"Error ${err.message}",Toast.LENGTH_LONG).show()
+                                                }
                                             }
 
                                             val intent = Intent(this,MainActivity::class.java)

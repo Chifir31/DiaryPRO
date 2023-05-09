@@ -66,6 +66,7 @@ class SportsmensFragment : Fragment() {
         dateTextView.text = dateFormat.format(currentDate)
 
         //Загружаем список спортсменов
+        val tempList = mutableListOf<Item>()
         database = Firebase.database.reference
         val currentUser = Firebase.auth.currentUser
         lateinit var email:String
@@ -88,7 +89,7 @@ class SportsmensFragment : Fragment() {
                         children.forEach{
                             val value = it.getValue()
                             val item = Item(value.toString(),"https://picsum.photos/200?random=$randomNumber",value.toString())
-                            itemList.add(item)
+                            tempList.add(item)
                         }
                     }
 
@@ -98,7 +99,7 @@ class SportsmensFragment : Fragment() {
             }
         }
 
-        //itemList = (requireActivity() as MainActivity).sportsmensList
+        itemList = tempList
         size = itemList.size+1
         recyclerView = view.findViewById(R.id.recycler_sportsmens)
         layoutManager = LinearLayoutManager(activity)

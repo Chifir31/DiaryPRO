@@ -106,7 +106,6 @@ class MainActivity: AppCompatActivity()  {
             editor.putString("sportsmensList", Gson().toJson(sportsmensList))
             Log.d("check", sportsmensList.toString())
             editor.apply()
-
             //было сделано чтение из бд ^
             //user = "C" //Надо сделать чтение из бд
             val currentUser = Firebase.auth.currentUser
@@ -130,6 +129,7 @@ class MainActivity: AppCompatActivity()  {
                                 R.id.groups -> loadFragment(GroupsFragment())
                                 R.id.profile -> loadFragment(ProfileFragment())
                                 else -> {
+
                                 }
                             }
                             true

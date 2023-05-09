@@ -118,7 +118,7 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                                                     username.text.toString(),editdate.text.toString(),role,"0","")
                                                 database.child("users").child(username.text.toString().split("@")[0]).setValue(user).addOnCompleteListener {
                                                     Toast.makeText(this,"Insert done",Toast.LENGTH_LONG).show()
-                                                    Log.d("Huiy","REG")
+                                                    Log.d("R","REG")
                                                 }.addOnFailureListener{err ->
                                                     Toast.makeText(this,"Error ${err.message}",Toast.LENGTH_LONG).show()
                                                 }

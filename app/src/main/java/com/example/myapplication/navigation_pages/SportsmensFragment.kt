@@ -177,7 +177,7 @@ class SportsmensFragment : Fragment() {
                                         .child("list_of_sportsmen").push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
                                     sportsmen_list.setValue(edit.text.toString())
                                 }else{
-                                    Log.d("Huiy","User does not exist")
+                                    Log.d("S","User does not exist")
                                 }
                             }
 

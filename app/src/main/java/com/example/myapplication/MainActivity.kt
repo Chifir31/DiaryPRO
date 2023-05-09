@@ -38,7 +38,7 @@ class MainActivity: AppCompatActivity()  {
         Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
         Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
         Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
-    var temp = arrayOf<String>(
+    var temp = listOf<String>(
         "Anton",
         "Alexey")
 
@@ -152,10 +152,10 @@ class MainActivity: AppCompatActivity()  {
                 user = it.child("role").value.toString()
 
             }else{
-                Log.d("Huiy","User does not exist")
+                Log.d("F","User does not exist")
             }
         }.addOnFailureListener{
-            Log.d("Huiy","Pizdec")
+            Log.d("F","Failed fairbase")
         }
     }
     override fun onBackPressed() {

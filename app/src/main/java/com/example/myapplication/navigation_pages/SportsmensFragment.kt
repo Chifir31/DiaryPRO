@@ -215,15 +215,19 @@ class SportsmensFragment : Fragment() {
                                     val sportsmen_list = database.child("users").child(email.split("@")[0])
                                         .child("list_of_sportsmen").push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
                                     sportsmen_list.setValue(edit.text.toString())
+                                    itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
+                                    adapter.notifyItemInserted(itemList.size)
+                                    editor.putString("sportsmensList", Gson().toJson(itemList))
+                                    editor.apply()
                                 }else{
                                     Log.d("S","User does not exist")
                                 }
                             }
 
-                            itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
+                            /*itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
                             adapter.notifyItemInserted(itemList.size)
                             editor.putString("sportsmensList", Gson().toJson(itemList))
-                            editor.apply()
+                            editor.apply()*/
                             Log.d("SportsmensFragment size", adapter.itemCount.toString())
                             Log.d("SportsmensFragment elements", "Item list: $itemList")
 

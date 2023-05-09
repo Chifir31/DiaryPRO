@@ -26,8 +26,12 @@ import com.example.myapplication.R
 import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
@@ -60,7 +64,41 @@ class SportsmensFragment : Fragment() {
         val currentDate = Date()
         val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
         dateTextView.text = dateFormat.format(currentDate)
-        itemList = (requireActivity() as MainActivity).sportsmensList
+
+        //Загружаем список спортсменов
+        database = Firebase.database.reference
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email:String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+        database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
+            if (it.exists()){
+                val reference = database.child("users").child(email.split("@")[0])
+                    .child("list_of_sportsmen")
+                reference.addListenerForSingleValueEvent(object: ValueEventListener {
+                    override fun onCancelled(snapshotError: DatabaseError) {
+                        TODO("not implemented")
+                    }
+
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val random = Random()
+                        val randomNumber = random.nextInt(1000)
+                        val children = snapshot!!.children
+                        children.forEach{
+                            val value = it.getValue()
+                            val item = Item(value.toString(),"https://picsum.photos/200?random=$randomNumber",value.toString())
+                            itemList.add(item)
+                        }
+                    }
+
+                })
+            }else{
+                Log.d("S","User does not exist")
+            }
+        }
+
+        //itemList = (requireActivity() as MainActivity).sportsmensList
         size = itemList.size+1
         recyclerView = view.findViewById(R.id.recycler_sportsmens)
         layoutManager = LinearLayoutManager(activity)

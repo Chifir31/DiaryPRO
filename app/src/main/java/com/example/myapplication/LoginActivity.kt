@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
         val btn_login: Button = findViewById(R.id.LoginBtn)
         email_field = findViewById(R.id.Email_field)
         pwd_field = findViewById(R.id.Pwd_field)
-        AMLAZYTOLOGIN(true)
+        AMLAZYTOLOGIN(false)
 
         btn_register.setOnClickListener{
             val intent = Intent(this, RegisterActivity::class.java)

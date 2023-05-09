@@ -7,24 +7,37 @@
     tools:context=".navigation_pages.DiaryFragment"
     android:background="@color/black">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/date_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/gray"/>
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="@color/dark_gray"
+        app:titleTextColor="@color/gray"
+        android:layout_marginBottom="10dp">
+        <TextView
+            android:id="@+id/textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/gray"
+            android:textStyle="bold"
+            android:layout_marginStart="110dp"
+            android:text="Дневник тренировок"
+            />
+    </androidx.appcompat.widget.Toolbar>
 
     <CalendarView
         android:id="@+id/CalendarView"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/date_textview" />
+        android:layout_below="@+id/toolbar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="260dp"
         android:layout_below="@id/CalendarView"
         android:id="@+id/list"
+        android:scrollbars="vertical"
     />
 
 </RelativeLayout>

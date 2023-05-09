@@ -52,6 +52,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var calendarView: CalendarView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
+    private lateinit var stateList: ArrayMap<Char, String>
     private lateinit var date: TextView
     private var selectedDate: Date = Date()
     private var size: Int = 0
@@ -199,6 +200,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         val toolbar_text = dialogLayout.findViewById<TextView>(R.id.toolbar_text)
         val edit_btn = dialogLayout.findViewById<ImageButton>(R.id.edit_button)
         val plan = dialogLayout.findViewById<EditText>(R.id.plan_edit)
+        val status = dialogLayout.findViewById<TextView>(R.id.status_edit)
         var dateSelected = selectedDate
         toolbar_text.setText("Тренировка")
         date = dialogLayout.findViewById<TextView>(R.id.date_edit)
@@ -255,6 +257,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 1900
             )).toString()+ ' ' + tmp1?.hours.toString() + ':' + tmp1?.minutes.toString()
         )
+        status.setText(stateList[tmp?.get(position)?.itemState])
         Log.d("item", tmp.toString())
         type.setSelection(adapterspinner.getPosition(tmp?.get(position)?.text))
         Log.d("ItemDesc", tmp?.get(position)?.itemDesc.toString())
@@ -331,6 +334,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         size = itemList["Item1"]?.size ?: 0
         add_button=view.findViewById(R.id.add_btn)
         calendarView = view.findViewById(R.id.CalendarView )
+        stateList = (requireActivity() as MainActivity).statemap
         // Get the current time in milliseconds
         val currentTimeMillis = System.currentTimeMillis()
         val calendar = Calendar.getInstance()

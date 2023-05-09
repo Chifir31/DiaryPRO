@@ -14,6 +14,8 @@ data class  Sportsmen(
     var login: String? = null,
     var BirthDate: String? = null,
     var role: String? = null,
+    var height: String? = null,
+    var weight: String? = null,
     var CSS: String? = null,
     var coach: String? = null
 )

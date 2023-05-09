@@ -48,7 +48,7 @@ class SportsmensFragment : Fragment() {
     private var size : Int = 0
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
-    private lateinit var database: DatabaseReference
+    private lateinit  var database: DatabaseReference
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Set up the listener for back stack changes
@@ -66,36 +66,42 @@ class SportsmensFragment : Fragment() {
         dateTextView.text = dateFormat.format(currentDate)
 
         //Загружаем список спортсменов
-        val tempList = mutableListOf<Item>()
-        database = Firebase.database.reference
-        val currentUser = Firebase.auth.currentUser
-        lateinit var email:String
-        currentUser?.let {
-            email = it.email.toString()
-        }
-        database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
-            if (it.exists()){
-                val reference = database.child("users").child(email.split("@")[0])
-                    .child("list_of_sportsmen")
-                reference.addListenerForSingleValueEvent(object: ValueEventListener {
-                    override fun onCancelled(snapshotError: DatabaseError) {
-                        TODO("not implemented")
-                    }
-
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val random = Random()
-                        val randomNumber = random.nextInt(1000)
-                        val children = snapshot!!.children
-                        children.forEach{
-                            val value = it.getValue()
-                            val item = Item(value.toString(),"https://picsum.photos/200?random=$randomNumber",value.toString())
-                            tempList.add(item)
+        val tempList = (requireActivity() as MainActivity).sportsmensList
+        if (tempList.size == 0) {
+            //database = Firebase.database.reference
+            val currentUser = Firebase.auth.currentUser
+            lateinit var email: String
+            currentUser?.let {
+                email = it.email.toString()
+            }
+            database.child(email.split("@")[0]).get().addOnSuccessListener {
+                if (it.exists()) {
+                    val reference = database.child(email.split("@")[0])
+                        .child("list_of_sportsmen")
+                    reference.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onCancelled(snapshotError: DatabaseError) {
+                            TODO("not implemented")
                         }
-                    }
 
-                })
-            }else{
-                Log.d("S","User does not exist")
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val random = Random()
+                            val randomNumber = random.nextInt(1000)
+                            val children = snapshot!!.children
+                            children.forEach {
+                                val value = it.getValue()
+                                val item = Item(
+                                    value.toString(),
+                                    "https://picsum.photos/200?random=$randomNumber",
+                                    value.toString()
+                                )
+                                tempList.add(item)
+                            }
+                        }
+
+                    })
+                } else {
+                    Log.d("S", "User does not exist")
+                }
             }
         }
 
@@ -178,6 +184,7 @@ class SportsmensFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        database = database.child("users")
         val view = inflater.inflate(R.layout.fragment_sportsmens, container, false)
         // Inflate the layout for this fragment
         return view
@@ -199,47 +206,58 @@ class SportsmensFragment : Fragment() {
                     val randomNumber = random.nextInt(1000)
 
                     //Поиск спортсмена в бд
-                    database = Firebase.database.reference
-                    database.child("users").child(edit.text.toString()).get().addOnSuccessListener {
-                        if (it.exists()){
+                    //database = Firebase.database.reference
+                    database.child(edit.text.toString()).get().addOnSuccessListener {
+                        if (it.exists()) {
                             //user = it.child("role").value.toString()
-
-                            //Добавление спортсмена к тренеру
-                            val currentUser = Firebase.auth.currentUser
-                            lateinit var email:String
-                            currentUser?.let {
-                                email = it.email.toString()
-                            }
-                            database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
-                                if (it.exists()){
-                                    val sportsmen_list = database.child("users").child(email.split("@")[0])
-                                        .child("list_of_sportsmen").push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
-                                    sportsmen_list.setValue(edit.text.toString())
-                                    itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
-                                    adapter.notifyItemInserted(itemList.size)
-                                    editor.putString("sportsmensList", Gson().toJson(itemList))
-                                    editor.apply()
-                                }else{
-                                    Log.d("S","User does not exist")
+                            val role = it.child("role").value.toString()
+                            if (role == "S"){
+                                //Добавление спортсмена к тренеру
+                                val currentUser = Firebase.auth.currentUser
+                                lateinit var email: String
+                                currentUser?.let {
+                                    email = it.email.toString()
                                 }
-                            }
+                                database.child(email.split("@")[0]).get()
+                                    .addOnSuccessListener {
+                                        if (it.exists()) {
+                                            val sportsmen_list =
+                                                database.child(email.split("@")[0])
+                                                    .child("list_of_sportsmen")
+                                                    .push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
+                                            sportsmen_list.setValue(edit.text.toString())
+                                            itemList.add(
+                                                Item(
+                                                    edit.text.toString(),
+                                                    "https://picsum.photos/200?random=$randomNumber",
+                                                    "Item " + (size++).toString()
+                                             )
+                                            )
+                                            adapter.notifyItemInserted(itemList.size)
+                                            editor.putString("sportsmensList", Gson().toJson(itemList))
+                                            editor.apply()
+                                        } else {
+                                            Log.d("S", "User does not exist")
+                                        }
+                                    }
 
                             /*itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
                             adapter.notifyItemInserted(itemList.size)
                             editor.putString("sportsmensList", Gson().toJson(itemList))
                             editor.apply()*/
-                            Log.d("SportsmensFragment size", adapter.itemCount.toString())
-                            Log.d("SportsmensFragment elements", "Item list: $itemList")
+                                Log.d("SportsmensFragment size", adapter.itemCount.toString())
+                                Log.d("SportsmensFragment elements", "Item list: $itemList")
 
+                            }
                         }else{
-                            Log.d("Huiy","No sportsmen with such login")//Добавить вывод сообщения об ошибки
+                            Log.d("H","No sportsmen with such login")//Добавить вывод сообщения об ошибки
                         }
                     }
 
-                    itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
+                    /*itemList.add(Item(edit.text.toString(), "https://picsum.photos/200?random=$randomNumber", "Item "+(size++).toString()))
                     adapter.notifyItemInserted(itemList.size)
                     editor.putString("sportsmensList", Gson().toJson(itemList))
-                    editor.apply()
+                    editor.apply()*/
                     Log.d("SportsmensFragment size", adapter.itemCount.toString())
                     Log.d("SportsmensFragment elements", "Item list: $itemList")
                 }//Log.d("Main","Positive")}

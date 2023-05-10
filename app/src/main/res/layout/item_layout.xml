@@ -26,6 +26,7 @@
             android:id="@+id/item_text"
             android:layout_toRightOf="@id/item_image"
             android:layout_width="210dp"
+            android:layout_marginStart="10dp"
             android:paddingVertical="30dp"
             android:textColor="@color/gray"
             android:textStyle="bold"

@@ -15,9 +15,11 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
             android:id="@+id/toolbar_text"
-
+            android:textSize="20sp"
+            android:textStyle="bold"
             android:textColor="@color/gray"
             android:text="Дневник тренировок"/>
     </androidx.appcompat.widget.Toolbar>
@@ -37,14 +39,21 @@
         android:layout_height="350sp"
         >
     </androidx.recyclerview.widget.RecyclerView>
-    <TextView
-        android:id="@+id/add_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/recycler_sportsmens_dialog"
-        android:layout_centerHorizontal="true"
-        android:background="@android:color/transparent"
-        android:text="Добавить тренировку"
-        android:textSize="20sp"
-        android:textColor="@color/red" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginBottom="25dp"
+        android:layout_alignParentBottom="true">
+        <TextView
+            android:id="@+id/add_btn"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:background="@android:color/transparent"
+            android:paddingVertical="25dp"
+            android:text="Добавить тренировку"
+            android:textSize="20sp"
+            android:textColor="@color/red" />
+    </LinearLayout>
 </RelativeLayout>

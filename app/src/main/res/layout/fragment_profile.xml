@@ -180,13 +180,16 @@
     </LinearLayout>
     <TextView
         android:id="@+id/logout_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:background="@android:color/transparent"
+        android:textSize="20sp"
+        android:paddingVertical="25dp"
         android:text="Выйти"
         android:textColor="@color/red"
-        android:layout_marginBottom="190sp"/>
+        android:layout_marginBottom="90sp"/>
 
 </RelativeLayout>

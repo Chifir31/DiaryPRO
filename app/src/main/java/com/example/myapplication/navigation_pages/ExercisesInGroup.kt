@@ -111,7 +111,7 @@ class ExercisesInGroup : Fragment() {
         toolbar_text.setText("Изменение тренировки")
         date = dialogLayout.findViewById<TextView>(R.id.date_edit)
         val plan = dialogLayout.findViewById<EditText>(R.id.plan_edit)
-        val array = arrayOf("Плавание", "Интервальный бег", "Езда на велосипеде", "Лыжи", "ОФП")
+        val array = arrayOf("Плавание", "Бег", "Езда на велосипеде", "Лыжи", "ОФП")
         val adapterspinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
         // Set the adapter for the Spinner
         type.adapter = adapterspinner
@@ -176,7 +176,7 @@ class ExercisesInGroup : Fragment() {
             val sportsmen = dialogLayout.findViewById<TextView>(R.id.sportsmen_edit)
             date = dialogLayout.findViewById<TextView>(R.id.date_edit)
             val plan = dialogLayout.findViewById<EditText>(R.id.plan_edit)
-            val array = arrayOf("Плавание", "Интервальный бег", "Езда на велосипеде", "Лыжи", "ОФП")
+            val array = arrayOf("Плавание", "Бег", "Езда на велосипеде", "Лыжи", "ОФП")
             val adapterspinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
             // Set the adapter for the Spinner
             type.adapter = adapterspinner

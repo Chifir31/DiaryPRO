@@ -117,7 +117,7 @@ class DiaryFragment : Fragment() {
 
         toolbar_text.setText("Тренировка")
         date = dialogLayout.findViewById<TextView>(R.id.date_edit)
-        val array = arrayOf("Плавание", "Интервальный бег", "Езда на велосипеде", "Лыжи", "ОФП")
+        val array = arrayOf("Плавание", "Бег", "Езда на велосипеде", "Лыжи", "ОФП")
         val adapterspinner =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
         // Set the adapter for the Spinner

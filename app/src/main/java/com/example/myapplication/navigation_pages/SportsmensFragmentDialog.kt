@@ -27,6 +27,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
@@ -60,6 +66,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
     private lateinit var mainActivity: MainActivity
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
+    private lateinit var database: DatabaseReference
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -168,6 +175,15 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                             )
                         )
                     }
+                    database.child("Exercise").child(param1.toString()).setValue(Exercise(
+                        type.selectedItem.toString(),
+                        "https://picsum.photos/200?random=$randomNumber",
+                        dateSelected,
+                        plan.text.toString(),
+                        'p',
+                        "",
+                        "Item " + (size++).toString())
+                    )
                     editor.putString("exerciseList", Gson().toJson(itemList))
                     editor.apply()
                     adapter = AdapterExercise(itemList[param2]?.filter {
@@ -322,7 +338,41 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         super.onViewCreated(view, savedInstanceState)
         preferences= requireContext().getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
         editor= preferences.edit()
-        itemList = (requireActivity() as MainActivity).exerciseList
+
+        val tempList = ArrayMap<String, MutableList<Exercise>>()
+        database = Firebase.database.reference
+        database.child("Exercise").child(param1.toString())
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(snapshotError: DatabaseError) {
+                    TODO("not implemented")
+                }
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val children = snapshot!!.children
+                    children!!.forEach{
+                        if(tempList[param2]==null){
+                            var newsize = size++
+                            itemList.apply {
+                                put(
+                                    param2.toString(),
+                                    mutableListOf(
+                                        it.getValue() as Exercise
+                                    )
+                                )
+
+                            }
+                        }
+                        else {
+                            itemList[param2]?.add(
+                                it.getValue() as Exercise
+                            )
+                        }
+                    }
+                }
+            }
+            )
+
+        itemList = tempList
         //Log.d("Check param", param1.toString() + " "+ param2.toString())
         //Log.d("Check getting list\n", itemList[param2].toString())
         toolbar = view.findViewById(R.id.toolbar)

@@ -35,7 +35,7 @@ class ExerciseFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
     private lateinit var itemList1: MutableList<Exercise>
-    private lateinit var stateList: ArrayMap<Char, String>
+    private lateinit var stateList: ArrayMap<String, String>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

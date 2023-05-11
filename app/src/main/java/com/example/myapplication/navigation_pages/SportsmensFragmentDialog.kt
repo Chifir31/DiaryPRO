@@ -153,7 +153,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                                         "https://picsum.photos/200?random=$randomNumber",
                                         dateSelected,
                                         plan.text.toString(),
-                                        'p',
+                                        "p",
                                         "",
                                         "Item " + (newsize).toString()
                                     )
@@ -169,7 +169,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                                 "https://picsum.photos/200?random=$randomNumber",
                                 dateSelected,
                                 plan.text.toString(),
-                                'p',
+                                "p",
                                 "",
                                 "Item " + (size++).toString()
                             )
@@ -180,7 +180,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                         "https://picsum.photos/200?random=$randomNumber",
                         dateSelected,
                         plan.text.toString(),
-                        'p',
+                        "p",
                         "",
                         "Item " + (size++).toString())
                     )

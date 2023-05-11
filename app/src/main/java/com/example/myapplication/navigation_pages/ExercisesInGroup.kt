@@ -200,7 +200,7 @@ class ExercisesInGroup : Fragment() {
                 setPositiveButton("Добавить"){dialog, which->
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
-                    itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.text.toString(),'p', "", "Item "+(size++).toString()))
+                    itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.text.toString(),"p", "", "Item "+(size++).toString()))
                     adapter = AdapterExercise(itemList[param2]?.filter {
                         val calendar = Calendar.getInstance()
                         calendar.time = it.itemDate

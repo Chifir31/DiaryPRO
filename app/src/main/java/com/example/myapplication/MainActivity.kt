@@ -67,11 +67,11 @@ class MainActivity: AppCompatActivity()  {
     lateinit var profileList: ArrayMap<String, String>
     var user = "C"
 
-    var statemap = ArrayMap<Char, String>().apply {
-        put('p', "Запланирована")
-        put('c',"Выполнена")
-        put('h', "Выполнена частично")
-        put('f', "Не выполнена")
+    var statemap = ArrayMap<String, String>().apply {
+        put("p", "Запланирована")
+        put("c","Выполнена")
+        put("h", "Выполнена частично")
+        put("f", "Не выполнена")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

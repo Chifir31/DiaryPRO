@@ -53,7 +53,7 @@ class ExerciseFragmentDialog : Fragment() {
     private lateinit var comment1_text: TextView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
     private lateinit var itemList1: MutableList<Exercise>
-    private lateinit var stateList: ArrayMap<Char, String>
+    private lateinit var stateList: ArrayMap<String, String>
     private var param1: String? = null
     private var param2: String? = null
     private var param3: Int? = null
@@ -133,12 +133,12 @@ class ExerciseFragmentDialog : Fragment() {
         toolbar_text.setText(param1.toString())
         plan.setText(param3?.let { itemList1.get(it).itemDesc}.toString())
         state.setText(stateList[param3?.let { itemList1.get(it).itemState }].toString())
-        if(param3?.let { itemList1.get(it).itemState }!='p'){
+        if(param3?.let { itemList1.get(it).itemState }!="p"){
             comment1.isVisible=true
             comment1.setText(param3?.let { itemList1.get(it).itemCom}.toString())
             comment1_text.isVisible=true
         }
-        val array = arrayOf(stateList['c'], stateList['h'], stateList['f'])
+        val array = arrayOf(stateList["c"], stateList["h"], stateList["f"])
         val adapterspinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
         // Set the adapter for the Spinner
         type.adapter = adapterspinner

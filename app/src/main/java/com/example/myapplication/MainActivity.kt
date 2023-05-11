@@ -46,20 +46,20 @@ class MainActivity: AppCompatActivity()  {
         Group("Item 1", "Item 1", temp),
         Group("Item 2", "Item 2", temp)
     )
-/*
+
     var tmp = arrayListOf<Exercise>(
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", 'p', "", "Item 1"),
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", 'p', "", "Item 2"),
+        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", 'p', "", "Item 2"),
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", 'p', "", "Item 3"))
     var tmp1 = arrayListOf<Exercise>(
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", 'p', "", "Item 1"),
+        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", 'p', "", "Item 1"),
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date(), "DO IT", 'p', "", "Item 2"),
-        Exercise("Интервальный бег", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAPATA", 'p', "", "Item 3")
+        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAPATA", 'p', "", "Item 3")
     )
     var exerciseList1 = ArrayMap<String, MutableList<Exercise>>().apply{
         put("Item 1", tmp)
         put("Item 2", tmp1)
-    }*/
+    }
 
     lateinit var preferences: SharedPreferences
     lateinit var sportsmensList: MutableList<Item>
@@ -78,10 +78,10 @@ class MainActivity: AppCompatActivity()  {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
         val sportsmensListJson = (preferences.getString("sportsmensList", null))
-        //var editor = preferences.edit()
-        //editor.putString("exerciseList", Gson().toJson(exerciseList1))
+        var editor = preferences.edit()
+        editor.putString("exerciseList", Gson().toJson(exerciseList1))
         //editor.putBoolean("isLoggedIn", false)
-        //editor.apply()
+        editor.apply()
         sportsmensList = sportsmensListJson?.let {
             Gson().fromJson<MutableList<Item>>(it, object : TypeToken<ArrayList<Item>>() {}.type)
         } ?: arrayListOf()

@@ -56,7 +56,9 @@
         android:id="@+id/type_edit"
         android:layout_below="@id/type_text"
         android:textColor="@color/gray"
-        android:textSize="20sp"
+        android:textSize="17sp"
+        android:gravity="center_vertical"
+        android:paddingStart="7dp"
         android:background="@color/dark_gray"
         android:popupBackground="@color/black"
         />
@@ -74,9 +76,11 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:id="@+id/sportsmen_edit"
+        android:paddingStart="20dp"
+        android:gravity="center_vertical"
         android:layout_below="@id/sportsmen_text"
         android:textColor="@color/gray"
-        android:textSize="20sp"
+        android:textSize="17sp"
         android:background="@color/dark_gray"
         />
     <TextView
@@ -94,8 +98,10 @@
         android:layout_height="40dp"
         android:id="@+id/date_edit"
         android:layout_below="@id/date_text"
+        android:gravity="center_vertical"
+        android:paddingStart="20dp"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="17sp"
         android:background="@color/dark_gray"
         />
     <TextView
@@ -113,6 +119,9 @@
         android:layout_height="110dp"
         android:id="@+id/plan_edit"
         android:layout_below="@id/plan_text"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:textSize="17sp"
         android:textColor="@color/white"
         android:background="@color/dark_gray"
         />

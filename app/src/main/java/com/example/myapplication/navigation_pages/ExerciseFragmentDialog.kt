@@ -125,7 +125,7 @@ class ExerciseFragmentDialog : Fragment() {
         stateList = (requireActivity() as MainActivity).statemap
         itemList1 = (itemList["Item 1"]?.filter {
             val calendar = Calendar.getInstance()
-            calendar.time = it.itemDate
+            calendar.time = Date(it.itemDate)
             calendar.get(Calendar.DAY_OF_MONTH) == date.date &&
                     calendar.get(Calendar.MONTH) == date.month &&
                     calendar.get(Calendar.YEAR) == date.year+1900

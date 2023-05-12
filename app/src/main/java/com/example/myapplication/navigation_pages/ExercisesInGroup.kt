@@ -131,7 +131,7 @@ class ExercisesInGroup : Fragment() {
             dpd.datePicker.minDate = calendar.timeInMillis
             dpd.show()
         }
-        var tmp = itemList[param2]?.get(position)?.itemDate
+        var tmp = Date(itemList[param2]?.get(position)?.itemDate)
         date.setText(tmp?.date.toString()+'.'+tmp?.month.toString()+'.'+(tmp?.year?.plus(1900)).toString())
         Log.d("item",itemList[param2].toString())
         type.setSelection(adapterspinner.getPosition(itemList[param2]?.get(position)?.text))
@@ -143,14 +143,14 @@ class ExercisesInGroup : Fragment() {
                 val randomNumber = random.nextInt(1000)
                 itemList[param2]?.get(position)?.text = type.selectedItem.toString()
                 itemList[param2]?.get(position)?.img = "https://picsum.photos/200?random=$randomNumber"
-                itemList[param2]?.get(position)?.itemDate = dateSelected
+                itemList[param2]?.get(position)?.itemDate = dateSelected.toString()
                 itemList[param2]?.get(position)?.itemDesc = plan.text.toString()
                 itemList[param2]?.get(position)?.itemId = "Item "+(size++).toString()
                 //(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString())
                 //itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString()))
                 adapter = AdapterExercise(itemList[param2]?.filter {
                     val calendar = Calendar.getInstance()
-                    calendar.time = it.itemDate
+                    calendar.time = Date(it.itemDate)
                     calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                             calendar.get(Calendar.MONTH) == selectedDate.month &&
                             calendar.get(Calendar.YEAR) == selectedDate.year+1900
@@ -200,10 +200,10 @@ class ExercisesInGroup : Fragment() {
                 setPositiveButton("Добавить"){dialog, which->
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
-                    itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.text.toString(),"p", "", "Item "+(size++).toString()))
+                    itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected.toString(), plan.text.toString(),"p", "", "Item "+(size++).toString()))
                     adapter = AdapterExercise(itemList[param2]?.filter {
                         val calendar = Calendar.getInstance()
-                        calendar.time = it.itemDate
+                        calendar.time = Date(it.itemDate)
                         calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                                 calendar.get(Calendar.MONTH) == selectedDate.month &&
                                 calendar.get(Calendar.YEAR) == selectedDate.year+1900
@@ -278,16 +278,16 @@ class ExercisesInGroup : Fragment() {
                 set(year, month, dayOfMonth)
             }.time
             val calendar = Calendar.getInstance()
-            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
+            calendar.time = Date(itemList[param2]?.get(0)?.itemDate) ?: Date()
             Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
             Log.d("list", (itemList[param2]?.filter {
-                calendar.time = it.itemDate
+                calendar.time = Date(it.itemDate)
                 calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                         calendar.get(Calendar.MONTH) == selectedDate.month /*&&
                         calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
             adapter = AdapterExercise(itemList[param2]?.filter {
                 val calendar = Calendar.getInstance()
-                calendar.time = it.itemDate
+                calendar.time = Date(it.itemDate)
                 calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                         calendar.get(Calendar.MONTH) == selectedDate.month &&
                         calendar.get(Calendar.YEAR) == selectedDate.year+1900
@@ -304,7 +304,7 @@ class ExercisesInGroup : Fragment() {
         layoutManager = LinearLayoutManager(activity)
         adapter = AdapterExercise(itemList[param2]?.filter {
             val calendar = Calendar.getInstance()
-            calendar.time = it.itemDate
+            calendar.time = Date(it.itemDate)
             calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                     calendar.get(Calendar.MONTH) == selectedDate.month/* &&
                     calendar.get(Calendar.YEAR) == selectedDate.year*/

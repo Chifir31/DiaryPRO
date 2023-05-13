@@ -518,14 +518,18 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
         adapter_calendar.fillWeekList(Calendar.getInstance())
     }
 
-    override fun onClick(day: String) {
-        val dayOfWeek = 2; // Monday
-        val now = Calendar.getInstance()
-        val weekday = now.get(Calendar.DAY_OF_WEEK)
+    override fun onClick(day: Date) {
         val fullDate = view?.findViewById<TextView>(R.id.full_date)
+
+        // Получение выбранной даты
+        var dateStr = SimpleDateFormat("d MMM yyyy, EE", Locale("ru")).format(day)
+        Log.d("Variant 1:", dateStr)
+
         if (fullDate != null) {
-            fullDate.text = day
+            fullDate.text = dateStr
         }
-        Log.d("click", day)
+
+        dateStr = SimpleDateFormat("dd.MM.yy", Locale("ru")).format(day)
+        Log.d("Variant 2:", dateStr)
     }
 }

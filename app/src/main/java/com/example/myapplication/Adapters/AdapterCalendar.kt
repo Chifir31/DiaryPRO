@@ -13,16 +13,16 @@ import kotlin.collections.ArrayList
 
 
 class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCalendar.CalendarViewHolder>() {
-    val weekList = ArrayList<String>()
+    val weekList = ArrayList<Date>()
     var currentMonday = 0
     class CalendarViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val binding = CalendarCellBinding.bind(itemView)
-        fun bind (day: String, listener: Listener) = with(binding){
-            val current_day: String = day[0].toString() + day[1].toString()
-            cellDayText.text = current_day
+        fun bind (day: Date, listener: Listener) = with(binding){
+            val date = day.getTime()
+            val dateStr = SimpleDateFormat("dd", Locale("ru")).format(date)
+            cellDayText.text = dateStr
             itemView.setOnClickListener {
                 listener.onClick(day)
-                //itemView.setBackgroundResource(R.color.teal_200)
             }
         }
     }
@@ -71,54 +71,17 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
 
         val days = dayOfWeek - weekday + currentMonday;
         now.add(Calendar.DAY_OF_YEAR, days)
-        var date = now.getTime()
-        var dateStr = SimpleDateFormat("dd MMM yyyy, EE", Locale("ru")).format(date)
-        weekList.add(dateStr)
+        val date = now.getTime()
+        weekList.add(date)
         (1..6).forEach {
             now.add(Calendar.DAY_OF_YEAR, +1)
-            date = now.getTime()
-            dateStr = SimpleDateFormat("dd MMM yyyy, EE", Locale("ru")).format(date)
-            weekList.add(dateStr)
+            val date = now.getTime()
+            weekList.add(date)
         }
         notifyDataSetChanged()
     }
 
     interface Listener{
-        fun onClick(day: String)
+        fun onClick(day: Date)
     }
 }
-
-//class MainActivity : AppCompatActivity(), CalendarRecycleAdapter.Listener{
-//    lateinit var binding: ActivityMainBinding
-//    private val adapter = CalendarRecycleAdapter(this)
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//        initCalendar()
-//    }
-//
-//    private fun initCalendar(){
-//
-//        val dateFormat = SimpleDateFormat("d MMM yyyy, EE", Locale("ru"))
-//        val date = dateFormat.format(Date())
-//
-//        binding.apply {
-//            calendarRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
-//            calendarRecyclerView.adapter = adapter
-//            fullDate.text = date
-//            prevWeek.setOnClickListener{ adapter.previousWeekAction() }
-//            nextWeek.setOnClickListener { adapter.nextWeekAction() }
-//            adapter.fillWeekList(Calendar.getInstance())
-//        }
-//    }
-//
-//    override fun onClick(day: String) {
-//        val dayOfWeek = 2; // Monday
-//        val now = Calendar.getInstance()
-//        val weekday = now.get(Calendar.DAY_OF_WEEK)
-//        binding.fullDate.text = day
-//    }
-//
-//}

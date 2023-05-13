@@ -1,13 +1,9 @@
 package com.example.myapplication.Adapters
 
 
-import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.databinding.CalendarCellBinding
@@ -16,7 +12,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class CalendarRecycleAdapter(val listener: Listener) : RecyclerView.Adapter<CalendarRecycleAdapter.CalendarViewHolder>() {
+class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCalendar.CalendarViewHolder>() {
     val weekList = ArrayList<String>()
     var currentMonday = 0
     class CalendarViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
@@ -45,23 +41,7 @@ class CalendarRecycleAdapter(val listener: Listener) : RecyclerView.Adapter<Cale
         return weekList.size
     }
 
-    fun fillWeekList(now: Calendar){
-        val dayOfWeek = 2; // Monday
-        val weekday = now.get(Calendar.DAY_OF_WEEK)
 
-        val days = dayOfWeek - weekday + currentMonday;
-        now.add(Calendar.DAY_OF_YEAR, days)
-        var date = now.getTime()
-        var dateStr = SimpleDateFormat("dd MMM yyyy, EE", Locale("ru")).format(date)
-        weekList.add(dateStr)
-        (1..6).forEach {
-            now.add(Calendar.DAY_OF_YEAR, +1)
-            date = now.getTime()
-            dateStr = SimpleDateFormat("dd MMM yyyy, EE", Locale("ru")).format(date)
-            weekList.add(dateStr)
-        }
-        notifyDataSetChanged()
-    }
 
     fun previousWeekAction() {
         weekList.clear()
@@ -83,6 +63,24 @@ class CalendarRecycleAdapter(val listener: Listener) : RecyclerView.Adapter<Cale
         if (days < 0) currentMonday += 7
         now.add(Calendar.DAY_OF_YEAR, days)
         fillWeekList(now)
+    }
+
+    fun fillWeekList(now: Calendar){
+        val dayOfWeek = 2; // Monday
+        val weekday = now.get(Calendar.DAY_OF_WEEK)
+
+        val days = dayOfWeek - weekday + currentMonday;
+        now.add(Calendar.DAY_OF_YEAR, days)
+        var date = now.getTime()
+        var dateStr = SimpleDateFormat("dd MMM yyyy, EE", Locale("ru")).format(date)
+        weekList.add(dateStr)
+        (1..6).forEach {
+            now.add(Calendar.DAY_OF_YEAR, +1)
+            date = now.getTime()
+            dateStr = SimpleDateFormat("dd MMM yyyy, EE", Locale("ru")).format(date)
+            weekList.add(dateStr)
+        }
+        notifyDataSetChanged()
     }
 
     interface Listener{

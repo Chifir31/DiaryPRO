@@ -1,7 +1,6 @@
 package com.example.myapplication.navigation_pages
 
 import AdapterExercise
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -20,16 +19,17 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.Adapters.AdapterCalendar
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.myapplication.databinding.CalendarCellBinding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -41,7 +41,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [SportsmensFragmentDialog.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener {
+class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener, AdapterCalendar.Listener {
     private lateinit var toolbar: Toolbar
     private lateinit var toolbar_text: TextView
     private lateinit var dateTextView: TextView
@@ -50,7 +50,6 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: AdapterExercise
     private lateinit var layoutManager: RecyclerView.LayoutManager
-    private lateinit var calendarView: CalendarView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
     private lateinit var stateList: ArrayMap<Char, String>
     private lateinit var date: TextView
@@ -61,6 +60,15 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
     private lateinit var mainActivity: MainActivity
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
+
+    lateinit var binding: CalendarCellBinding
+    private lateinit var layoutManager_calendar: RecyclerView.LayoutManager
+    private lateinit var calendarView: RecyclerView
+    private var adapter_calendar = AdapterCalendar(this)
+    private lateinit var calendarView1: CalendarView
+    private lateinit var fullDate: TextView
+    private lateinit var prevWeek: Button
+    private lateinit var nextWeek: Button
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -311,6 +319,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        binding = CalendarCellBinding.inflate(layoutInflater)
     }
 
     override fun onCreateView(
@@ -333,44 +342,47 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         toolbar_text.setText("Дневник тренировок\n"+param1.toString())
         size = itemList["Item1"]?.size ?: 0
         add_button=view.findViewById(R.id.add_btn)
-        calendarView = view.findViewById(R.id.CalendarView )
+
+        calendarView = view.findViewById(R.id.CalendarView)
+        initCalendar()
+
         stateList = (requireActivity() as MainActivity).statemap
         // Get the current time in milliseconds
         val currentTimeMillis = System.currentTimeMillis()
         val calendar = Calendar.getInstance()
         val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-
         // Calculate the start and end times for the current week
         val daysFromMonday = if (currentDayOfWeek == Calendar.SUNDAY) 6 else currentDayOfWeek - 2
         val weekStart = currentTimeMillis - daysFromMonday * 24 * 60 * 60 * 1000
         val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
         // Set the minimum and maximum dates for the calendar view to show only the current week
-        calendarView.minDate = weekStart
-        calendarView.maxDate = weekEnd
-        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            selectedDate = Calendar.getInstance().apply {
-                set(year, month, dayOfMonth)
-            }.time
-            val calendar = Calendar.getInstance()
-            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
-            Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
-            Log.d("list", (itemList[param2]?.filter {
-                calendar.time = it.itemDate
-                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                        calendar.get(Calendar.MONTH) == selectedDate.month /*&&
-                        calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
-            adapter = AdapterExercise(itemList[param2]?.filter {
-                val calendar = Calendar.getInstance()
-                calendar.time = it.itemDate
-                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                        calendar.get(Calendar.MONTH) == selectedDate.month &&
-                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
-            } as MutableList<Exercise>?)
-            adapter.notifyDataSetChanged()
-            recyclerView.adapter = adapter
-            setupListeners()
 
-        }
+        //calendarView.minDate = weekStart
+        //calendarView.maxDate = weekEnd
+//        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+//            selectedDate = Calendar.getInstance().apply {
+//                set(year, month, dayOfMonth)
+//            }.time
+//            val calendar = Calendar.getInstance()
+//            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
+//            Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
+//            Log.d("list", (itemList[param2]?.filter {
+//                calendar.time = it.itemDate
+//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+//                        calendar.get(Calendar.MONTH) == selectedDate.month /*&&
+//                        calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
+//            adapter = AdapterExercise(itemList[param2]?.filter {
+//                val calendar = Calendar.getInstance()
+//                calendar.time = it.itemDate
+//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+//                        calendar.get(Calendar.MONTH) == selectedDate.month &&
+//                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
+//            } as MutableList<Exercise>?)
+//            adapter.notifyDataSetChanged()
+//            recyclerView.adapter = adapter
+//            setupListeners()
+//
+//        }
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         setHasOptionsMenu(true)
@@ -488,5 +500,31 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 EditWindow(position)
             }
         })
+    }
+    private fun initCalendar(){
+
+        val dateFormat = SimpleDateFormat("d MMM yyyy, EE", Locale("ru"))
+        val date = dateFormat.format(Date())
+        val CalendarView = layoutInflater.inflate(R.layout.calendar, null)
+        fullDate =  CalendarView.findViewById<TextView>(R.id.full_date)
+        prevWeek =   CalendarView.findViewById<Button>(R.id.prevWeek)
+        nextWeek =  CalendarView.findViewById<Button>(R.id.nextWeek)
+
+        binding.apply {
+            calendarView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
+            calendarView.adapter = adapter_calendar
+            fullDate.text = date
+            prevWeek.setOnClickListener{ adapter_calendar.previousWeekAction() }
+            nextWeek.setOnClickListener { adapter_calendar.nextWeekAction() }
+            adapter_calendar.fillWeekList(Calendar.getInstance())
+        }
+    }
+
+    override fun onClick(day: String) {
+        val dayOfWeek = 2; // Monday
+        val now = Calendar.getInstance()
+        val weekday = now.get(Calendar.DAY_OF_WEEK)
+        binding.cellDayText.text = day
+        Log.d("Click", "Click")
     }
 }

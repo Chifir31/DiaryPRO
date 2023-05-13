@@ -106,17 +106,17 @@ class DiaryFragment : Fragment() {
     fun EditWindow(position: Int){
         val builder = AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen)
         val inflater = requireActivity().layoutInflater
-        val dialogLayout = inflater.inflate(R.layout.sportsmens_dialog_input, null)
+        val dialogLayout = inflater.inflate(R.layout.fragment_diary_dialog, null)
         val type = dialogLayout.findViewById<Spinner>(R.id.type_edit)
-        val sportsmen = dialogLayout.findViewById<TextView>(R.id.sportsmen_edit)
+        //val sportsmen = dialogLayout.findViewById<TextView>(R.id.sportsmen_edit)
         val toolbar_text = dialogLayout.findViewById<TextView>(R.id.toolbar_text)
         val edit_btn = dialogLayout.findViewById<ImageButton>(R.id.edit_button)
-        val plan = dialogLayout.findViewById<EditText>(R.id.plan_edit)
+        val plan = dialogLayout.findViewById<TextView>(R.id.plan_edit)
         var dateSelected = selectedDate
-        val status = dialogLayout.findViewById<TextView>(R.id.status_edit)
+        //val status = dialogLayout.findViewById<TextView>(R.id.status_edit)
 
         toolbar_text.setText("Тренировка")
-        date = dialogLayout.findViewById<TextView>(R.id.date_edit)
+        date = dialogLayout.findViewById(R.id.date_edit)
         val array = arrayOf("Плавание", "Бег", "Езда на велосипеде", "Лыжи", "ОФП")
         val adapterspinner =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
@@ -129,7 +129,7 @@ class DiaryFragment : Fragment() {
         }
         state(false)
         type.adapter = adapterspinner
-        sportsmen.text = param2.toString()
+        //sportsmen.text = param2.toString()
         val calendar = Calendar.getInstance()
         val year = calendar.get(android.icu.util.Calendar.YEAR)
         val month = calendar.get(android.icu.util.Calendar.MONTH)
@@ -139,15 +139,8 @@ class DiaryFragment : Fragment() {
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                     calendar.set(year, monthOfYear, dayOfMonth)
-                    val tpd = TimePickerDialog(requireContext(), TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                        val minuteInterval = (minute + 7) / 15 * 15
-                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                        calendar.set(Calendar.MINUTE, minuteInterval)
                         dateSelected = calendar.time
-                        date.text = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(dateSelected!!)
-                        date.setError(null)
-                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),true)
-                    tpd.show()
+                        date.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(dateSelected!!)
                     date.setError(null)
                 },
                 year,
@@ -170,7 +163,7 @@ class DiaryFragment : Fragment() {
                 1900
             )).toString()+ ' ' + tmp1?.hours.toString() + ':' + tmp1?.minutes.toString()
         )
-        status.setText(stateList[tmp?.get(position)?.itemState])
+        //status.setText(stateList[tmp?.get(position)?.itemState])
         Log.d("item", tmp.toString())
         type.setSelection(adapterspinner.getPosition(tmp?.get(position)?.text))
         Log.d("ItemDesc", tmp?.get(position)?.itemDesc.toString())

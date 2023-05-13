@@ -3,7 +3,6 @@ package com.example.myapplication.navigation_pages
 import AdapterExercise
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Canvas
@@ -119,15 +118,9 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             date.setOnClickListener{
                 val dpd = DatePickerDialog(requireContext(), DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                 calendar.set(year, monthOfYear, dayOfMonth)
-                val tpd = TimePickerDialog(requireContext(), TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                    val minuteInterval = (minute + 7) / 15 * 15
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                    calendar.set(Calendar.MINUTE, minuteInterval)
                     dateSelected = calendar.time
-                    date.text = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(dateSelected!!)
+                    date.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(dateSelected!!)
                     date.setError(null)
-                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),true)
-                tpd.show()
             }, year, month, day)
                 dpd.datePicker.minDate = calendar.timeInMillis
                 dpd.show()
@@ -226,15 +219,8 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                     calendar.set(year, monthOfYear, dayOfMonth)
-                    val tpd = TimePickerDialog(requireContext(), TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                        val minuteInterval = (minute + 7) / 15 * 15
-                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                        calendar.set(Calendar.MINUTE, minuteInterval)
                         dateSelected = calendar.time
-                        date.text = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(dateSelected!!)
-                        date.setError(null)
-                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),true)
-                    tpd.show()
+                        date.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(dateSelected!!)
                     date.setError(null)
                 },
                 year,
@@ -255,7 +241,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         date.setText(
             tmp1?.date.toString() + '.' + tmp1?.month.toString() + '.' + (tmp1?.year?.plus(
                 1900
-            )).toString()+ ' ' + tmp1?.hours.toString() + ':' + tmp1?.minutes.toString()
+            )).toString()
         )
         status.setText(stateList[tmp?.get(position)?.itemState])
         Log.d("item", tmp.toString())
@@ -380,8 +366,8 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             val calendar = Calendar.getInstance()
             calendar.time = it.itemDate
             calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                    calendar.get(Calendar.MONTH) == selectedDate.month/* &&
-                    calendar.get(Calendar.YEAR) == selectedDate.year*/
+                    calendar.get(Calendar.MONTH) == selectedDate.month &&
+                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
         } as MutableList<Exercise>?)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
@@ -391,7 +377,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
                 // disable item removal based on swipe gesture
-                return Float.MAX_VALUE
+                return 0.5f
             }
             override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
                 val dragFlags = 0
@@ -405,6 +391,10 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             ): Boolean {
                 // Do nothing, we don't support drag and drop
                 return false
+            }
+            override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
+                // Adjust the swipe velocity threshold here (default is 2000f)
+                return 1000f
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -433,21 +423,29 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             ) {//Log.d("SportsmensFragment", "onChildDraw called")
 
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    // Set the delete button visibility based on the swipe direction
+                    // Adjust the maximum swipe distance here
+                    val maxSwipeDistance = 400f  // Set your desired distance
                     //Log.d("SportsmensFragment", "onChildDraw surely called")
                     val itemView = viewHolder.itemView
-                    itemView.translationY = 0f
-                    //l
+                    val itemPosition = viewHolder.absoluteAdapterPosition
                     val deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
-                    itemView.translationX = dX
-                    // Draw the swipe background color
-//                    if(dX>0)
-//                      deleteBtn.visibility=VISIBLE
-//                    else
-//                        deleteBtn.visibility=GONE
+                    // Set the delete button visibility based on the swipe direction
+                    if (dX > 0) {
+                        deleteBtn.visibility = VISIBLE
+                    } else if (dX <= 0) {
+                        deleteBtn.visibility = GONE
+                    }
+                    //In case when deleteButton still in set when swipe to the right was weak
+                    if(adapter.getVisibility(itemPosition))
+                        deleteBtn.visibility = VISIBLE
 
-                }
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    // Restrict the item movement to the defined maximum swipe distance
+                    val limitedDX = when {
+                        dX > maxSwipeDistance -> maxSwipeDistance
+                        dX < -maxSwipeDistance -> -maxSwipeDistance
+                        else -> dX
+                    }
+                    super.onChildDraw(c, recyclerView, viewHolder, limitedDX, dY, actionState, isCurrentlyActive)}
             }
         }
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)

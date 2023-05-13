@@ -316,8 +316,7 @@ class ExercisesInGroup : Fragment() {
         setupListeners()
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-                // disable item removal based on swipe gesture
-                return Float.MAX_VALUE
+                return 0.5f
             }
             override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
                 val dragFlags = 0
@@ -331,6 +330,11 @@ class ExercisesInGroup : Fragment() {
             ): Boolean {
                 // Do nothing, we don't support drag and drop
                 return false
+            }
+
+            override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
+                // Adjust the swipe velocity threshold here (default is 2000f)
+                return 1000f
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -359,21 +363,29 @@ class ExercisesInGroup : Fragment() {
             ) {//Log.d("SportsmensFragment", "onChildDraw called")
 
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    // Set the delete button visibility based on the swipe direction
-                    //Log.d("SportsmensFragment", "onChildDraw surely called")
+                    // Adjust the maximum swipe distance here
+                    val maxSwipeDistance = 400f  // Set your desired distance
                     val itemView = viewHolder.itemView
-                    itemView.translationY = 0f
-                    //l
+                    val itemPosition = viewHolder.absoluteAdapterPosition
                     val deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
-                    itemView.translationX = dX
-                    // Draw the swipe background color
-//                    if(dX>0)
-//                      deleteBtn.visibility=VISIBLE
-//                    else
-//                        deleteBtn.visibility=GONE
+                    // Set the delete button visibility based on the swipe direction
+                    if (dX > 0) {
+                        deleteBtn.visibility = View.VISIBLE
+                    } else if (dX <= 0) {
+                        deleteBtn.visibility = View.GONE
+                    }
+                    //In case when deleteButton still in set when swipe to the right was weak
+                    if(adapter.getVisibility(itemPosition))
+                        deleteBtn.visibility = View.VISIBLE
 
-                }
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    // Restrict the item movement to the defined maximum swipe distance
+                    val limitedDX = when {
+                        dX > maxSwipeDistance -> maxSwipeDistance
+                        dX < -maxSwipeDistance -> -maxSwipeDistance
+                        else -> dX
+                    }
+                    super.onChildDraw(c, recyclerView, viewHolder, limitedDX, dY, actionState, isCurrentlyActive)
+                    }
             }
         }
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)

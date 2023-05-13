@@ -398,7 +398,17 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 set(year, month, dayOfMonth)
             }.time
             val calendar = Calendar.getInstance()
-            calendar.time = Date(itemList[param2]?.get(0)?.itemDate) ?: Date()
+            val dateString = itemList[param2]?.get(0)?.itemDate
+            Log.d("StringDate", dateString.toString())
+            if(dateString!=null){
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                val date = dateFormat.parse(dateString)
+                if (date != null) {
+                    calendar.time = date
+                }
+            }
+            else
+                calendar.time = Date()
             Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
             Log.d("list", (itemList[param2]?.filter {
                 calendar.time = Date(it.itemDate)

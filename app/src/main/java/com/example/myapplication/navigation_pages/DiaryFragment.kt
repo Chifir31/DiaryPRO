@@ -112,6 +112,7 @@ class DiaryFragment : Fragment() {
         val toolbar_text = dialogLayout.findViewById<TextView>(R.id.toolbar_text)
         val edit_btn = dialogLayout.findViewById<ImageButton>(R.id.edit_button)
         val plan = dialogLayout.findViewById<TextView>(R.id.plan_edit)
+        val state = dialogLayout.findViewById<TextView>(R.id.state_edit)
         var dateSelected = selectedDate
         //val status = dialogLayout.findViewById<TextView>(R.id.status_edit)
 
@@ -161,45 +162,14 @@ class DiaryFragment : Fragment() {
         date.setText(
             tmp1?.date.toString() + '.' + tmp1?.month.toString() + '.' + (tmp1?.year?.plus(
                 1900
-            )).toString()+ ' ' + tmp1?.hours.toString() + ':' + tmp1?.minutes.toString()
+            )).toString()
         )
+        state.setText(stateList[position?.let { tmp?.get(it)?.itemState }].toString())
         //status.setText(stateList[tmp?.get(position)?.itemState])
         Log.d("item", tmp.toString())
         type.setSelection(adapterspinner.getPosition(tmp?.get(position)?.text))
         Log.d("ItemDesc", tmp?.get(position)?.itemDesc.toString())
         plan.setText(tmp?.get(position)?.itemDesc.toString())
-        with(builder) {
-            setPositiveButton("Сохранить") { dialog, which ->
-                val random = Random()
-                val randomNumber = random.nextInt(1000)
-                tmp?.get(position)?.text = type.selectedItem.toString()
-                tmp?.get(position)?.img = "https://picsum.photos/200?random=$randomNumber"
-                tmp?.get(position)?.itemDate = dateSelected
-                tmp?.get(position)?.itemDesc = plan.text.toString()
-                //tmp?.get(position)?.itemId = "Item " + (size++).toString()
-                //(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString())
-                //itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString()))
-                adapter = AdapterExercise(itemList[param2]?.filter {
-                    val calendar = Calendar.getInstance()
-                    calendar.time = it.itemDate
-                    calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                            calendar.get(Calendar.MONTH) == selectedDate.month &&
-                            calendar.get(Calendar.YEAR) == selectedDate.year + 1900
-                } as MutableList<Exercise>?)
-                adapter.notifyItemInserted(itemList[param2]?.size ?: 0)
-                recyclerView.adapter = adapter
-                setupListeners()
-                //editor.putString("exerciseList", Gson().toJson(itemList))
-                //editor.apply()
-                Log.d("SportsmensFragment size", adapter.itemCount.toString())
-                Log.d("SportsmensFragment elements", "Item list: $itemList")
-                edit_btn.visibility= View.VISIBLE
-                state(false)
-            }//Log.d("Main","Positive")}
-            setNegativeButton("Отмена") { dialog, which -> Log.d("Main", "Negative")
-                edit_btn.visibility= View.VISIBLE
-                state(false)}
-        }
         builder.setView(dialogLayout)
         builder.show()
     }

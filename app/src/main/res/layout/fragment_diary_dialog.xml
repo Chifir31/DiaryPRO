@@ -166,29 +166,4 @@
         android:background="@color/dark_gray"
         android:visibility="gone"
         />
-    <TextView
-        android:id="@+id/finish_btn"
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:paddingVertical="25dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="25dp"
-        android:layout_centerHorizontal="true"
-        android:background="@android:color/transparent"
-        android:text="Завершить тренировку"
-        android:textSize="20sp"
-        android:textColor="@color/red"
-        />
-    <TextView
-        android:id="@+id/save_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@android:color/transparent"
-        android:text="Сохранить"
-        android:textSize="20sp"
-        android:textColor="@color/red"
-        android:visibility="gone"/>
 </RelativeLayout>

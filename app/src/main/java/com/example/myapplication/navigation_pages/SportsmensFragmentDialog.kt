@@ -32,8 +32,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -142,6 +144,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 setPositiveButton("Добавить"){dialog, which->
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
+                    val ts = dateSelected.getTime()
                     if(itemList[param2]==null){
                         var newsize = size++
                         itemList.apply {
@@ -151,7 +154,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                                     Exercise(
                                         type.selectedItem.toString(),
                                         "https://picsum.photos/200?random=$randomNumber",
-                                        dateSelected.toString(),
+                                        dateSelected.time,
                                         plan.text.toString(),
                                         "p",
                                         "",
@@ -167,7 +170,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                             Exercise(
                                 type.selectedItem.toString(),
                                 "https://picsum.photos/200?random=$randomNumber",
-                                dateSelected.toString(),
+                                dateSelected.time,
                                 plan.text.toString(),
                                 "p",
                                 "",
@@ -178,7 +181,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                     database.child("Exercise").child(param1.toString()).setValue(Exercise(
                         type.selectedItem.toString(),
                         "https://picsum.photos/200?random=$randomNumber",
-                        dateSelected.toString(),
+                        dateSelected.time,
                         plan.text.toString(),
                         "p",
                         "",
@@ -265,7 +268,8 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                     calendar.get(Calendar.MONTH) == selectedDate.month &&
                     calendar.get(Calendar.YEAR) == selectedDate.year+1900
         } as MutableList<Exercise>?)
-        var tmp1 = Date(tmp?.get(position)?.itemDate)
+        //var ts = tmp?.get(position)?.itemDate
+        var tmp1 = Date(tmp?.get(position)?.itemDate!!)
         date.setText(
             tmp1?.date.toString() + '.' + tmp1?.month.toString() + '.' + (tmp1?.year?.plus(
                 1900
@@ -288,7 +292,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 val randomNumber = random.nextInt(1000)
                 tmp?.get(position)?.text = type.selectedItem.toString()
                 tmp?.get(position)?.img = "https://picsum.photos/200?random=$randomNumber"
-                tmp?.get(position)?.itemDate = dateSelected.toString()
+                tmp?.get(position)?.itemDate = dateSelected.time
                 tmp?.get(position)?.itemDesc = plan.text.toString()
                 tmp?.get(position)?.itemId = "Item " + (size++).toString()
                 //(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString())
@@ -350,13 +354,20 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val children = snapshot!!.children
                     children!!.forEach{
+                        val img = it.child("img").getValue().toString()
+                        val itemComm = it.child("itemComm").getValue().toString()
+                        val itemDate = it.child("itemDate").getValue().toString().toLong()
+                        val itemDesc = it.child("itemDesc").getValue().toString()
+                        val itemId = it.child("itemId").getValue().toString()
+                        val itemState = it.child("itemState").getValue().toString()
+                        val text = it.child("text").getValue().toString()
                         if(tempList[param2]==null){
                             var newsize = size++
                             itemList.apply {
                                 put(
                                     param2.toString(),
                                     mutableListOf(
-                                        it.getValue() as Exercise
+                                        Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
                                     )
                                 )
 
@@ -364,7 +375,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                         }
                         else {
                             itemList[param2]?.add(
-                                it.getValue() as Exercise
+                                Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
                             )
                         }
                     }
@@ -402,7 +413,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             Log.d("StringDate", dateString.toString())
             if(dateString!=null){
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                val date = dateFormat.parse(dateString)
+                val date = dateFormat.parse(Date(dateString).toString())
                 if (date != null) {
                     calendar.time = date
                 }

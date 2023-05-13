@@ -511,11 +511,14 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
         if (fullDate != null) {
             fullDate.text = date
         }
-        view?.findViewById<Button>(R.id.prevWeek)
-            ?.setOnClickListener { adapter_calendar.previousWeekAction() }
-        view?.findViewById<Button>(R.id.nextWeek)
-            ?.setOnClickListener { adapter_calendar.nextWeekAction() }
         adapter_calendar.fillWeekList(Calendar.getInstance())
+        view?.findViewById<Button>(R.id.prevWeek)
+            ?.setOnClickListener {
+                Log.d("prev click", "yes")
+                adapter_calendar.previousWeekAction() }
+        view?.findViewById<Button>(R.id.nextWeek)
+            ?.setOnClickListener { adapter_calendar.nextWeekAction()
+                Log.d("next click", "yes")}
     }
 
     override fun onClick(day: Date) {
@@ -531,5 +534,17 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
 
         dateStr = SimpleDateFormat("dd.MM.yy", Locale("ru")).format(day)
         Log.d("Variant 2:", dateStr)
+        Log.d("Day", day.date.toString() + " " +day.month.toString() + " " + day.year.toString()+1900)
+        adapter = AdapterExercise(itemList[param2]?.filter {
+            val calendar = Calendar.getInstance()
+            calendar.time = it.itemDate
+            calendar.get(Calendar.DAY_OF_MONTH) == day.date &&
+                    calendar.get(Calendar.MONTH) == day.month &&
+                calendar.get(Calendar.YEAR) == day.year+1900
+        } as MutableList<Exercise>?)
+        adapter.notifyDataSetChanged()
+        recyclerView.adapter = adapter
+        selectedDate=day
+        setupListeners()
     }
 }

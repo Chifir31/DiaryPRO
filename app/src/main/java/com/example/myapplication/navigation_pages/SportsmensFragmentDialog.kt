@@ -154,7 +154,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                                     Exercise(
                                         type.selectedItem.toString(),
                                         "https://picsum.photos/200?random=$randomNumber",
-                                        dateSelected.time,
+                                        dateSelected.time.toString(),
                                         plan.text.toString(),
                                         "p",
                                         "",
@@ -170,7 +170,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                             Exercise(
                                 type.selectedItem.toString(),
                                 "https://picsum.photos/200?random=$randomNumber",
-                                dateSelected.time,
+                                dateSelected.time.toString(),
                                 plan.text.toString(),
                                 "p",
                                 "",
@@ -178,10 +178,11 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                             )
                         )
                     }
-                    database.child("Exercise").child(param1.toString()).setValue(Exercise(
+                    var newKey = database.push().key
+                    database.child("Exercise").child(param1.toString()).child(newKey.toString()).setValue(Exercise(
                         type.selectedItem.toString(),
                         "https://picsum.photos/200?random=$randomNumber",
-                        dateSelected.time,
+                        dateSelected.time.toString(),
                         plan.text.toString(),
                         "p",
                         "",
@@ -191,7 +192,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                     editor.apply()
                     adapter = AdapterExercise(itemList[param2]?.filter {
                         val calendar = Calendar.getInstance()
-                        calendar.time = Date(it.itemDate)
+                        calendar.time = Date(it.itemDate.toLong())
                         calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                                 calendar.get(Calendar.MONTH) == selectedDate.month &&
                     calendar.get(Calendar.YEAR) == selectedDate.year+1900
@@ -263,13 +264,13 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         }
         var tmp = (itemList[param2]?.filter {
             val calendar = Calendar.getInstance()
-            calendar.time = Date(it.itemDate)
+            calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                     calendar.get(Calendar.MONTH) == selectedDate.month &&
                     calendar.get(Calendar.YEAR) == selectedDate.year+1900
         } as MutableList<Exercise>?)
         //var ts = tmp?.get(position)?.itemDate
-        var tmp1 = Date(tmp?.get(position)?.itemDate!!)
+        var tmp1 = Date(tmp?.get(position)?.itemDate?.toLong()!!)
         date.setText(
             tmp1?.date.toString() + '.' + tmp1?.month.toString() + '.' + (tmp1?.year?.plus(
                 1900
@@ -292,14 +293,14 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 val randomNumber = random.nextInt(1000)
                 tmp?.get(position)?.text = type.selectedItem.toString()
                 tmp?.get(position)?.img = "https://picsum.photos/200?random=$randomNumber"
-                tmp?.get(position)?.itemDate = dateSelected.time
+                tmp?.get(position)?.itemDate = dateSelected.time.toString()
                 tmp?.get(position)?.itemDesc = plan.text.toString()
                 tmp?.get(position)?.itemId = "Item " + (size++).toString()
                 //(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString())
                 //itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString()))
                 adapter = AdapterExercise(itemList[param2]?.filter {
                     val calendar = Calendar.getInstance()
-                    calendar.time = Date(it.itemDate)
+                    calendar.time = Date(it.itemDate.toLong())
                     calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                             calendar.get(Calendar.MONTH) == selectedDate.month &&
                             calendar.get(Calendar.YEAR) == selectedDate.year + 1900
@@ -356,7 +357,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                     children!!.forEach{
                         val img = it.child("img").getValue().toString()
                         val itemComm = it.child("itemComm").getValue().toString()
-                        val itemDate = it.child("itemDate").getValue().toString().toLong()
+                        val itemDate = it.child("itemDate").getValue().toString()
                         val itemDesc = it.child("itemDesc").getValue().toString()
                         val itemId = it.child("itemId").getValue().toString()
                         val itemState = it.child("itemState").getValue().toString()
@@ -412,8 +413,8 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             val dateString = itemList[param2]?.get(0)?.itemDate
             Log.d("StringDate", dateString.toString())
             if(dateString!=null){
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                val date = dateFormat.parse(Date(dateString).toString())
+                //val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                val date = Date(dateString.toLong())
                 if (date != null) {
                     calendar.time = date
                 }
@@ -422,13 +423,13 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 calendar.time = Date()
             Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
             Log.d("list", (itemList[param2]?.filter {
-                calendar.time = Date(it.itemDate)
+                calendar.time = Date(it.itemDate.toLong())
                 calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                         calendar.get(Calendar.MONTH) == selectedDate.month /*&&
                         calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
             adapter = AdapterExercise(itemList[param2]?.filter {
                 val calendar = Calendar.getInstance()
-                calendar.time = Date(it.itemDate)
+                calendar.time = Date(it.itemDate.toLong())
                 calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                         calendar.get(Calendar.MONTH) == selectedDate.month &&
                     calendar.get(Calendar.YEAR) == selectedDate.year+1900

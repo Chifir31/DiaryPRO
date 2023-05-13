@@ -15,6 +15,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,6 +40,7 @@ class ExerciseFragment : Fragment() {
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
     private lateinit var itemList1: MutableList<Exercise>
     private lateinit var stateList: ArrayMap<String, String>
+    private lateinit var database: DatabaseReference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,12 +57,53 @@ class ExerciseFragment : Fragment() {
         val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
         dateTextView.text = dateFormat.format(currentDate)
 
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+
+        var tempList = ArrayMap<String, MutableList<Exercise>>()
+        database = Firebase.database.reference
+        database.child("Exercise").child(email.split("@")[0]).get().addOnSuccessListener {
+            if(it.exists()){
+                val children = it.children
+                children.forEach{
+                    val img = it.child("img").getValue().toString()
+                    val itemComm = it.child("itemComm").getValue().toString()
+                    val itemDate = it.child("itemDate").getValue().toString()
+                    val itemDesc = it.child("itemDesc").getValue().toString()
+                    val itemId = it.child("itemId").getValue().toString()
+                    val itemState = it.child("itemState").getValue().toString()
+                    val text = it.child("text").getValue().toString()
+
+                    if(tempList[email.split("@")[0]]==null){
+                        tempList.apply {
+                            put(
+                                email.split("@")[0],
+                                mutableListOf(
+                                    Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                                )
+                            )
+
+                        }
+                    }else{
+                        tempList[email.split("@")[0]]?.add(
+                            Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                        )
+                    }
+                }
+            }else{
+                tempList = ArrayMap<String, MutableList<Exercise>>()
+            }
+        }
+
         val random = Random()
         val randomNumber = random.nextInt(1000)
         var date = Date()
-        itemList = (requireActivity() as MainActivity).exerciseList
+        itemList = tempList
         stateList = (requireActivity() as MainActivity).statemap
-        itemList1 = (itemList["Item 1"]?.filter {
+        itemList1 = (itemList[email.split("@")[0]]?.filter {
             val calendar = Calendar.getInstance()
             calendar.time = Date(it.itemDate)
             calendar.get(Calendar.DAY_OF_MONTH) == date.date &&

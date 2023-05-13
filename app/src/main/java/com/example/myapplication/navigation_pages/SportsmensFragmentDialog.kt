@@ -147,6 +147,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                     val ts = dateSelected.getTime()
                     if(itemList[param2]==null){
                         var newsize = size++
+                        var newKey = database.push().key
                         itemList.apply {
                             put(
                                 param2.toString(),
@@ -158,7 +159,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                                         plan.text.toString(),
                                         "p",
                                         "",
-                                        "Item " + (newsize).toString()
+                                        newKey.toString()
                                     )
                                 )
                             )
@@ -166,6 +167,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                         }
                         }
                     else {
+                        var newKey = database.push().key
                         itemList[param2]?.add(
                             Exercise(
                                 type.selectedItem.toString(),
@@ -174,7 +176,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                                 plan.text.toString(),
                                 "p",
                                 "",
-                                "Item " + (size++).toString()
+                                newKey.toString()
                             )
                         )
                     }
@@ -186,7 +188,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                         plan.text.toString(),
                         "p",
                         "",
-                        "Item " + (size++).toString())
+                        newKey.toString())
                     )
                     editor.putString("exerciseList", Gson().toJson(itemList))
                     editor.apply()
@@ -364,7 +366,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                         val text = it.child("text").getValue().toString()
                         if(tempList[param2]==null){
                             var newsize = size++
-                            itemList.apply {
+                            tempList.apply {
                                 put(
                                     param2.toString(),
                                     mutableListOf(
@@ -375,7 +377,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                             }
                         }
                         else {
-                            itemList[param2]?.add(
+                            tempList[param2]?.add(
                                 Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
                             )
                         }

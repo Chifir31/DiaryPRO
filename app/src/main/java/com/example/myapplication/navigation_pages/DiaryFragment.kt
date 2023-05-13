@@ -14,6 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,6 +32,7 @@ class DiaryFragment : Fragment() {
     private lateinit var adapter: AdapterExercise
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
+    private  lateinit var  database: DatabaseReference
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,12 +45,51 @@ class DiaryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         dateTextView = view.findViewById(R.id.date_textview)
 
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email:String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+        var tempList = ArrayMap<String, MutableList<Exercise>>()
+        database = Firebase.database.reference
+        database.child("Exercise").child(email.split("@")[0]).get().addOnSuccessListener {
+            if(it.exists()){
+                val children = it.children
+                children.forEach{
+                    val img = it.child("img").getValue().toString()
+                    val itemComm = it.child("itemComm").getValue().toString()
+                    val itemDate = it.child("itemDate").getValue().toString()
+                    val itemDesc = it.child("itemDesc").getValue().toString()
+                    val itemId = it.child("itemId").getValue().toString()
+                    val itemState = it.child("itemState").getValue().toString()
+                    val text = it.child("text").getValue().toString()
 
-        itemList = (requireActivity() as MainActivity).exerciseList
+                    if(tempList[email.split("@")[0]]==null){
+                        tempList.apply {
+                            put(
+                                email.split("@")[0],
+                                mutableListOf(
+                                    Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                                )
+                            )
+
+                        }
+                    }else{
+                        tempList[email.split("@")[0]]?.add(
+                            Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                        )
+                    }
+                }
+            }else{
+                tempList = ArrayMap<String, MutableList<Exercise>>()
+            }
+        }
+
+        itemList = tempList
         val layoutManager = LinearLayoutManager(context)
         recyclerView = view.findViewById(R.id.list)
         recyclerView.layoutManager = layoutManager
-        adapter = AdapterExercise(itemList["Item 1"])
+        adapter = AdapterExercise(itemList[email.split("@")[0]])
         recyclerView.adapter = adapter
 
         val currentDate = Date()

@@ -23,6 +23,10 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
@@ -60,7 +64,7 @@ class ExerciseFragmentDialog : Fragment() {
     private lateinit var mainActivity: MainActivity
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
-
+    private lateinit var database: DatabaseReference
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -121,7 +125,49 @@ class ExerciseFragmentDialog : Fragment() {
         val random = Random()
         val randomNumber = random.nextInt(1000)
         var date = Date()
-        itemList = (requireActivity() as MainActivity).exerciseList
+
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+
+        var tempList = ArrayMap<String, MutableList<Exercise>>()
+        database = Firebase.database.reference
+        database.child("Exercise").child(email.split("@")[0]).get().addOnSuccessListener {
+            if(it.exists()){
+                val children = it.children
+                children.forEach{
+                    val img = it.child("img").getValue().toString()
+                    val itemComm = it.child("itemComm").getValue().toString()
+                    val itemDate = it.child("itemDate").getValue().toString()
+                    val itemDesc = it.child("itemDesc").getValue().toString()
+                    val itemId = it.child("itemId").getValue().toString()
+                    val itemState = it.child("itemState").getValue().toString()
+                    val text = it.child("text").getValue().toString()
+
+                    if(tempList[email.split("@")[0]]==null){
+                        tempList.apply {
+                            put(
+                                email.split("@")[0],
+                                mutableListOf(
+                                    Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                                )
+                            )
+
+                        }
+                    }else{
+                        tempList[email.split("@")[0]]?.add(
+                            Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                        )
+                    }
+                }
+            }else{
+                tempList = ArrayMap<String, MutableList<Exercise>>()
+            }
+        }
+
+        itemList = tempList
         stateList = (requireActivity() as MainActivity).statemap
         itemList1 = (itemList["Item 1"]?.filter {
             val calendar = Calendar.getInstance()
@@ -165,6 +211,15 @@ class ExerciseFragmentDialog : Fragment() {
             Log.d("itemList", itemList.toString())
             item?.itemCom = comment.text.toString()
             comment1.setText(item?.itemCom)
+
+            val currentUser = Firebase.auth.currentUser
+            lateinit var email: String
+            currentUser?.let {
+                email = it.email.toString()
+            }
+            database.child("Exercise").child(email.split("@")[0])
+                .child(item?.itemId!!).child("itemState").setValue(item?.itemState)
+
             editor.putString("exerciseList", Gson().toJson(itemList))
             editor.apply()
             state.setText(stateList[item?.itemState].toString())

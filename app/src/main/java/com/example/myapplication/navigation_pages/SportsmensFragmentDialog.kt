@@ -19,6 +19,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,7 +30,7 @@ import com.example.myapplication.data.Exercise
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
-import com.example.myapplication.databinding.CalendarCellBinding
+import com.example.myapplication.databinding.FragmentSportsmensDialogBinding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -61,14 +62,11 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
 
-    lateinit var binding: CalendarCellBinding
+    lateinit var binding: FragmentSportsmensDialogBinding
     private lateinit var layoutManager_calendar: RecyclerView.LayoutManager
     private lateinit var calendarView: RecyclerView
     private var adapter_calendar = AdapterCalendar(this)
-    private lateinit var calendarView1: CalendarView
-    private lateinit var fullDate: TextView
-    private lateinit var prevWeek: Button
-    private lateinit var nextWeek: Button
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -319,7 +317,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        binding = CalendarCellBinding.inflate(layoutInflater)
+        binding = FragmentSportsmensDialogBinding.inflate(layoutInflater)
     }
 
     override fun onCreateView(
@@ -501,30 +499,33 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
             }
         })
     }
-    private fun initCalendar(){
+    private fun initCalendar() {
 
         val dateFormat = SimpleDateFormat("d MMM yyyy, EE", Locale("ru"))
         val date = dateFormat.format(Date())
-        val CalendarView = layoutInflater.inflate(R.layout.calendar, null)
-        fullDate =  CalendarView.findViewById<TextView>(R.id.full_date)
-        prevWeek =   CalendarView.findViewById<Button>(R.id.prevWeek)
-        nextWeek =  CalendarView.findViewById<Button>(R.id.nextWeek)
 
-        binding.apply {
-            calendarView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
-            calendarView.adapter = adapter_calendar
+        val fullDate = view?.findViewById<TextView>(R.id.full_date)
+        calendarView.layoutManager =
+            GridLayoutManager(requireActivity(), 7 )
+        calendarView.adapter = adapter_calendar
+        if (fullDate != null) {
             fullDate.text = date
-            prevWeek.setOnClickListener{ adapter_calendar.previousWeekAction() }
-            nextWeek.setOnClickListener { adapter_calendar.nextWeekAction() }
-            adapter_calendar.fillWeekList(Calendar.getInstance())
         }
+        view?.findViewById<Button>(R.id.prevWeek)
+            ?.setOnClickListener { adapter_calendar.previousWeekAction() }
+        view?.findViewById<Button>(R.id.nextWeek)
+            ?.setOnClickListener { adapter_calendar.nextWeekAction() }
+        adapter_calendar.fillWeekList(Calendar.getInstance())
     }
 
     override fun onClick(day: String) {
         val dayOfWeek = 2; // Monday
         val now = Calendar.getInstance()
         val weekday = now.get(Calendar.DAY_OF_WEEK)
-        binding.cellDayText.text = day
-        Log.d("Click", "Click")
+        val fullDate = view?.findViewById<TextView>(R.id.full_date)
+        if (fullDate != null) {
+            fullDate.text = day
+        }
+        Log.d("click", day)
     }
 }

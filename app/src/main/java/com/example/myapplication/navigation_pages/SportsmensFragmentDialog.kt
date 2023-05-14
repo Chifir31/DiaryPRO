@@ -513,27 +513,18 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
         }
         adapter_calendar.fillWeekList(Calendar.getInstance())
         view?.findViewById<Button>(R.id.prevWeek)
-            ?.setOnClickListener {
-                Log.d("prev click", "yes")
-                adapter_calendar.previousWeekAction() }
+            ?.setOnClickListener { adapter_calendar.previousWeekAction() }
         view?.findViewById<Button>(R.id.nextWeek)
-            ?.setOnClickListener { adapter_calendar.nextWeekAction()
-                Log.d("next click", "yes")}
+            ?.setOnClickListener { adapter_calendar.nextWeekAction() }
     }
 
     override fun onClick(day: Date) {
         val fullDate = view?.findViewById<TextView>(R.id.full_date)
-
-        // Получение выбранной даты
-        var dateStr = SimpleDateFormat("d MMM yyyy, EE", Locale("ru")).format(day)
-        Log.d("Variant 1:", dateStr)
-
+        val dateStr = SimpleDateFormat("d MMM yyyy, EE", Locale("ru")).format(day)
         if (fullDate != null) {
             fullDate.text = dateStr
         }
 
-        dateStr = SimpleDateFormat("dd.MM.yy", Locale("ru")).format(day)
-        Log.d("Variant 2:", dateStr)
         Log.d("Day", day.date.toString() + " " +day.month.toString() + " " + day.year.toString()+1900)
         adapter = AdapterExercise(itemList[param2]?.filter {
             val calendar = Calendar.getInstance()

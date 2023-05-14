@@ -12,11 +12,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.Adapters.AdapterCalendar
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
+import com.example.myapplication.databinding.FragmentSportsmensDialogBinding
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
@@ -26,8 +29,7 @@ import java.util.*
  * Use the [DiaryFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class DiaryFragment : Fragment() {
-    private lateinit var calendarView: CalendarView
+class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
     private lateinit var adapter: AdapterExercise
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
@@ -35,6 +37,11 @@ class DiaryFragment : Fragment() {
     private lateinit var date: TextView
     private var selectedDate: Date = Date()
     private var param2="Item 1"
+
+    lateinit var binding: FragmentSportsmensDialogBinding
+    private lateinit var layoutManager_calendar: RecyclerView.LayoutManager
+    private lateinit var calendarView: RecyclerView
+    private var adapter_calendar = AdapterCalendar(this)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,6 +59,11 @@ class DiaryFragment : Fragment() {
         recyclerView = view.findViewById(R.id.list)
         recyclerView.layoutManager = layoutManager
         val date = Date()
+
+        calendarView = view.findViewById(R.id.CalendarView)
+        initCalendar()
+
+
         adapter = AdapterExercise(itemList[param2]?.filter {
             val calendar = Calendar.getInstance()
             calendar.time = it.itemDate
@@ -74,33 +86,33 @@ class DiaryFragment : Fragment() {
         val daysFromMonday = if (currentDayOfWeek == Calendar.SUNDAY) 6 else currentDayOfWeek - 2
         val weekStart = currentTimeMillis - daysFromMonday * 24 * 60 * 60 * 1000
         val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
-        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            selectedDate = Calendar.getInstance().apply {
-                set(year, month, dayOfMonth)
-            }.time
-            val calendar = Calendar.getInstance()
-            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
-            Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
-            Log.d("list", (itemList[param2]?.filter {
-                calendar.time = it.itemDate
-                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                        calendar.get(Calendar.MONTH) == selectedDate.month /*&&
-                        calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
-            adapter = AdapterExercise(itemList[param2]?.filter {
-                val calendar = Calendar.getInstance()
-                calendar.time = it.itemDate
-                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                        calendar.get(Calendar.MONTH) == selectedDate.month &&
-                        calendar.get(Calendar.YEAR) == selectedDate.year+1900
-            } as MutableList<Exercise>?)
-            adapter.notifyDataSetChanged()
-            recyclerView.adapter = adapter
-            setupListeners()
-
-        }
-        // Set the minimum and maximum dates for the calendar view to show only the current week
-        calendarView.minDate = weekStart
-        calendarView.maxDate = weekEnd
+//        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+//            selectedDate = Calendar.getInstance().apply {
+//                set(year, month, dayOfMonth)
+//            }.time
+//            val calendar = Calendar.getInstance()
+//            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
+//            Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
+//            Log.d("list", (itemList[param2]?.filter {
+//                calendar.time = it.itemDate
+//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+//                        calendar.get(Calendar.MONTH) == selectedDate.month /*&&
+//                        calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
+//            adapter = AdapterExercise(itemList[param2]?.filter {
+//                val calendar = Calendar.getInstance()
+//                calendar.time = it.itemDate
+//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+//                        calendar.get(Calendar.MONTH) == selectedDate.month &&
+//                        calendar.get(Calendar.YEAR) == selectedDate.year+1900
+//            } as MutableList<Exercise>?)
+//            adapter.notifyDataSetChanged()
+//            recyclerView.adapter = adapter
+//            setupListeners()
+//
+//        }
+//        // Set the minimum and maximum dates for the calendar view to show only the current week
+//        calendarView.minDate = weekStart
+//        calendarView.maxDate = weekEnd
     }
 
     fun EditWindow(position: Int){
@@ -216,6 +228,46 @@ class DiaryFragment : Fragment() {
                 EditWindow(position)
             }
         })
+    }
+
+    private fun initCalendar() {
+
+        val dateFormat = SimpleDateFormat("d MMM yyyy, EE", Locale("ru"))
+        val date = dateFormat.format(Date())
+
+        val fullDate = view?.findViewById<TextView>(R.id.full_date)
+        calendarView.layoutManager =
+            GridLayoutManager(requireActivity(), 7 )
+        calendarView.adapter = adapter_calendar
+        if (fullDate != null) {
+            fullDate.text = date
+        }
+        adapter_calendar.fillWeekList(Calendar.getInstance())
+        view?.findViewById<Button>(R.id.prevWeek)
+            ?.setOnClickListener { adapter_calendar.previousWeekAction() }
+        view?.findViewById<Button>(R.id.nextWeek)
+            ?.setOnClickListener { adapter_calendar.nextWeekAction() }
+    }
+
+    override fun onClick(day: Date) {
+        val fullDate = view?.findViewById<TextView>(R.id.full_date)
+        val dateStr = SimpleDateFormat("d MMM yyyy, EE", Locale("ru")).format(day)
+        if (fullDate != null) {
+            fullDate.text = dateStr
+        }
+
+        Log.d("Day", day.date.toString() + " " +day.month.toString() + " " + day.year.toString()+1900)
+        adapter = AdapterExercise(itemList[param2]?.filter {
+            val calendar = Calendar.getInstance()
+            calendar.time = it.itemDate
+            calendar.get(Calendar.DAY_OF_MONTH) == day.date &&
+                    calendar.get(Calendar.MONTH) == day.month &&
+                    calendar.get(Calendar.YEAR) == day.year+1900
+        } as MutableList<Exercise>?)
+        adapter.notifyDataSetChanged()
+        recyclerView.adapter = adapter
+        selectedDate=day
+        setupListeners()
     }
 }
 

@@ -43,14 +43,13 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
     }
 
 
-
     fun previousWeekAction() {
         weekList.clear()
         val now = Calendar.getInstance()
         val weekday = now.get(Calendar.DAY_OF_WEEK)
         val dayOfWeek = 2; // Monday
         val days = dayOfWeek - weekday;
-        if (days < 0) currentMonday -= 7
+        currentMonday -= 7
         now.add(Calendar.DAY_OF_YEAR, days)
         fillWeekList(now)
     }
@@ -61,7 +60,7 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
         val weekday = now.get(Calendar.DAY_OF_WEEK)
         val dayOfWeek = 2; // Monday
         val days = dayOfWeek - weekday;
-        if (days < 0) currentMonday += 7
+        currentMonday += 7
         now.add(Calendar.DAY_OF_YEAR, days)
         fillWeekList(now)
     }
@@ -69,9 +68,13 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
     fun fillWeekList(now: Calendar){
         val dayOfWeek = 2; // Monday
         val weekday = now.get(Calendar.DAY_OF_WEEK)
-
-        val days = dayOfWeek - weekday + currentMonday;
-        now.add(Calendar.DAY_OF_YEAR, days)
+        if (weekday !=  1) {
+            val days = dayOfWeek - weekday + currentMonday
+            now.add(Calendar.DAY_OF_YEAR, days)
+        } else{
+            val days = -6 + currentMonday
+            now.add(Calendar.DAY_OF_YEAR, days)
+        }
         val date = now.getTime()
         weekList.add(date)
         (1..6).forEach {

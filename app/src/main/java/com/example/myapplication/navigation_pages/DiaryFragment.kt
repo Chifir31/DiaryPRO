@@ -313,8 +313,13 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
             fullDate.text = dateStr
         }
 
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
         Log.d("Day", day.date.toString() + " " +day.month.toString() + " " + day.year.toString()+1900)
-        adapter = AdapterExercise(itemList[param2]?.filter {
+        adapter = AdapterExercise(itemList[email.split("@")[0]]?.filter {
             val calendar = Calendar.getInstance()
             calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == day.date &&

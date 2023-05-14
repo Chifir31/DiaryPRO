@@ -60,16 +60,16 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
         super.onViewCreated(view, savedInstanceState)
 
         val currentUser = Firebase.auth.currentUser
-        lateinit var email:String
+        lateinit var email: String
         currentUser?.let {
             email = it.email.toString()
         }
         var tempList = ArrayMap<String, MutableList<Exercise>>()
         database = Firebase.database.reference
         database.child("Exercise").child(email.split("@")[0]).get().addOnSuccessListener {
-            if(it.exists()){
+            if (it.exists()) {
                 val children = it.children
-                children.forEach{
+                children.forEach {
                     val img = it.child("img").getValue().toString()
                     val itemComm = it.child("itemComm").getValue().toString()
                     val itemDate = it.child("itemDate").getValue().toString()
@@ -78,23 +78,31 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
                     val itemState = it.child("itemState").getValue().toString()
                     val text = it.child("text").getValue().toString()
 
-                    if(tempList[email.split("@")[0]]==null){
+                    if (tempList[email.split("@")[0]] == null) {
                         tempList.apply {
                             put(
                                 email.split("@")[0],
                                 mutableListOf(
-                                    Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                                    Exercise(
+                                        text,
+                                        img,
+                                        itemDate,
+                                        itemDesc,
+                                        itemState,
+                                        itemComm,
+                                        itemId
+                                    )
                                 )
                             )
 
                         }
-                    }else{
+                    } else {
                         tempList[email.split("@")[0]]?.add(
-                            Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                            Exercise(text, img, itemDate, itemDesc, itemState, itemComm, itemId)
                         )
                     }
                 }
-            }else{
+            } else {
                 tempList = ArrayMap<String, MutableList<Exercise>>()
             }
             itemList = tempList
@@ -108,16 +116,16 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
             val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
             dateTextView.text = dateFormat.format(currentDate)
 
-            calendarView = view.findViewById(R.id.CalendarView )
+            calendarView = view.findViewById(R.id.CalendarView)
             // Get the current time in milliseconds
             val currentTimeMillis = System.currentTimeMillis()
             val calendar = Calendar.getInstance()
             val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
 
 
-
             // Calculate the start and end times for the current week
-            val daysFromMonday = if (currentDayOfWeek == Calendar.SUNDAY) 6 else currentDayOfWeek - 2
+            val daysFromMonday =
+                if (currentDayOfWeek == Calendar.SUNDAY) 6 else currentDayOfWeek - 2
             val weekStart = currentTimeMillis - daysFromMonday * 24 * 60 * 60 * 1000
             val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
 
@@ -126,6 +134,7 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
             calendarView.maxDate = weekEnd
 
         }
+    }
 
         /*itemList = tempList
         val layoutManager = LinearLayoutManager(context)
@@ -188,7 +197,7 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
 //        calendarView.minDate = weekStart
 //        calendarView.maxDate = weekEnd
     }
-
+*/
     fun EditWindow(position: Int){
         val builder = AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen)
         val inflater = requireActivity().layoutInflater
@@ -307,4 +316,3 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
         setupListeners()
     }
 }
-

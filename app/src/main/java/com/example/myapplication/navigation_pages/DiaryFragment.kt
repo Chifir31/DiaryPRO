@@ -48,6 +48,11 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
     private lateinit var calendarView: RecyclerView
     private var adapter_calendar = AdapterCalendar(this)
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = FragmentSportsmensDialogBinding.inflate(layoutInflater)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -114,9 +119,10 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
 
             val currentDate = Date()
             val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
-            dateTextView.text = dateFormat.format(currentDate)
+            //dateTextView.text = dateFormat.format(currentDate)
 
             calendarView = view.findViewById(R.id.CalendarView)
+            initCalendar()
             // Get the current time in milliseconds
             val currentTimeMillis = System.currentTimeMillis()
             val calendar = Calendar.getInstance()
@@ -130,8 +136,8 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
             val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
 
             // Set the minimum and maximum dates for the calendar view to show only the current week
-            calendarView.minDate = weekStart
-            calendarView.maxDate = weekEnd
+            //calendarView.minDate = weekStart
+            //calendarView.maxDate = weekEnd
 
         }
     }
@@ -248,18 +254,18 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
         }
         var tmp = (itemList[param2]?.filter {
             val calendar = Calendar.getInstance()
-            calendar.time = it.itemDate
+            calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                     calendar.get(Calendar.MONTH) == selectedDate.month &&
                     calendar.get(Calendar.YEAR) == selectedDate.year+1900
         } as MutableList<Exercise>?)
-        var tmp1 = tmp?.get(position)?.itemDate
+        var tmp1 = Date(tmp?.get(position)?.itemDate?.toLong()!!)
         date.setText(
             tmp1?.date.toString() + '.' + tmp1?.month.toString() + '.' + (tmp1?.year?.plus(
                 1900
             )).toString()
         )
-        state.setText(stateList[position?.let { tmp?.get(it)?.itemState }].toString())
+        //state.setText(stateList[position?.let { tmp?.get(it)?.itemState }].toString())
         //status.setText(stateList[tmp?.get(position)?.itemState])
         Log.d("item", tmp.toString())
         type.setSelection(adapterspinner.getPosition(tmp?.get(position)?.text))
@@ -305,7 +311,7 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
         Log.d("Day", day.date.toString() + " " +day.month.toString() + " " + day.year.toString()+1900)
         adapter = AdapterExercise(itemList[param2]?.filter {
             val calendar = Calendar.getInstance()
-            calendar.time = it.itemDate
+            calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == day.date &&
                     calendar.get(Calendar.MONTH) == day.month &&
                     calendar.get(Calendar.YEAR) == day.year+1900

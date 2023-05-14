@@ -590,7 +590,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
         Log.d("Day", day.date.toString() + " " +day.month.toString() + " " + day.year.toString()+1900)
         adapter = AdapterExercise(itemList[param2]?.filter {
             val calendar = Calendar.getInstance()
-            calendar.time = Date(it.itemDate)
+            calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == day.date &&
                     calendar.get(Calendar.MONTH) == day.month &&
                 calendar.get(Calendar.YEAR) == day.year+1900

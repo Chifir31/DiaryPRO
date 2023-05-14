@@ -65,7 +65,7 @@ class MainActivity: AppCompatActivity()  {
     lateinit var sportsmensList: MutableList<Item>
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
     lateinit var profileList: ArrayMap<String, String>
-    var user = "C"
+    lateinit var user: String
 
     var statemap = ArrayMap<String, String>().apply {
         put("p", "Запланирована")
@@ -81,6 +81,7 @@ class MainActivity: AppCompatActivity()  {
 //        editor.putString("exerciseList", Gson().toJson(exerciseList1))
 //        editor.putString("sportsmensList", Gson().toJson(sportsmensList1))
 //        editor.apply()
+        user = ""
         val sportsmensListJson = (preferences.getString("sportsmensList", null))
         sportsmensList = sportsmensListJson?.let {
             Gson().fromJson<MutableList<Item>>(it, object : TypeToken<ArrayList<Item>>() {}.type)
@@ -105,43 +106,65 @@ class MainActivity: AppCompatActivity()  {
             editor.putString("exerciseList", Gson().toJson(exerciseList))
             editor.putString("sportsmensList", Gson().toJson(sportsmensList))
             editor.apply()
-            getRole()
-            //user = "C" //Надо сделать чтение из бд
-            if (user == "C") {
-                setContentView(R.layout.c_activity_main)
-                navView = findViewById(R.id.c_bottom_navigation)
-                loadFragment(SportsmensFragment())
-                navView?.setOnItemSelectedListener {
-                    when (it.itemId) {
-                        R.id.sportsmens -> loadFragment(SportsmensFragment())
-                        R.id.groups -> loadFragment(GroupsFragment())
-                        R.id.profile -> loadFragment(ProfileFragment())
-                        else -> {
-
-                        }
-                    }
-                    true
-                }
-            } else if (user == "S") {
-                setContentView(R.layout.s_activity_main)
-                navView = findViewById(R.id.s_bottom_navigation)
-                loadFragment(ExerciseFragment())
-                navView?.setOnItemSelectedListener {
-                    when (it.itemId) {
-                        R.id.exercise -> loadFragment(ExerciseFragment())
-                        R.id.diary -> loadFragment(DiaryFragment())
-                        R.id.profile -> loadFragment(ProfileFragment())
-                        else -> {
-
-                        }
-                    }
-                    true
-                }
+            //getRole()
+            val currentUser = Firebase.auth.currentUser
+            lateinit var email:String
+            var role = ""
+            currentUser?.let {
+                email = it.email.toString()
             }
+            database = Firebase.database.reference
+            Log.d("User",email.split("@")[0])
+            database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
+                if (it.exists()){
+                    role = it.child("role").value.toString()
+                    Log.d("User",role)
+                    user = role
+                    if (user == "C") {
+                        setContentView(R.layout.c_activity_main)
+                        navView = findViewById(R.id.c_bottom_navigation)
+                        loadFragment(SportsmensFragment())
+                        navView?.setOnItemSelectedListener {
+                            when (it.itemId) {
+                                R.id.sportsmens -> loadFragment(SportsmensFragment())
+                                R.id.groups -> loadFragment(GroupsFragment())
+                                R.id.profile -> loadFragment(ProfileFragment())
+                                else -> {
 
+                                }
+                            }
+                            true
+                        }
+                    } else if (user == "S") {
+                        setContentView(R.layout.s_activity_main)
+                        navView = findViewById(R.id.s_bottom_navigation)
+                        loadFragment(ExerciseFragment())
+                        navView?.setOnItemSelectedListener {
+                            when (it.itemId) {
+                                R.id.exercise -> loadFragment(ExerciseFragment())
+                                R.id.diary -> loadFragment(DiaryFragment())
+                                R.id.profile -> loadFragment(ProfileFragment())
+                                else -> {
+
+                                }
+                            }
+                            true
+                        }
+                    }
+
+                }else{
+                    Log.d("F","User does not exist")
+                }
+            }.addOnFailureListener{
+                Log.d("F","Failed fairbase")
+            }
+            //Log.d("User",role)
+            print(role)
+            Log.d("User",user)
+            //user = role
         }
     }
-    fun getRole(){
+    /*fun getRole(){
         val currentUser = Firebase.auth.currentUser
         lateinit var email:String
         currentUser?.let {
@@ -158,7 +181,7 @@ class MainActivity: AppCompatActivity()  {
         }.addOnFailureListener{
             Log.d("F","Failed fairbase")
         }
-    }
+    }*/
     override fun onBackPressed() {
         var currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
         var currentFragment1 = supportFragmentManager.findFragmentById(R.id.fragment_groups)

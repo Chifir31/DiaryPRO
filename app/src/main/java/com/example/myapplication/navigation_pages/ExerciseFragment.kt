@@ -3,6 +3,7 @@ package com.example.myapplication.navigation_pages
 import AdapterExercise
 import android.os.Bundle
 import android.util.ArrayMap
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -57,6 +58,7 @@ class ExerciseFragment : Fragment() {
         val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
         dateTextView.text = dateFormat.format(currentDate)
 
+        //itemList = (requireActivity() as MainActivity).exerciseList
         val currentUser = Firebase.auth.currentUser
         lateinit var email: String
         currentUser?.let {
@@ -98,14 +100,30 @@ class ExerciseFragment : Fragment() {
             }
         }
 
+
+        itemList = tempList
+        if(itemList.size == 0){
+            itemList.apply {
+                put(
+                    email.split("@")[0],
+                    mutableListOf(
+                        Exercise("text","img","0","itemDesc","itemState","itemComm","itemId")
+                    )
+                )
+            }
+            Log.d("kill me1",itemList.size.toString())
+        }
+        Log.d("kill me",itemList.size.toString())
+
         val random = Random()
         val randomNumber = random.nextInt(1000)
         var date = Date()
-        itemList = tempList
+        //itemList = tempList
+        Log.d("Eee",itemList.size.toString())
         stateList = (requireActivity() as MainActivity).statemap
         itemList1 = (itemList[email.split("@")[0]]?.filter {
             val calendar = Calendar.getInstance()
-            calendar.time = Date(it.itemDate)
+            calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == date.date &&
                     calendar.get(Calendar.MONTH) == date.month &&
                     calendar.get(Calendar.YEAR) == date.year + 1900

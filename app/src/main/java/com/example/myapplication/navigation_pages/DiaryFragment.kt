@@ -252,7 +252,12 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
             dpd.datePicker.minDate = calendar.timeInMillis
             dpd.show()
         }
-        var tmp = (itemList[param2]?.filter {
+            val currentUser = Firebase.auth.currentUser
+            lateinit var email: String
+            currentUser?.let {
+                email = it.email.toString()
+            }
+        var tmp = (itemList[email.split("@")[0]]?.filter {
             val calendar = Calendar.getInstance()
             calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&

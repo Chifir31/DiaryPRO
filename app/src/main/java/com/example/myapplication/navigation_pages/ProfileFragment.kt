@@ -12,10 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
-import android.widget.DatePicker
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -25,6 +22,9 @@ import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Item
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 
 
@@ -33,12 +33,15 @@ class ProfileFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private lateinit var options_btn: ImageView
     private lateinit var edit_btn: ImageView
     private lateinit var lastname: EditText
+    private lateinit var profile_id: TextView
+    private lateinit var profile_login: TextView
     private lateinit var name: EditText
     private lateinit var datebirth: EditText
     private lateinit var logout_btn: TextView
     private lateinit var itemList: ArrayMap<String, String>
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
+    private lateinit var database: DatabaseReference
 override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,22 +64,25 @@ override fun onCreateView(
             //.error(R.drawable.error_image) // image to display if there is an error loading the actual image
             .into(myImageView)
         lastname = view.findViewById(R.id.profile_lastnameedit)
+        profile_id = view.findViewById(R.id.profile_id)
+        profile_login = view.findViewById(R.id.profile_login)
         name = view.findViewById(R.id.profile_nameedit)
         datebirth = view.findViewById(R.id.profile_datebirthedit)
         options_btn = view.findViewById(R.id.options_button)
         edit_btn = view.findViewById(R.id.edit_button)
         logout_btn = view.findViewById(R.id.logout_btn)
         Log.d("profileList",itemList.toString())
-        lastname.setText(itemList["lastname"].toString())
-        name.setText(itemList["firsname"].toString())
-        datebirth.setText(itemList["datebirth"].toString())
+        lastname.setText(itemList["lastName"].toString())
+        profile_id.setText(itemList["id"].toString())
+        profile_login.setText(itemList["login"].toString())
+        name.setText(itemList["firstName"].toString())
+        datebirth.setText(itemList["birthDate"].toString())
         logout_btn.setOnClickListener {
             //FirebaseAuth.getInstance().signOut() - Отключено на время отладки и разработки
             val preferences = requireContext().getSharedPreferences("my_prefs", MODE_PRIVATE)
             val editor = preferences.edit()
             editor.putBoolean("isLoggedIn", false)
             editor.apply()
-
             val intent = Intent(requireContext(), MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -99,9 +105,17 @@ override fun onCreateView(
                 DatePickerDialog(requireContext(), this, year, month, day).show()
                 datebirth.setError(null)}
             edit_btn.setOnClickListener {
-                itemList["lastname"]=lastname.text.toString()
-                itemList["firsname"]=name.text.toString()
-                itemList["datebirth"]=datebirth.text.toString()
+                Log.d("check", itemList.toString())
+                itemList["lastName"]=lastname.text.toString()
+                itemList["firstName"]=name.text.toString()
+                itemList["birthDate"]=datebirth.text.toString()
+                database = Firebase.database.reference
+                database.child("users").child(itemList["id"].toString()).setValue(itemList).addOnCompleteListener {
+                    Toast.makeText(requireContext(),"Insert done", Toast.LENGTH_LONG).show()
+                    Log.d("R","REG")
+                }.addOnFailureListener{err ->
+                    Toast.makeText(requireContext(),"Error ${err.message}", Toast.LENGTH_LONG).show()
+                }
                 editor.putString("profileList", Gson().toJson(itemList))
                 editor.apply()
                 options_btn.visibility = VISIBLE

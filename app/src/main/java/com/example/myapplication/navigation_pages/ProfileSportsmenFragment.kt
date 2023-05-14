@@ -12,16 +12,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
-import android.widget.DatePicker
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import java.util.*
 
@@ -31,6 +31,9 @@ class ProfileSportsmenFragment : Fragment(), DatePickerDialog.OnDateSetListener 
     private lateinit var options_btn: ImageView
     private lateinit var edit_btn: ImageView
     private lateinit var lastname: EditText
+    private lateinit var profile_id: TextView
+    private lateinit var profile_login: TextView
+    private lateinit var profile_coach: TextView
     private lateinit var name: EditText
     private lateinit var datebirth: EditText
     private lateinit var logout_btn: TextView
@@ -40,6 +43,7 @@ class ProfileSportsmenFragment : Fragment(), DatePickerDialog.OnDateSetListener 
     private lateinit var css: EditText
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
+    private lateinit var database: DatabaseReference
 override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,6 +66,9 @@ override fun onCreateView(
             //.error(R.drawable.error_image) // image to display if there is an error loading the actual image
             .into(myImageView)
         lastname = view.findViewById(R.id.profile_lastnameedit)
+        profile_id = view.findViewById(R.id.profile_id)
+        profile_login = view.findViewById(R.id.profile_login)
+        profile_coach = view.findViewById(R.id.profile_coach)
         name = view.findViewById(R.id.profile_nameedit)
         datebirth = view.findViewById(R.id.profile_datebirthedit)
         options_btn = view.findViewById(R.id.options_button)
@@ -71,19 +78,24 @@ override fun onCreateView(
         weight = view.findViewById(R.id.profile_weightedit)
         css = view.findViewById(R.id.profile_pulseedit)
         Log.d("profileList",itemList.toString())
-        var dateArray = itemList["datebirth"]?.split('/')
+        var dateArray = itemList["birthDate"]?.split('/')
         var day = dateArray?.get(0)?.toInt()
         var month = dateArray?.get(1)?.toInt()
         var year = dateArray?.get(2)?.toInt()
         Log.d("Check", Date().year.toString() +'|'+dateArray)
         var tmp1 = 0
-        if(Date().month.toInt()<= month!! && Date().day< day!!)
+        if(Date().month<= month!! && Date().day< day!!)
             tmp1=1
         Log.d("Check", (1900.toString() +"+"+Date().year.toString())+"-"+month+"|"+year+"-"+tmp1)
+
+        lastname.setText(itemList["lastName"].toString())
+        profile_id.setText(itemList["id"].toString())
+        profile_login.setText(itemList["login"].toString())
+        name.setText(itemList["firstName"].toString())
+        datebirth.setText(itemList["birthDate"].toString())
+        height.setText(itemList["height"].toString())
+        weight.setText(itemList["weight"].toString())
         css.setText((220 - ((1900+Date().year)- year!! -tmp1)).toString())
-        lastname.setText(itemList["lastname"].toString())
-        name.setText(itemList["firsname"].toString())
-        datebirth.setText(itemList["datebirth"].toString())
         logout_btn.setOnClickListener {
             //FirebaseAuth.getInstance().signOut() - Отключено на время отладки и разработки
             val preferences = requireContext().getSharedPreferences("my_prefs", MODE_PRIVATE)
@@ -117,11 +129,12 @@ override fun onCreateView(
                 DatePickerDialog(requireContext(), this, year, month, day).show()
                 datebirth.setError(null)}
             edit_btn.setOnClickListener {
-                itemList["lastname"]=lastname.text.toString()
-                itemList["firsname"]=name.text.toString()
-                itemList["datebirth"]=datebirth.text.toString()
-                editor.putString("profileList", Gson().toJson(itemList))
-                var dateArray = itemList["datebirth"]?.split('/')
+                itemList["lastName"]=lastname.text.toString()
+                itemList["firstName"]=name.text.toString()
+                itemList["birthDate"]=datebirth.text.toString()
+                itemList["weight"]=weight.text.toString()
+                itemList["height"]=height.text.toString()
+                var dateArray = itemList["birthDate"]?.split('/')
                 var day = dateArray?.get(0)?.toInt()
                 var month = dateArray?.get(1)?.toInt()
                 var year = dateArray?.get(2)?.toInt()
@@ -130,6 +143,15 @@ override fun onCreateView(
                 if(Date().month.toInt()<= month!! && Date().day< day!!)
                     tmp1=1
                 css.setText((220 - ((1900+Date().year)- year!! -tmp1)).toString())
+                itemList["css"]=css.text.toString()
+                database = Firebase.database.reference
+                database.child("users").child(itemList["id"].toString()).setValue(itemList).addOnCompleteListener {
+                    Toast.makeText(requireContext(),"Insert done", Toast.LENGTH_LONG).show()
+                    Log.d("R","REG")
+                }.addOnFailureListener{err ->
+                    Toast.makeText(requireContext(),"Error ${err.message}", Toast.LENGTH_LONG).show()
+                }
+                editor.putString("profileList", Gson().toJson(itemList))
                 editor.apply()
                 options_btn.visibility = VISIBLE
                 edit_btn.visibility = GONE

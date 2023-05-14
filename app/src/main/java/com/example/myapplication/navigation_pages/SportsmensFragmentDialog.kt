@@ -200,7 +200,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                     calendar.get(Calendar.YEAR) == selectedDate.year+1900
                     } as MutableList<Exercise>?)
                     adapter.notifyItemInserted(itemList[param2]?.size ?: 0)
-                    recyclerView.adapter = adapter
+                    //recyclerView.adapter = adapter
                     setupListeners()
                     Log.d("SportsmensFragment size", adapter.itemCount.toString())
                     Log.d("SportsmensFragment elements", "Item list: $itemList")

@@ -50,7 +50,7 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
         val weekday = now.get(Calendar.DAY_OF_WEEK)
         val dayOfWeek = 2; // Monday
         val days = dayOfWeek - weekday;
-        if (days < 0) currentMonday -= 7
+        currentMonday -= 7
         now.add(Calendar.DAY_OF_YEAR, days)
         fillWeekList(now)
     }
@@ -61,7 +61,7 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
         val weekday = now.get(Calendar.DAY_OF_WEEK)
         val dayOfWeek = 2; // Monday
         val days = dayOfWeek - weekday;
-        if (days < 0) currentMonday += 7
+        currentMonday += 7
         now.add(Calendar.DAY_OF_YEAR, days)
         fillWeekList(now)
     }

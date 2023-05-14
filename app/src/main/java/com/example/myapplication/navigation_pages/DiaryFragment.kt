@@ -83,9 +83,37 @@ class DiaryFragment : Fragment() {
             }else{
                 tempList = ArrayMap<String, MutableList<Exercise>>()
             }
+            itemList = tempList
+            val layoutManager = LinearLayoutManager(context)
+            recyclerView = view.findViewById(R.id.list)
+            recyclerView.layoutManager = layoutManager
+            adapter = AdapterExercise(itemList[email.split("@")[0]])
+            recyclerView.adapter = adapter
+
+            val currentDate = Date()
+            val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
+            dateTextView.text = dateFormat.format(currentDate)
+
+            calendarView = view.findViewById(R.id.CalendarView )
+            // Get the current time in milliseconds
+            val currentTimeMillis = System.currentTimeMillis()
+            val calendar = Calendar.getInstance()
+            val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+
+
+            // Calculate the start and end times for the current week
+            val daysFromMonday = if (currentDayOfWeek == Calendar.SUNDAY) 6 else currentDayOfWeek - 2
+            val weekStart = currentTimeMillis - daysFromMonday * 24 * 60 * 60 * 1000
+            val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
+
+            // Set the minimum and maximum dates for the calendar view to show only the current week
+            calendarView.minDate = weekStart
+            calendarView.maxDate = weekEnd
+
         }
 
-        itemList = tempList
+        /*itemList = tempList
         val layoutManager = LinearLayoutManager(context)
         recyclerView = view.findViewById(R.id.list)
         recyclerView.layoutManager = layoutManager
@@ -111,7 +139,7 @@ class DiaryFragment : Fragment() {
 
         // Set the minimum and maximum dates for the calendar view to show only the current week
         calendarView.minDate = weekStart
-        calendarView.maxDate = weekEnd
+        calendarView.maxDate = weekEnd*/
     }
 }
 

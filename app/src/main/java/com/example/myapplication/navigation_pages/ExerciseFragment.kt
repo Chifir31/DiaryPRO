@@ -67,6 +67,7 @@ class ExerciseFragment : Fragment() {
 
         var tempList = ArrayMap<String, MutableList<Exercise>>()
         database = Firebase.database.reference
+        Log.d("kill me2",email.split("@")[0])
         database.child("Exercise").child(email.split("@")[0]).get().addOnSuccessListener {
             if(it.exists()){
                 val children = it.children
@@ -79,6 +80,7 @@ class ExerciseFragment : Fragment() {
                     val itemState = it.child("itemState").getValue().toString()
                     val text = it.child("text").getValue().toString()
 
+                    Log.d("kill me2",itemDate)
                     if(tempList[email.split("@")[0]]==null){
                         tempList.apply {
                             put(
@@ -89,19 +91,55 @@ class ExerciseFragment : Fragment() {
                             )
 
                         }
+
                     }else{
                         tempList[email.split("@")[0]]?.add(
                             Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
                         )
                     }
                 }
-            }else{
-                tempList = ArrayMap<String, MutableList<Exercise>>()
+
+
             }
+            itemList = tempList
+            Log.d("size1",itemList.size.toString())
+
+            Log.d("kill me",itemList.size.toString())
+
+            val random = Random()
+            val randomNumber = random.nextInt(1000)
+            var date = Date()
+            //itemList = tempList
+            Log.d("Eee",itemList.size.toString())
+            stateList = (requireActivity() as MainActivity).statemap
+            itemList1 = (itemList[email.split("@")[0]]?.filter {
+                val calendar = Calendar.getInstance()
+                calendar.time = Date(it.itemDate.toLong())
+                calendar.get(Calendar.DAY_OF_MONTH) == date.date &&
+                        calendar.get(Calendar.MONTH) == date.month &&
+                        calendar.get(Calendar.YEAR) == date.year + 1900
+            } as MutableList<Exercise>)
+            val layoutManager = LinearLayoutManager(context)
+            recyclerView = view.findViewById(R.id.list)
+            recyclerView.layoutManager = layoutManager
+            adapter = AdapterExercise(itemList1)
+            recyclerView.adapter = adapter
+            adapter.setOnOpenClickListener(object : AdapterExercise.OnOpenClickListener {
+                override fun onOpenClick(position: Int) {
+                    val exercise = itemList1[position]
+                    val fragment = ExerciseFragmentDialog.newInstance(exercise.text, exercise.itemId, position)
+                    val fragmentManager = (requireContext() as AppCompatActivity).supportFragmentManager
+                    fragmentManager.beginTransaction()
+                        .replace(R.id.fragment_exercise, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+            })
         }
 
 
-        itemList = tempList
+        /*itemList = tempList
+        Log.d("size2",itemList.size.toString())
         if(itemList.size == 0){
             itemList.apply {
                 put(
@@ -111,7 +149,6 @@ class ExerciseFragment : Fragment() {
                     )
                 )
             }
-            Log.d("kill me1",itemList.size.toString())
         }
         Log.d("kill me",itemList.size.toString())
 
@@ -143,6 +180,6 @@ class ExerciseFragment : Fragment() {
                     .addToBackStack(null)
                     .commit()
             }
-        })
+        })*/
     }
 }

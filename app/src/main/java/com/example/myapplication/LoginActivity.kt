@@ -81,6 +81,10 @@ class LoginActivity : AppCompatActivity() {
                                                 put("login", it.child("login").value.toString())
                                                 put("id", email_field.text.split("@")[0])
                                             }
+                                            editor.putString("profileList", Gson().toJson(profileList))
+                                            editor.apply()
+                                            val intent = Intent(this, MainActivity::class.java)
+                                            startActivity(intent)
                                         }
                                         else if (user == "S"){
                                             profileList = ArrayMap <String, String>().apply{
@@ -95,13 +99,14 @@ class LoginActivity : AppCompatActivity() {
                                                 put("css", it.child("css").value.toString())
                                                 put("coach", it.child("coach").value.toString())
                                             }
+                                            editor.putString("profileList", Gson().toJson(profileList))
+                                            editor.apply()
+                                            val intent = Intent(this, MainActivity::class.java)
+                                            startActivity(intent)
                                         }
-                                        editor.putString("profileList", Gson().toJson(profileList))
-                                        editor.apply()
+
                                     }
                                 }
-                                val intent = Intent(this, MainActivity::class.java)
-                                startActivity(intent)
                             } else {
                                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_LONG)
                                     .show()

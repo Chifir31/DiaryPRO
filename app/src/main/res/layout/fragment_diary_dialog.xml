@@ -109,9 +109,30 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="15dp"
         android:layout_marginTop="10dp"
-        android:id="@+id/state_text"
+        android:id="@+id/date_text"
         android:textSize="15sp"
         android:layout_below="@id/plan_edit"
+        android:textColor="@color/gray"
+        android:text="Дата тренировки"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:id="@+id/date_edit"
+        android:gravity="center_vertical"
+        android:textSize="17sp"
+        android:layout_below="@id/date_text"
+        android:textColor="@color/white"
+        android:paddingStart="15dp"
+        android:background="@color/dark_gray"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/state_text"
+        android:textSize="15sp"
+        android:layout_below="@id/date_edit"
         android:textColor="@color/gray"
         android:text="Статус выполнения тренировки"/>
     <TextView
@@ -145,30 +166,4 @@
         android:background="@color/dark_gray"
         android:visibility="gone"
         />
-    <TextView
-        android:id="@+id/finish_btn"
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:paddingVertical="25dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="25dp"
-        android:layout_centerHorizontal="true"
-        android:background="@android:color/transparent"
-        android:text="Завершить тренировку"
-        android:textSize="20sp"
-        android:textColor="@color/red"
-        />
-    <TextView
-        android:id="@+id/save_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="45dp"
-        android:background="@android:color/transparent"
-        android:text="Сохранить"
-        android:textSize="20sp"
-        android:textColor="@color/red"
-        android:visibility="gone"/>
 </RelativeLayout>

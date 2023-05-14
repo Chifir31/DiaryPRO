@@ -72,6 +72,9 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
         }
         return ""
     }
+    fun getVisibility(position: Int) : Boolean{
+        return deleteButtonsVisible.contains(getItem(position))
+    }
     fun showDeleteButton(position: Int) {
         deleteButtonsVisible.add(getItem(position))
         notifyItemChanged(position)

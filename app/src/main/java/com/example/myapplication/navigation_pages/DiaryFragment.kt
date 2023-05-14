@@ -118,17 +118,18 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
     fun EditWindow(position: Int){
         val builder = AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen)
         val inflater = requireActivity().layoutInflater
-        val dialogLayout = inflater.inflate(R.layout.sportsmens_dialog_input, null)
+        val dialogLayout = inflater.inflate(R.layout.fragment_diary_dialog, null)
         val type = dialogLayout.findViewById<Spinner>(R.id.type_edit)
-        val sportsmen = dialogLayout.findViewById<TextView>(R.id.sportsmen_edit)
+        //val sportsmen = dialogLayout.findViewById<TextView>(R.id.sportsmen_edit)
         val toolbar_text = dialogLayout.findViewById<TextView>(R.id.toolbar_text)
         val edit_btn = dialogLayout.findViewById<ImageButton>(R.id.edit_button)
-        val plan = dialogLayout.findViewById<EditText>(R.id.plan_edit)
+        val plan = dialogLayout.findViewById<TextView>(R.id.plan_edit)
+        val state = dialogLayout.findViewById<TextView>(R.id.state_edit)
         var dateSelected = selectedDate
-        val status = dialogLayout.findViewById<TextView>(R.id.status_edit)
+        //val status = dialogLayout.findViewById<TextView>(R.id.status_edit)
 
         toolbar_text.setText("Тренировка")
-        date = dialogLayout.findViewById<TextView>(R.id.date_edit)
+        date = dialogLayout.findViewById(R.id.date_edit)
         val array = arrayOf("Плавание", "Бег", "Езда на велосипеде", "Лыжи", "ОФП")
         val adapterspinner =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
@@ -141,7 +142,7 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
         }
         state(false)
         type.adapter = adapterspinner
-        sportsmen.text = param2.toString()
+        //sportsmen.text = param2.toString()
         val calendar = Calendar.getInstance()
         val year = calendar.get(android.icu.util.Calendar.YEAR)
         val month = calendar.get(android.icu.util.Calendar.MONTH)
@@ -151,15 +152,8 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                     calendar.set(year, monthOfYear, dayOfMonth)
-                    val tpd = TimePickerDialog(requireContext(), TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                        val minuteInterval = (minute + 7) / 15 * 15
-                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                        calendar.set(Calendar.MINUTE, minuteInterval)
                         dateSelected = calendar.time
-                        date.text = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(dateSelected!!)
-                        date.setError(null)
-                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),true)
-                    tpd.show()
+                        date.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(dateSelected!!)
                     date.setError(null)
                 },
                 year,
@@ -180,45 +174,14 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
         date.setText(
             tmp1?.date.toString() + '.' + tmp1?.month.toString() + '.' + (tmp1?.year?.plus(
                 1900
-            )).toString()+ ' ' + tmp1?.hours.toString() + ':' + tmp1?.minutes.toString()
+            )).toString()
         )
-        status.setText(stateList[tmp?.get(position)?.itemState])
+        state.setText(stateList[position?.let { tmp?.get(it)?.itemState }].toString())
+        //status.setText(stateList[tmp?.get(position)?.itemState])
         Log.d("item", tmp.toString())
         type.setSelection(adapterspinner.getPosition(tmp?.get(position)?.text))
         Log.d("ItemDesc", tmp?.get(position)?.itemDesc.toString())
         plan.setText(tmp?.get(position)?.itemDesc.toString())
-        with(builder) {
-            setPositiveButton("Сохранить") { dialog, which ->
-                val random = Random()
-                val randomNumber = random.nextInt(1000)
-                tmp?.get(position)?.text = type.selectedItem.toString()
-                tmp?.get(position)?.img = "https://picsum.photos/200?random=$randomNumber"
-                tmp?.get(position)?.itemDate = dateSelected
-                tmp?.get(position)?.itemDesc = plan.text.toString()
-                //tmp?.get(position)?.itemId = "Item " + (size++).toString()
-                //(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString())
-                //itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString()))
-                adapter = AdapterExercise(itemList[param2]?.filter {
-                    val calendar = Calendar.getInstance()
-                    calendar.time = it.itemDate
-                    calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                            calendar.get(Calendar.MONTH) == selectedDate.month &&
-                            calendar.get(Calendar.YEAR) == selectedDate.year + 1900
-                } as MutableList<Exercise>?)
-                adapter.notifyItemInserted(itemList[param2]?.size ?: 0)
-                recyclerView.adapter = adapter
-                setupListeners()
-                //editor.putString("exerciseList", Gson().toJson(itemList))
-                //editor.apply()
-                Log.d("SportsmensFragment size", adapter.itemCount.toString())
-                Log.d("SportsmensFragment elements", "Item list: $itemList")
-                edit_btn.visibility= View.VISIBLE
-                state(false)
-            }//Log.d("Main","Positive")}
-            setNegativeButton("Отмена") { dialog, which -> Log.d("Main", "Negative")
-                edit_btn.visibility= View.VISIBLE
-                state(false)}
-        }
         builder.setView(dialogLayout)
         builder.show()
     }

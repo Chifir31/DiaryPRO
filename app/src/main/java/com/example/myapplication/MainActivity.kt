@@ -32,12 +32,12 @@ class MainActivity: AppCompatActivity()  {
     private lateinit var database: DatabaseReference
     val random = Random()
     val randomNumber = random.nextInt(1000)
-    /*var sportsmensList = arrayListOf<Item>(
+    var sportsmensList1 = arrayListOf<Item>(
         Item("Item 1", "https://picsum.photos/200?random=$randomNumber", "Item 1"),
         Item("Item 2", "https://picsum.photos/200?random=$randomNumber+1", "Item 2"),
         Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
         Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
-        Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
+        Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))
     var temp = arrayListOf<String>(
         "Anton",
         "Alexey")
@@ -77,11 +77,12 @@ class MainActivity: AppCompatActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
-        val sportsmensListJson = (preferences.getString("sportsmensList", null))
         var editor = preferences.edit()
         editor.putString("exerciseList", Gson().toJson(exerciseList1))
+        editor.putString("sportsmensList", Gson().toJson(sportsmensList1))
         //editor.putBoolean("isLoggedIn", false)
         editor.apply()
+        val sportsmensListJson = (preferences.getString("sportsmensList", null))
         sportsmensList = sportsmensListJson?.let {
             Gson().fromJson<MutableList<Item>>(it, object : TypeToken<ArrayList<Item>>() {}.type)
         } ?: arrayListOf()

@@ -1,30 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".navigation_pages.DiaryFragment"
     android:background="@color/black">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/date_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/gray"/>
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="@color/dark_gray"
+        app:titleTextColor="@color/gray"
+        android:layout_marginBottom="10dp">
+        <TextView
+            android:id="@+id/textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/gray"
+            android:textStyle="bold"
+            android:layout_marginStart="110dp"
+            android:text="Дневник тренировок"
+            />
+    </androidx.appcompat.widget.Toolbar>
 
-    <CalendarView
-        android:id="@+id/CalendarView"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:id="@+id/calendarLL"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/date_textview" />
+        android:background="@color/black"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id = "@+id/prevWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="prev"
+                android:textColor="@color/white"
+                android:background="@android:color/transparent" />
+
+            <TextView
+                android:id = "@+id/full_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Месяц д1-д1, год"
+                android:textSize="20sp"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:textColor="@color/teal_200"
+                android:textAlignment="center"
+                android:paddingVertical="10dp"
+                />
+
+            <Button
+                android:id = "@+id/nextWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="next"
+                android:textColor="@color/white"
+                android:background="@android:color/transparent"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:paddingVertical="5dp"
+                android:text="ПН"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:paddingVertical="5dp"
+                android:text="ВТ"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:paddingVertical="5dp"
+                android:text="СР"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:paddingVertical="5dp"
+                android:text="ЧТ"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:paddingVertical="5dp"
+                android:text="ПТ"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:paddingVertical="5dp"
+                android:text="СБ"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:paddingVertical="5dp"
+                android:text="ВС"/>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/CalendarView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            tools:listitem="@layout/calendar_cell" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="260dp"
         android:layout_below="@id/CalendarView"
         android:id="@+id/list"
+        android:scrollbars="vertical"
     />
 
-</RelativeLayout>
+</LinearLayout>

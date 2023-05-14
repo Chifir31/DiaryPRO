@@ -20,15 +20,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.example.myapplication.LoginActivity
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
-import com.example.myapplication.data.Item
-import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
+import java.util.*
 
 
-class ProfileFragment : Fragment(), DatePickerDialog.OnDateSetListener {
+class ProfileSportsmenFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private lateinit var myImageView: ImageView
     private lateinit var options_btn: ImageView
     private lateinit var edit_btn: ImageView
@@ -37,6 +35,9 @@ class ProfileFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private lateinit var datebirth: EditText
     private lateinit var logout_btn: TextView
     private lateinit var itemList: ArrayMap<String, String>
+    private lateinit var height: EditText
+    private lateinit var weight: EditText
+    private lateinit var css: EditText
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
 override fun onCreateView(
@@ -44,7 +45,7 @@ override fun onCreateView(
         savedInstanceState: Bundle?
     ): View? {
     // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.fragment_profile, container, false)
+    return inflater.inflate(R.layout.fragment_profile_s, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,7 +67,20 @@ override fun onCreateView(
         options_btn = view.findViewById(R.id.options_button)
         edit_btn = view.findViewById(R.id.edit_button)
         logout_btn = view.findViewById(R.id.logout_btn)
+        height = view.findViewById(R.id.profile_heightedit)
+        weight = view.findViewById(R.id.profile_weightedit)
+        css = view.findViewById(R.id.profile_pulseedit)
         Log.d("profileList",itemList.toString())
+        var dateArray = itemList["datebirth"]?.split('/')
+        var day = dateArray?.get(0)?.toInt()
+        var month = dateArray?.get(1)?.toInt()
+        var year = dateArray?.get(2)?.toInt()
+        Log.d("Check", Date().year.toString() +'|'+dateArray)
+        var tmp1 = 0
+        if(Date().month.toInt()<= month!! && Date().day< day!!)
+            tmp1=1
+        Log.d("Check", (1900.toString() +"+"+Date().year.toString())+"-"+month+"|"+year+"-"+tmp1)
+        css.setText((220 - ((1900+Date().year)- year!! -tmp1)).toString())
         lastname.setText(itemList["lastname"].toString())
         name.setText(itemList["firsname"].toString())
         datebirth.setText(itemList["datebirth"].toString())
@@ -89,6 +103,10 @@ override fun onCreateView(
             lastname.isFocusableInTouchMode = true
             name.isFocusable = true
             name.isFocusableInTouchMode = true
+            height.isFocusable = true
+            height.isFocusableInTouchMode = true
+            weight.isFocusable = true
+            weight.isFocusableInTouchMode = true
             val c: Calendar
             c = Calendar.getInstance()
             val year = c.get(Calendar.YEAR)
@@ -103,6 +121,15 @@ override fun onCreateView(
                 itemList["firsname"]=name.text.toString()
                 itemList["datebirth"]=datebirth.text.toString()
                 editor.putString("profileList", Gson().toJson(itemList))
+                var dateArray = itemList["datebirth"]?.split('/')
+                var day = dateArray?.get(0)?.toInt()
+                var month = dateArray?.get(1)?.toInt()
+                var year = dateArray?.get(2)?.toInt()
+                Log.d("Check", Date().year.toString() +'|'+dateArray)
+                var tmp1 = 0
+                if(Date().month.toInt()<= month!! && Date().day< day!!)
+                    tmp1=1
+                css.setText((220 - ((1900+Date().year)- year!! -tmp1)).toString())
                 editor.apply()
                 options_btn.visibility = VISIBLE
                 edit_btn.visibility = GONE
@@ -111,6 +138,10 @@ override fun onCreateView(
                 name.isFocusable = false
                 name.isFocusableInTouchMode = false
                 datebirth.isEnabled = false
+                height.isFocusable = false
+                weight.isFocusable = false
+                height.isFocusableInTouchMode = false
+                weight.isFocusableInTouchMode = false
             }
         }
 

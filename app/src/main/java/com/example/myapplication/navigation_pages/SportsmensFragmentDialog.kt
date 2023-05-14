@@ -1,9 +1,7 @@
 package com.example.myapplication.navigation_pages
 
 import AdapterExercise
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Canvas
@@ -20,10 +18,11 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.Adapters.AdapterCalendar
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
@@ -38,6 +37,7 @@ import com.google.gson.Gson
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.myapplication.databinding.FragmentSportsmensDialogBinding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -49,7 +49,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [SportsmensFragmentDialog.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener {
+class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener, AdapterCalendar.Listener {
     private lateinit var toolbar: Toolbar
     private lateinit var toolbar_text: TextView
     private lateinit var dateTextView: TextView
@@ -58,8 +58,8 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: AdapterExercise
     private lateinit var layoutManager: RecyclerView.LayoutManager
-    private lateinit var calendarView: CalendarView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
+    private lateinit var stateList: ArrayMap<Char, String>
     private lateinit var date: TextView
     private var selectedDate: Date = Date()
     private var size: Int = 0
@@ -69,6 +69,12 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
     private lateinit var database: DatabaseReference
+
+    lateinit var binding: FragmentSportsmensDialogBinding
+    private lateinit var layoutManager_calendar: RecyclerView.LayoutManager
+    private lateinit var calendarView: RecyclerView
+    private var adapter_calendar = AdapterCalendar(this)
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -114,7 +120,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             val sportsmen = dialogLayout.findViewById<TextView>(R.id.sportsmen_edit)
             date = dialogLayout.findViewById<TextView>(R.id.date_edit)
             val plan = dialogLayout.findViewById<EditText>(R.id.plan_edit)
-            val array = arrayOf("Плавание", "Интервальный бег")
+            val array = arrayOf("Плавание", "Бег", "Езда на велосипеде", "Лыжи", "ОФП")
             val adapterspinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
             // Set the adapter for the Spinner
             type.adapter = adapterspinner
@@ -127,15 +133,9 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             date.setOnClickListener{
                 val dpd = DatePickerDialog(requireContext(), DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                 calendar.set(year, monthOfYear, dayOfMonth)
-                val tpd = TimePickerDialog(requireContext(), TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                    val minuteInterval = (minute + 7) / 15 * 15
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                    calendar.set(Calendar.MINUTE, minuteInterval)
                     dateSelected = calendar.time
-                    date.text = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(dateSelected!!)
+                    date.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(dateSelected!!)
                     date.setError(null)
-                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),true)
-                tpd.show()
             }, year, month, day)
                 dpd.datePicker.minDate = calendar.timeInMillis
                 dpd.show()
@@ -221,10 +221,11 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         val toolbar_text = dialogLayout.findViewById<TextView>(R.id.toolbar_text)
         val edit_btn = dialogLayout.findViewById<ImageButton>(R.id.edit_button)
         val plan = dialogLayout.findViewById<EditText>(R.id.plan_edit)
+        val status = dialogLayout.findViewById<TextView>(R.id.status_edit)
         var dateSelected = selectedDate
         toolbar_text.setText("Тренировка")
         date = dialogLayout.findViewById<TextView>(R.id.date_edit)
-        val array = arrayOf("Плавание", "Интервальный бег")
+        val array = arrayOf("Плавание", "Бег", "Езда на велосипеде", "Лыжи", "ОФП")
         val adapterspinner =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
         // Set the adapter for the Spinner
@@ -246,15 +247,8 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                     calendar.set(year, monthOfYear, dayOfMonth)
-                    val tpd = TimePickerDialog(requireContext(), TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                        val minuteInterval = (minute + 7) / 15 * 15
-                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                        calendar.set(Calendar.MINUTE, minuteInterval)
                         dateSelected = calendar.time
-                        date.text = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(dateSelected!!)
-                        date.setError(null)
-                    }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE),true)
-                    tpd.show()
+                        date.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(dateSelected!!)
                     date.setError(null)
                 },
                 year,
@@ -276,8 +270,9 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         date.setText(
             tmp1?.date.toString() + '.' + tmp1?.month.toString() + '.' + (tmp1?.year?.plus(
                 1900
-            )).toString()+ ' ' + tmp1?.hours.toString() + ':' + tmp1?.minutes.toString()
+            )).toString()
         )
+        status.setText(stateList[tmp?.get(position)?.itemState])
         Log.d("item", tmp.toString())
         type.setSelection(adapterspinner.getPosition(tmp?.get(position)?.text))
         Log.d("ItemDesc", tmp?.get(position)?.itemDesc.toString())
@@ -331,6 +326,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        binding = FragmentSportsmensDialogBinding.inflate(layoutInflater)
     }
 
     override fun onCreateView(
@@ -394,53 +390,47 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         toolbar_text.setText("Дневник тренировок\n"+param1.toString())
         size = itemList["Item1"]?.size ?: 0
         add_button=view.findViewById(R.id.add_btn)
-        calendarView = view.findViewById(R.id.CalendarView )
+
+        calendarView = view.findViewById(R.id.CalendarView)
+        initCalendar()
+
+        stateList = (requireActivity() as MainActivity).statemap
         // Get the current time in milliseconds
         val currentTimeMillis = System.currentTimeMillis()
         val calendar = Calendar.getInstance()
         val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-
         // Calculate the start and end times for the current week
         val daysFromMonday = if (currentDayOfWeek == Calendar.SUNDAY) 6 else currentDayOfWeek - 2
         val weekStart = currentTimeMillis - daysFromMonday * 24 * 60 * 60 * 1000
         val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
         // Set the minimum and maximum dates for the calendar view to show only the current week
-        calendarView.minDate = weekStart
-        calendarView.maxDate = weekEnd
-        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            selectedDate = Calendar.getInstance().apply {
-                set(year, month, dayOfMonth)
-            }.time
-            val calendar = Calendar.getInstance()
-            val dateString = itemList[param2]?.get(0)?.itemDate
-            Log.d("StringDate", dateString.toString())
-            if(dateString!=null){
-                //val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                val date = Date(dateString.toLong())
-                if (date != null) {
-                    calendar.time = date
-                }
-            }
-            else
-                calendar.time = Date()
-            Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
-            Log.d("list", (itemList[param2]?.filter {
-                calendar.time = Date(it.itemDate.toLong())
-                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                        calendar.get(Calendar.MONTH) == selectedDate.month /*&&
-                        calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
-            adapter = AdapterExercise(itemList[param2]?.filter {
-                val calendar = Calendar.getInstance()
-                calendar.time = Date(it.itemDate.toLong())
-                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                        calendar.get(Calendar.MONTH) == selectedDate.month &&
-                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
-            } as MutableList<Exercise>?)
-            adapter.notifyDataSetChanged()
-            recyclerView.adapter = adapter
-            setupListeners()
 
-        }
+        //calendarView.minDate = weekStart
+        //calendarView.maxDate = weekEnd
+//        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+//            selectedDate = Calendar.getInstance().apply {
+//                set(year, month, dayOfMonth)
+//            }.time
+//            val calendar = Calendar.getInstance()
+//            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
+//            Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
+//            Log.d("list", (itemList[param2]?.filter {
+//                calendar.time = it.itemDate
+//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+//                        calendar.get(Calendar.MONTH) == selectedDate.month /*&&
+//                        calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
+//            adapter = AdapterExercise(itemList[param2]?.filter {
+//                val calendar = Calendar.getInstance()
+//                calendar.time = it.itemDate
+//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+//                        calendar.get(Calendar.MONTH) == selectedDate.month &&
+//                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
+//            } as MutableList<Exercise>?)
+//            adapter.notifyDataSetChanged()
+//            recyclerView.adapter = adapter
+//            setupListeners()
+//
+//        }
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         setHasOptionsMenu(true)
@@ -450,8 +440,8 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             val calendar = Calendar.getInstance()
             calendar.time = Date(it.itemDate)
             calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                    calendar.get(Calendar.MONTH) == selectedDate.month/* &&
-                    calendar.get(Calendar.YEAR) == selectedDate.year*/
+                    calendar.get(Calendar.MONTH) == selectedDate.month &&
+                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
         } as MutableList<Exercise>?)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
@@ -461,7 +451,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
                 // disable item removal based on swipe gesture
-                return Float.MAX_VALUE
+                return 0.5f
             }
             override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
                 val dragFlags = 0
@@ -475,6 +465,10 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             ): Boolean {
                 // Do nothing, we don't support drag and drop
                 return false
+            }
+            override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
+                // Adjust the swipe velocity threshold here (default is 2000f)
+                return 1000f
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -503,21 +497,29 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
             ) {//Log.d("SportsmensFragment", "onChildDraw called")
 
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    // Set the delete button visibility based on the swipe direction
+                    // Adjust the maximum swipe distance here
+                    val maxSwipeDistance = 400f  // Set your desired distance
                     //Log.d("SportsmensFragment", "onChildDraw surely called")
                     val itemView = viewHolder.itemView
-                    itemView.translationY = 0f
-                    //l
+                    val itemPosition = viewHolder.absoluteAdapterPosition
                     val deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
-                    itemView.translationX = dX
-                    // Draw the swipe background color
-//                    if(dX>0)
-//                      deleteBtn.visibility=VISIBLE
-//                    else
-//                        deleteBtn.visibility=GONE
+                    // Set the delete button visibility based on the swipe direction
+                    if (dX > 0) {
+                        deleteBtn.visibility = VISIBLE
+                    } else if (dX <= 0) {
+                        deleteBtn.visibility = GONE
+                    }
+                    //In case when deleteButton still in set when swipe to the right was weak
+                    if(adapter.getVisibility(itemPosition))
+                        deleteBtn.visibility = VISIBLE
 
-                }
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    // Restrict the item movement to the defined maximum swipe distance
+                    val limitedDX = when {
+                        dX > maxSwipeDistance -> maxSwipeDistance
+                        dX < -maxSwipeDistance -> -maxSwipeDistance
+                        else -> dX
+                    }
+                    super.onChildDraw(c, recyclerView, viewHolder, limitedDX, dY, actionState, isCurrentlyActive)}
             }
         }
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
@@ -558,5 +560,44 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener 
                 EditWindow(position)
             }
         })
+    }
+    private fun initCalendar() {
+
+        val dateFormat = SimpleDateFormat("d MMM yyyy, EE", Locale("ru"))
+        val date = dateFormat.format(Date())
+
+        val fullDate = view?.findViewById<TextView>(R.id.full_date)
+        calendarView.layoutManager =
+            GridLayoutManager(requireActivity(), 7 )
+        calendarView.adapter = adapter_calendar
+        if (fullDate != null) {
+            fullDate.text = date
+        }
+        adapter_calendar.fillWeekList(Calendar.getInstance())
+        view?.findViewById<Button>(R.id.prevWeek)
+            ?.setOnClickListener { adapter_calendar.previousWeekAction() }
+        view?.findViewById<Button>(R.id.nextWeek)
+            ?.setOnClickListener { adapter_calendar.nextWeekAction() }
+    }
+
+    override fun onClick(day: Date) {
+        val fullDate = view?.findViewById<TextView>(R.id.full_date)
+        val dateStr = SimpleDateFormat("d MMM yyyy, EE", Locale("ru")).format(day)
+        if (fullDate != null) {
+            fullDate.text = dateStr
+        }
+
+        Log.d("Day", day.date.toString() + " " +day.month.toString() + " " + day.year.toString()+1900)
+        adapter = AdapterExercise(itemList[param2]?.filter {
+            val calendar = Calendar.getInstance()
+            calendar.time = it.itemDate
+            calendar.get(Calendar.DAY_OF_MONTH) == day.date &&
+                    calendar.get(Calendar.MONTH) == day.month &&
+                calendar.get(Calendar.YEAR) == day.year+1900
+        } as MutableList<Exercise>?)
+        adapter.notifyDataSetChanged()
+        recyclerView.adapter = adapter
+        selectedDate=day
+        setupListeners()
     }
 }

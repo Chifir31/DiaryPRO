@@ -34,16 +34,16 @@
             android:layout_marginStart="10dp"
             android:background="@drawable/circular_background"
             android:scaleType="fitXY"/>
+
         <TextView
             android:id="@+id/item_text"
+            android:layout_width="245dp"
+            android:layout_height="match_parent"
             android:layout_toRightOf="@id/item_image"
-            android:layout_width="180dp"
             android:paddingVertical="30dp"
             android:textColor="@color/gray"
-            android:textStyle="bold"
             android:textSize="15sp"
-            android:layout_height="match_parent">
-        </TextView>
+            android:textStyle="bold"></TextView>
         
     </LinearLayout>
     <LinearLayout

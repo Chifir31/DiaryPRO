@@ -59,7 +59,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
     private lateinit var adapter: AdapterExercise
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
-    private lateinit var stateList: ArrayMap<Char, String>
+    private lateinit var stateList: ArrayMap<String, String>
     private lateinit var date: TextView
     private var selectedDate: Date = Date()
     private var size: Int = 0
@@ -590,7 +590,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
         Log.d("Day", day.date.toString() + " " +day.month.toString() + " " + day.year.toString()+1900)
         adapter = AdapterExercise(itemList[param2]?.filter {
             val calendar = Calendar.getInstance()
-            calendar.time = it.itemDate
+            calendar.time = Date(it.itemDate)
             calendar.get(Calendar.DAY_OF_MONTH) == day.date &&
                     calendar.get(Calendar.MONTH) == day.month &&
                 calendar.get(Calendar.YEAR) == day.year+1900

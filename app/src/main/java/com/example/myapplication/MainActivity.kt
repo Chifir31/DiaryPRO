@@ -39,7 +39,7 @@ class MainActivity: AppCompatActivity()  {
        Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
        Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
        Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
-    var temp = listOf<String>(
+    var temp = arrayListOf<String>(
         "Anton",
         "Alexey")
 
@@ -50,13 +50,13 @@ class MainActivity: AppCompatActivity()  {
 
     var tmp = arrayListOf<Exercise>(
 
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", 'p', "", "Item 1"),
-        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", 'p', "", "Item 2"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", 'p', "", "Item 3"))
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date().toString(), "JUST DO IT", "p", "", "Item 1"),
+        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+6", Date().toString(), "Kirby the world eater", "p", "", "Item 2"),
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date().toString(), "Kept you waiting, huh?", "p", "", "Item 3"))
     var tmp1 = arrayListOf<Exercise>(
-        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", 'p', "", "Item 1"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date(), "DO IT", 'p', "", "Item 2"),
-        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAPATA", 'p', "", "Item 3")
+        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+8", Date().toString(), "Keep on keeping on", "p", "", "Item 1"),
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date().toString(), "DO IT", "p", "", "Item 2"),
+        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+10", Date().toString(), "HAPATA", "p", "", "Item 3")
     )
     var exerciseList1 = ArrayMap<String, MutableList<Exercise>>().apply{
         put("Item 1", tmp)

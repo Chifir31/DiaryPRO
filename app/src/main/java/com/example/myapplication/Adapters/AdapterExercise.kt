@@ -12,6 +12,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import org.w3c.dom.Text
 import java.util.*
 
@@ -99,7 +102,19 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
     fun removeItem(position: Int) {
         hideDeleteButton(position)
         Log.d("Check", itemList.toString())
+
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+        val database = Firebase.database.reference
         itemList?.removeAt(position)
+        itemList?.let {
+            it[position].itemId
+            database.child("Exercise").child(email.split("@")[0])
+                .child(it[position].itemId).removeValue()
+        }
         Log.d("Check", itemList.toString())
         notifyDataSetChanged()
     }

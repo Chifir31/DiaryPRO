@@ -209,6 +209,8 @@ class ExerciseFragmentDialog : Fragment() {
                 Log.d("itemList", itemList.toString())
                 item?.itemCom = comment.text.toString()
                 comment1.setText(item?.itemCom)
+                database.child("Exercise").child(email.split("@")[0])
+                    .child(item?.itemId!!).child("itemCom").setValue(comment.text.toString())
 
                 val currentUser = Firebase.auth.currentUser
                 lateinit var email: String

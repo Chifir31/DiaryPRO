@@ -134,12 +134,15 @@
         android:textSize="15sp"
         android:layout_below="@id/state_edit"
         android:textColor="@color/gray"
-        android:text="Коментарий спортсмена"
+        android:text="Комментарий спортсмена"
         android:visibility="gone"/>
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/com1_edit"
+        android:textSize="17sp"
+        android:layout_height="110dp"
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
         android:layout_below="@id/com1_text"
         android:textColor="@color/white"
         android:background="@color/dark_gray"

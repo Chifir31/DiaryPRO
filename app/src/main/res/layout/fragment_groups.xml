@@ -10,40 +10,32 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="90dp"
-        android:orientation="horizontal"
         android:background="@color/dark_gray"
         android:layout_marginBottom="10dp"
         android:id="@+id/title1">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_alignParentEnd="true"
-            >
             <TextView
                 android:id="@+id/date_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:paddingVertical="30dp"
                 android:text="Place Holder"
+                android:gravity="center"
                 android:textSize="20sp"
+                android:layout_centerHorizontal="true"
                 android:textColor="@color/gray"
-                android:textStyle="bold"
-                android:layout_marginStart="100dp"
-                android:layout_marginEnd="70dp"
-                />
+                android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/addgroup"
-
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:src="@drawable/baseline_add_24"
                 android:paddingHorizontal="25dp"
+                android:layout_alignParentRight="true"
                 android:background="@android:color/transparent"
                 />
-        </LinearLayout>
+
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -51,6 +43,5 @@
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         tools:listitem="@layout/group_item"/>
 </RelativeLayout>

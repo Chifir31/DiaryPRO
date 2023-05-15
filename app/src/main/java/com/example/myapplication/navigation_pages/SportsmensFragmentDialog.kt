@@ -574,9 +574,9 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
             fullDate.text = date
         }
         adapter_calendar.fillWeekList(Calendar.getInstance())
-        view?.findViewById<Button>(R.id.prevWeek)
+        view?.findViewById<ImageButton>(R.id.prevWeek)
             ?.setOnClickListener { adapter_calendar.previousWeekAction() }
-        view?.findViewById<Button>(R.id.nextWeek)
+        view?.findViewById<ImageButton>(R.id.nextWeek)
             ?.setOnClickListener { adapter_calendar.nextWeekAction() }
     }
 

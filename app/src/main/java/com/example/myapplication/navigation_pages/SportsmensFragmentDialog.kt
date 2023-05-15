@@ -120,7 +120,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
             val sportsmen = dialogLayout.findViewById<TextView>(R.id.sportsmen_edit)
             date = dialogLayout.findViewById<TextView>(R.id.date_edit)
             val plan = dialogLayout.findViewById<EditText>(R.id.plan_edit)
-            val array = arrayOf("Плавание", "Бег", "Езда на велосипеде", "Лыжи", "ОФП")
+            val array = arrayOf("Плавание", "Бег", "Велосипед", "Лыжи", "ОФП")
             val adapterspinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
             // Set the adapter for the Spinner
             type.adapter = adapterspinner
@@ -225,7 +225,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
         var dateSelected = selectedDate
         toolbar_text.setText("Тренировка")
         date = dialogLayout.findViewById<TextView>(R.id.date_edit)
-        val array = arrayOf("Плавание", "Бег", "Езда на велосипеде", "Лыжи", "ОФП")
+        val array = arrayOf("Плавание", "Бег", "Велосипед", "Лыжи", "ОФП")
         val adapterspinner =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
         // Set the adapter for the Spinner

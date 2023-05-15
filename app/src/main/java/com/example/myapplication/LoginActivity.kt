@@ -3,6 +3,8 @@ package com.example.myapplication
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.ArrayMap
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -12,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 
 
 class LoginActivity : AppCompatActivity() {
@@ -20,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var pwd_field : EditText
     private lateinit var database: DatabaseReference
     lateinit var role: String
+    lateinit var profileList: ArrayMap<String, String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +66,47 @@ class LoginActivity : AppCompatActivity() {
                             pwd_field.text.toString()
                         ).addOnCompleteListener {
                             if (it.isSuccessful) {
-                                val intent = Intent(this, MainActivity::class.java)
-                                startActivity(intent)
+                                database = Firebase.database.reference
+                                var user = ""
+                                Log.d("check", email_field.text.split("@")[0])
+                                database.child("users").child(email_field.text.split("@")[0]).get().addOnSuccessListener {
+                                    if (it.exists()) {
+                                        user = it.child("role").value.toString()
+                                        if (user == "C") {
+                                            profileList = ArrayMap <String, String>().apply{
+                                                put("lastName", it.child("lastName").value.toString())
+                                                put("firstName", it.child("firstName").value.toString())
+                                                put("birthDate", it.child("birthDate").value.toString())
+                                                put("role", it.child("role").value.toString())
+                                                put("login", it.child("login").value.toString())
+                                                put("id", email_field.text.split("@")[0])
+                                            }
+                                            editor.putString("profileList", Gson().toJson(profileList))
+                                            editor.apply()
+                                            val intent = Intent(this, MainActivity::class.java)
+                                            startActivity(intent)
+                                        }
+                                        else if (user == "S"){
+                                            profileList = ArrayMap <String, String>().apply{
+                                                put("lastName", it.child("lastName").value.toString())
+                                                put("firstName", it.child("firstName").value.toString())
+                                                put("birthDate", it.child("birthDate").value.toString())
+                                                put("role", it.child("role").value.toString())
+                                                put("login", it.child("login").value.toString())
+                                                put("id", email_field.text.split("@")[0])
+                                                put("weight", it.child("weight").value.toString())
+                                                put("height", it.child("height").value.toString())
+                                                put("css", it.child("css").value.toString())
+                                                put("coach", it.child("coach").value.toString())
+                                            }
+                                            editor.putString("profileList", Gson().toJson(profileList))
+                                            editor.apply()
+                                            val intent = Intent(this, MainActivity::class.java)
+                                            startActivity(intent)
+                                        }
+
+                                    }
+                                }
                             } else {
                                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_LONG)
                                     .show()

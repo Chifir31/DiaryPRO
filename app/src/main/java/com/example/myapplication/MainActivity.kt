@@ -32,12 +32,13 @@ class MainActivity: AppCompatActivity()  {
     private lateinit var database: DatabaseReference
     val random = Random()
     val randomNumber = random.nextInt(1000)
-    /*var sportsmensList = arrayListOf<Item>(
-        Item("Item 1", "https://picsum.photos/200?random=$randomNumber", "Item 1"),
-        Item("Item 2", "https://picsum.photos/200?random=$randomNumber+1", "Item 2"),
-        Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
-        Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
-        Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
+
+    /*var sportsmensList1 = arrayListOf<Item>(
+       Item("Item 1", "https://picsum.photos/200?random=$randomNumber", "Item 1"),
+       Item("Item 2", "https://picsum.photos/200?random=$randomNumber+1", "Item 2"),
+       Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
+       Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
+       Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
     var temp = arrayListOf<String>(
         "Anton",
         "Alexey")
@@ -48,13 +49,14 @@ class MainActivity: AppCompatActivity()  {
     )
 
     var tmp = arrayListOf<Exercise>(
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date(), "JUST DO IT", 'p', "", "Item 1"),
-        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+6", Date(), "Kirby the world eater", 'p', "", "Item 2"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date(), "Kept you waiting, huh?", 'p', "", "Item 3"))
+
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+5", Date().toString(), "JUST DO IT", "p", "", "Item 1"),
+        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+6", Date().toString(), "Kirby the world eater", "p", "", "Item 2"),
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+7", Date().toString(), "Kept you waiting, huh?", "p", "", "Item 3"))
     var tmp1 = arrayListOf<Exercise>(
-        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+8", Date(), "Keep on keeping on", 'p', "", "Item 1"),
-        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date(), "DO IT", 'p', "", "Item 2"),
-        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+10", Date(), "HAPATA", 'p', "", "Item 3")
+        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+8", Date().toString(), "Keep on keeping on", "p", "", "Item 1"),
+        Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date().toString(), "DO IT", "p", "", "Item 2"),
+        Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+10", Date().toString(), "HAPATA", "p", "", "Item 3")
     )
     var exerciseList1 = ArrayMap<String, MutableList<Exercise>>().apply{
         put("Item 1", tmp)
@@ -65,23 +67,25 @@ class MainActivity: AppCompatActivity()  {
     lateinit var sportsmensList: MutableList<Item>
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
     lateinit var profileList: ArrayMap<String, String>
-    var user = "C"
+    lateinit var user: String
 
-    var statemap = ArrayMap<Char, String>().apply {
-        put('p', "Запланирована")
-        put('c',"Выполнена")
-        put('h', "Выполнена частично")
-        put('f', "Не выполнена")
+    var statemap = ArrayMap<String, String>().apply {
+        put("p", "Запланирована")
+        put("c","Выполнена")
+        put("h", "Выполнена частично")
+        put("f", "Не выполнена")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
+
+//        var editor = preferences.edit()
+//        editor.putString("exerciseList", Gson().toJson(exerciseList1))
+//        editor.putString("sportsmensList", Gson().toJson(sportsmensList1))
+//        editor.apply()
+        user = ""
         val sportsmensListJson = (preferences.getString("sportsmensList", null))
-        var editor = preferences.edit()
-        editor.putString("exerciseList", Gson().toJson(exerciseList1))
-        //editor.putBoolean("isLoggedIn", false)
-        editor.apply()
         sportsmensList = sportsmensListJson?.let {
             Gson().fromJson<MutableList<Item>>(it, object : TypeToken<ArrayList<Item>>() {}.type)
         } ?: arrayListOf()
@@ -106,20 +110,21 @@ class MainActivity: AppCompatActivity()  {
             editor.putString("sportsmensList", Gson().toJson(sportsmensList))
             Log.d("check", sportsmensList.toString())
             editor.apply()
-            //было сделано чтение из бд ^
-            //user = "C" //Надо сделать чтение из бд
+            //getRole()
             val currentUser = Firebase.auth.currentUser
             lateinit var email:String
+            var role = ""
             currentUser?.let {
                 email = it.email.toString()
             }
             database = Firebase.database.reference
+            Log.d("User",email.split("@")[0])
             database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
                 if (it.exists()){
-                    user = it.child("role").value.toString()
-                    Log.d("ROLE = ", user)
+                    role = it.child("role").value.toString()
+                    Log.d("User",role)
+                    user = role
                     if (user == "C") {
-                        Log.d("WAT", "WAT")
                         setContentView(R.layout.c_activity_main)
                         navView = findViewById(R.id.c_bottom_navigation)
                         loadFragment(SportsmensFragment())
@@ -142,7 +147,7 @@ class MainActivity: AppCompatActivity()  {
                             when (it.itemId) {
                                 R.id.exercise -> loadFragment(ExerciseFragment())
                                 R.id.diary -> loadFragment(DiaryFragment())
-                                R.id.profile -> loadFragment(ProfileSportsmenFragment())
+                                R.id.profile -> loadFragment(ProfileFragment())
                                 else -> {
 
                                 }
@@ -152,14 +157,35 @@ class MainActivity: AppCompatActivity()  {
                     }
 
                 }else{
-                    Log.d("Huiy","User does not exist")
+                    Log.d("F","User does not exist")
                 }
             }.addOnFailureListener{
-                Log.d("Huiy","Pizdec")
+                Log.d("F","Failed fairbase")
             }
-            Log.d("ROLE1 = ", user)
+            //Log.d("User",role)
+            print(role)
+            Log.d("User",user)
+            //user = role
         }
     }
+    /*fun getRole(){
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email:String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+        database = Firebase.database.reference
+        database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
+            if (it.exists()){
+                user = it.child("role").value.toString()
+
+            }else{
+                Log.d("F","User does not exist")
+            }
+        }.addOnFailureListener{
+            Log.d("F","Failed fairbase")
+        }
+    }*/
     override fun onBackPressed() {
         var currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
         var currentFragment1 = supportFragmentManager.findFragmentById(R.id.fragment_groups)

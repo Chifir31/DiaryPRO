@@ -23,6 +23,10 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
@@ -53,14 +57,14 @@ class ExerciseFragmentDialog : Fragment() {
     private lateinit var comment1_text: TextView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
     private lateinit var itemList1: MutableList<Exercise>
-    private lateinit var stateList: ArrayMap<Char, String>
+    private lateinit var stateList: ArrayMap<String, String>
     private var param1: String? = null
     private var param2: String? = null
     private var param3: Int? = null
     private lateinit var mainActivity: MainActivity
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
-
+    private lateinit var database: DatabaseReference
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -121,11 +125,113 @@ class ExerciseFragmentDialog : Fragment() {
         val random = Random()
         val randomNumber = random.nextInt(1000)
         var date = Date()
-        itemList = (requireActivity() as MainActivity).exerciseList
+
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+
+        var tempList = ArrayMap<String, MutableList<Exercise>>()
+        database = Firebase.database.reference
+        database.child("Exercise").child(email.split("@")[0]).get().addOnSuccessListener {
+            if(it.exists()){
+                val children = it.children
+                children.forEach{
+                    val img = it.child("img").getValue().toString()
+                    val itemComm = it.child("itemComm").getValue().toString()
+                    val itemDate = it.child("itemDate").getValue().toString()
+                    val itemDesc = it.child("itemDesc").getValue().toString()
+                    val itemId = it.child("itemId").getValue().toString()
+                    val itemState = it.child("itemState").getValue().toString()
+                    val text = it.child("text").getValue().toString()
+
+                    if(tempList[email.split("@")[0]]==null){
+                        tempList.apply {
+                            put(
+                                email.split("@")[0],
+                                mutableListOf(
+                                    Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                                )
+                            )
+
+                        }
+                    }else{
+                        tempList[email.split("@")[0]]?.add(
+                            Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                        )
+                    }
+                }
+            }else{
+                tempList = ArrayMap<String, MutableList<Exercise>>()
+            }
+            itemList = tempList
+            stateList = (requireActivity() as MainActivity).statemap
+            itemList1 = (itemList[email.split("@")[0]]?.filter {
+                val calendar = Calendar.getInstance()
+                calendar.time = Date(it.itemDate.toLong())
+                calendar.get(Calendar.DAY_OF_MONTH) == date.date &&
+                        calendar.get(Calendar.MONTH) == date.month &&
+                        calendar.get(Calendar.YEAR) == date.year+1900
+            } as MutableList<Exercise>)
+            toolbar_text.setText(param1.toString())
+            plan.setText(param3?.let { itemList1.get(it).itemDesc}.toString())
+            state.setText(stateList[param3?.let { itemList1.get(it).itemState }].toString())
+            if(param3?.let { itemList1.get(it).itemState }!="p"){
+                comment1.isVisible=true
+                comment1.setText(param3?.let { itemList1.get(it).itemCom}.toString())
+                comment1_text.isVisible=true
+            }
+            val array = arrayOf(stateList["c"], stateList["h"], stateList["f"])
+            val adapterspinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
+            // Set the adapter for the Spinner
+            type.adapter = adapterspinner
+            finish_btn.setOnClickListener {
+                val builder = AlertDialog.Builder(requireContext())
+                with(builder){
+                    setTitle("Завершить тренировку?")
+                    setPositiveButton("Да"){dialog, which->
+                        ChangeVisibility(false)
+                    }
+                    setNegativeButton("Нет"){dialog, which->
+                        dialog.dismiss()
+                    }
+                    builder.show()
+                }
+            }
+            save_btn.setOnClickListener {
+                val item = param3?.let { it1 -> itemList1.getOrNull(it1) }
+                item?.let {
+                    it.itemState = stateList.keyAt(stateList.indexOfValue(type.selectedItem.toString()))
+                }
+                Log.d("item", item.toString())
+                Log.d("itemList1", itemList1.toString())
+                Log.d("itemList", itemList.toString())
+                item?.itemCom = comment.text.toString()
+                comment1.setText(item?.itemCom)
+                database.child("Exercise").child(email.split("@")[0])
+                    .child(item?.itemId!!).child("itemCom").setValue(comment.text.toString())
+
+                val currentUser = Firebase.auth.currentUser
+                lateinit var email: String
+                currentUser?.let {
+                    email = it.email.toString()
+                }
+                database.child("Exercise").child(email.split("@")[0])
+                    .child(item?.itemId!!).child("itemState").setValue(item?.itemState)
+
+                editor.putString("exerciseList", Gson().toJson(itemList))
+                editor.apply()
+                state.setText(stateList[item?.itemState].toString())
+                ChangeVisibility(true)
+            }
+        }
+
+        /*itemList = tempList
         stateList = (requireActivity() as MainActivity).statemap
-        itemList1 = (itemList["Item 1"]?.filter {
+        itemList1 = (itemList[email.split("@")[0]]?.filter {
             val calendar = Calendar.getInstance()
-            calendar.time = it.itemDate
+            calendar.time = Date(it.itemDate)
             calendar.get(Calendar.DAY_OF_MONTH) == date.date &&
                     calendar.get(Calendar.MONTH) == date.month &&
                     calendar.get(Calendar.YEAR) == date.year+1900
@@ -133,12 +239,12 @@ class ExerciseFragmentDialog : Fragment() {
         toolbar_text.setText(param1.toString())
         plan.setText(param3?.let { itemList1.get(it).itemDesc}.toString())
         state.setText(stateList[param3?.let { itemList1.get(it).itemState }].toString())
-        if(param3?.let { itemList1.get(it).itemState }!='p'){
+        if(param3?.let { itemList1.get(it).itemState }!="p"){
             comment1.isVisible=true
             comment1.setText(param3?.let { itemList1.get(it).itemCom}.toString())
             comment1_text.isVisible=true
         }
-        val array = arrayOf(stateList['c'], stateList['h'], stateList['f'])
+        val array = arrayOf(stateList["c"], stateList["h"], stateList["f"])
         val adapterspinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
         // Set the adapter for the Spinner
         type.adapter = adapterspinner
@@ -165,11 +271,20 @@ class ExerciseFragmentDialog : Fragment() {
             Log.d("itemList", itemList.toString())
             item?.itemCom = comment.text.toString()
             comment1.setText(item?.itemCom)
+
+            val currentUser = Firebase.auth.currentUser
+            lateinit var email: String
+            currentUser?.let {
+                email = it.email.toString()
+            }
+            database.child("Exercise").child(email.split("@")[0])
+                .child(item?.itemId!!).child("itemState").setValue(item?.itemState)
+
             editor.putString("exerciseList", Gson().toJson(itemList))
             editor.apply()
             state.setText(stateList[item?.itemState].toString())
             ChangeVisibility(true)
-        }
+        }*/
     }
 fun ChangeVisibility(bool: Boolean){
     plan.isVisible = bool

@@ -13,6 +13,9 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import org.w3c.dom.Text
@@ -109,13 +112,24 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
             email = it.email.toString()
         }
         val database = Firebase.database.reference
-        itemList?.removeAt(position)
         itemList?.let {
-            it[position].itemId
+            //it[position].itemId
             database.child("Exercise").child(email.split("@")[0])
-                .child(it[position].itemId).removeValue()
+                .child(it[position].itemId).addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        itemList?.removeAt(position)
+                        Log.d("Check", itemList.toString())
+                        notifyDataSetChanged()
+                        snapshot.ref.removeValue()
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+
+                })
+            Log.d("Del",it[position].itemId)
         }
-        Log.d("Check", itemList.toString())
-        notifyDataSetChanged()
+
     }
 }

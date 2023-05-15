@@ -8,11 +8,8 @@ import android.util.Log
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.Button
-import android.widget.EditText
+import android.widget.*
 import androidx.fragment.app.Fragment
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -41,7 +38,7 @@ import java.util.*
 class SportsmensFragment : Fragment() {
     private lateinit var toolbar: Toolbar
     private lateinit var dateTextView: TextView
-    private lateinit var add_button: Button
+    private lateinit var add_button: ImageButton
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: AdapterSportsmens
     private lateinit var layoutManager: RecyclerView.LayoutManager

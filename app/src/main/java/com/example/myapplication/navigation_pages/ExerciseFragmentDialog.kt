@@ -186,6 +186,15 @@ class ExerciseFragmentDialog : Fragment() {
             val adapterspinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
             // Set the adapter for the Spinner
             type.adapter = adapterspinner
+            val item = param3?.let { it1 -> itemList1.getOrNull(it1) }
+            item?.let {
+                if(it.itemState == "p"){
+                    finish_btn.isVisible = true
+                }
+                else {
+                finish_btn.isVisible = false
+            }
+            }
             finish_btn.setOnClickListener {
                 val builder = AlertDialog.Builder(requireContext())
                 with(builder){
@@ -286,12 +295,21 @@ class ExerciseFragmentDialog : Fragment() {
             ChangeVisibility(true)
         }*/
     }
-fun ChangeVisibility(bool: Boolean){
+@RequiresApi(Build.VERSION_CODES.Q)
+fun ChangeVisibility(bool: Boolean) {
     plan.isVisible = bool
     plan_text.isVisible = bool
     state.isVisible = bool
     state_text.isVisible = bool
-    finish_btn.isVisible = bool
+    val item = param3?.let { it1 -> itemList1.getOrNull(it1) }
+    item?.let {
+        if(it.itemState == "p"){
+            finish_btn.isVisible = true
+        }
+        else {
+            finish_btn.isVisible = false
+        }
+    }
     comment1.isVisible = bool
     comment1_text.isVisible = bool
     type.isVisible = !bool

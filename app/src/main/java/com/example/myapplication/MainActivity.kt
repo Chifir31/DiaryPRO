@@ -147,7 +147,7 @@ class MainActivity: AppCompatActivity()  {
                             when (it.itemId) {
                                 R.id.exercise -> loadFragment(ExerciseFragment())
                                 R.id.diary -> loadFragment(DiaryFragment())
-                                R.id.profile -> loadFragment(ProfileFragment())
+                                R.id.profile -> loadFragment(ProfileSportsmenFragment())
                                 else -> {
 
                                 }

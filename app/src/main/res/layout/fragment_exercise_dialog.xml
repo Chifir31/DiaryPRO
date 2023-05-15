@@ -161,6 +161,7 @@
         android:text="Завершить тренировку"
         android:textSize="20sp"
         android:textColor="@color/red"
+        android:visibility="gone"
         />
     <TextView
         android:id="@+id/save_btn"

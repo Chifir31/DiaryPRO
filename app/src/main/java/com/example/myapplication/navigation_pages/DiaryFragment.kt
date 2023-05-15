@@ -37,6 +37,7 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
     private lateinit var adapter: AdapterExercise
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
+    private lateinit var itemList1: MutableList<Exercise>
     private  lateinit var  database: DatabaseReference
     private lateinit var stateList: ArrayMap<Char, String>
     private lateinit var date: TextView
@@ -111,12 +112,21 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
                 tempList = ArrayMap<String, MutableList<Exercise>>()
             }
             itemList = tempList
-            val layoutManager = LinearLayoutManager(context)
-            recyclerView = view.findViewById(R.id.list)
-            recyclerView.layoutManager = layoutManager
-            adapter = AdapterExercise(itemList[email.split("@")[0]])
-            recyclerView.adapter = adapter
 
+            Log.d("Eee",itemList.size.toString())
+            recyclerView = view.findViewById(R.id.list)
+            itemList1 = (itemList[email.split("@")[0]]?.filter {
+                val calendar = Calendar.getInstance()
+                calendar.time = Date(it.itemDate.toLong())
+                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+                        calendar.get(Calendar.MONTH) == selectedDate.month &&
+                        calendar.get(Calendar.YEAR) == selectedDate.year + 1900
+            } as MutableList<Exercise>)
+            val layoutManager = LinearLayoutManager(context)
+            recyclerView.layoutManager = layoutManager
+            adapter = AdapterExercise(itemList1)
+            recyclerView.adapter = adapter
+            setupListeners()
             val currentDate = Date()
             val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
             //dateTextView.text = dateFormat.format(currentDate)

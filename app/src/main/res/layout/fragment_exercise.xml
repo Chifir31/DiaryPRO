@@ -21,7 +21,8 @@
         android:textSize="20sp"
         android:textColor="@color/gray"
         android:textStyle="bold"
-        android:layout_marginStart="110dp"
+        android:gravity="center"
+        android:layout_gravity="center"
         />
     </androidx.appcompat.widget.Toolbar>
 

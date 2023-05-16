@@ -99,7 +99,7 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
         val itemOpenButton: TextView = itemView.findViewById(R.id.item_open_button)
         val itemDeleteButton: TextView = itemView.findViewById(R.id.item_delete_button)
     }
-    fun removeItem(position: Int) {
+    fun removeItem(position: Int, user: String) {
         hideDeleteButton(position)
         Log.d("Check", itemList.toString())
 
@@ -109,12 +109,19 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
             email = it.email.toString()
         }
         val database = Firebase.database.reference
-        itemList?.removeAt(position)
         itemList?.let {
+            Log.d("What", it.toString())
             it[position].itemId
-            database.child("Exercise").child(email.split("@")[0])
-                .child(it[position].itemId).removeValue()
+            database.child("Exercise").child(user)
+                .child(it[position].itemId).ref.removeValue().addOnSuccessListener {
+                    // Value removed successfully
+                    Log.d("S", "S")
+                }.addOnFailureListener{
+                    Log.d("F", "F")
+                }
+            Log.d("checking", "email " + user + "item " + it[position].itemId + ", " + database.child("Exercise").child(user).child(it[position].itemId).toString())
         }
+        itemList?.removeAt(position)
         Log.d("Check", itemList.toString())
         notifyDataSetChanged()
     }

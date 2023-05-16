@@ -139,7 +139,7 @@ class ExerciseFragmentDialog : Fragment() {
                 val children = it.children
                 children.forEach{
                     val img = it.child("img").getValue().toString()
-                    val itemComm = it.child("itemComm").getValue().toString()
+                    val itemComm = it.child("itemCom").getValue().toString()
                     val itemDate = it.child("itemDate").getValue().toString()
                     val itemDesc = it.child("itemDesc").getValue().toString()
                     val itemId = it.child("itemId").getValue().toString()
@@ -179,7 +179,9 @@ class ExerciseFragmentDialog : Fragment() {
             state.setText(stateList[param3?.let { itemList1.get(it).itemState }].toString())
             if(param3?.let { itemList1.get(it).itemState }!="p"){
                 comment1.isVisible=true
-                comment1.setText(param3?.let { itemList1.get(it).itemCom}.toString())
+                val item = param3?.let { it1 -> itemList1.getOrNull(it1) }
+                Log.d("wat", item.toString() +" "+ item?.itemCom.toString())
+                comment1.setText(item?.itemCom)
                 comment1_text.isVisible=true
             }
             val array = arrayOf(stateList["c"], stateList["h"], stateList["f"])
@@ -192,7 +194,7 @@ class ExerciseFragmentDialog : Fragment() {
                     finish_btn.isVisible = true
                 }
                 else {
-                finish_btn.isVisible = false
+                    finish_btn.isVisible = false
             }
             }
             finish_btn.setOnClickListener {
@@ -217,10 +219,10 @@ class ExerciseFragmentDialog : Fragment() {
                 Log.d("itemList1", itemList1.toString())
                 Log.d("itemList", itemList.toString())
                 item?.itemCom = comment.text.toString()
+                Log.d("wat", item?.itemCom.toString())
                 comment1.setText(item?.itemCom)
                 database.child("Exercise").child(email.split("@")[0])
                     .child(item?.itemId!!).child("itemCom").setValue(comment.text.toString())
-
                 val currentUser = Firebase.auth.currentUser
                 lateinit var email: String
                 currentUser?.let {

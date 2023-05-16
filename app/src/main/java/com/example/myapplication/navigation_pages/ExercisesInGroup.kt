@@ -97,7 +97,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                 Log.d("SportsmensFragmentDialog size", adapter.itemCount.toString())
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
                 itemList[param2]?.removeAt(position)
-                adapter.removeItem(position)
+                param1?.let { adapter.removeItem(position, it) }
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
                 //adapter.notifyItemRemoved(position)
                 //recyclerView.adapter?.notifyItemRemoved(position)

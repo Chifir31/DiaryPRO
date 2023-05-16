@@ -24,6 +24,10 @@ import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
 import com.example.myapplication.databinding.FragmentSportsmensDialogBinding
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,6 +45,7 @@ private const val ARG_PARAM2 = "param2"
 class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
     // TODO: Rename and change types of parameters
     private lateinit var toolbar: Toolbar
+    private lateinit var database: DatabaseReference
     private lateinit var toolbar_text: TextView
     private lateinit var dateTextView: TextView
     private lateinit var add_button: TextView
@@ -49,7 +54,6 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: AdapterExercise
     private lateinit var layoutManager: RecyclerView.LayoutManager
-    //private lateinit var calendarView: CalendarView
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
     private lateinit var date: TextView
     private var selectedDate: Date = Date()
@@ -96,8 +100,15 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                 Log.d("SportsmensFragmentDialog position", position.toString())
                 Log.d("SportsmensFragmentDialog size", adapter.itemCount.toString())
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
-                itemList[param2]?.removeAt(position)
+                itemList[param1]?.removeAt(position)
                 adapter.removeItem(position)
+                val currentUser = Firebase.auth.currentUser
+                lateinit var email: String
+                currentUser?.let {
+                    email = it.email.toString()
+                }
+                database.child("groups").child(email.split("@")[0]).child(param1.toString())
+                    .child("exercises").setValue(itemList[param1])
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
                 //adapter.notifyItemRemoved(position)
                 //recyclerView.adapter?.notifyItemRemoved(position)
@@ -209,7 +220,18 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                 setPositiveButton("Добавить"){dialog, which->
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
-                    itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected.time.toString(), plan.text.toString(),"p", "", "Item "+(size++).toString()))
+                    var newExercise = Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected.time.toString(), plan.text.toString(),"p", "", "Item "+(size++).toString())
+                    itemList[param2]?.add(newExercise)
+                    val currentUser = Firebase.auth.currentUser
+                    lateinit var email: String
+                    currentUser?.let {
+                        email = it.email.toString()
+                    }
+                    database.child("groups").child(email.split("@")[0]).child(param1.toString())
+                        .child("exercises").setValue(itemList[param1])
+
+                    addExercises(newExercise)
+
                     adapter = AdapterExercise(itemList[param2]?.filter {
                         val calendar = Calendar.getInstance()
                         calendar.time = Date(it.itemDate)
@@ -227,6 +249,30 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
             }
             builder.setView(dialogLayout)
             builder.show()
+        }
+    }
+
+    private fun addExercises(newExercise: Exercise){
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+
+        var membersArray = mutableListOf<String>()
+        database.child("groups").child(email.split("@")[0]).child(param1.toString())
+            .child("members").get().addOnSuccessListener {
+                if (it.exists()){
+                    var children = it.children
+                    children.forEach {
+                        membersArray.add(it.getValue().toString())
+                    }
+                }else{
+                    membersArray = mutableListOf<String>()
+                }
+            }
+        membersArray.forEach {
+            database.child("Exercise").child(it).child(database.push().key.toString()).setValue(newExercise)
         }
     }
 
@@ -249,7 +295,57 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        itemList = (requireActivity() as MainActivity).exerciseList
+
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+        var tempList = ArrayMap<String, MutableList<Exercise>>()
+        database = Firebase.database.reference
+        database.child("groups").child(email.split("@")[0]).child(param1.toString())
+            .child("exercises").get().addOnSuccessListener {
+                if (it.exists()){
+                    val children = it.children
+                    children.forEach {
+                        val img = it.child("img").getValue().toString()
+                        val itemComm = it.child("itemComm").getValue().toString()
+                        val itemDate = it.child("itemDate").getValue().toString()
+                        val itemDesc = it.child("itemDesc").getValue().toString()
+                        val itemId = it.child("itemId").getValue().toString()
+                        val itemState = it.child("itemState").getValue().toString()
+                        val text = it.child("text").getValue().toString()
+
+                        if (tempList[param1.toString()] == null) {
+                            tempList.apply {
+                                put(
+                                    email.split("@")[0],
+                                    mutableListOf(
+                                        Exercise(
+                                            text,
+                                            img,
+                                            itemDate,
+                                            itemDesc,
+                                            itemState,
+                                            itemComm,
+                                            itemId
+                                        )
+                                    )
+                                )
+
+                            }
+                        } else {
+                            tempList[param1.toString()]?.add(
+                                Exercise(text, img, itemDate, itemDesc, itemState, itemComm, itemId)
+                            )
+                        }
+                    }
+                }else{
+                    tempList = ArrayMap<String, MutableList<Exercise>>()
+                }
+            }
+
+        itemList = tempList
         Log.d("Check param", param1.toString() + " "+ param2.toString())
         Log.d("Check getting list\n", itemList[param2].toString())
         toolbar = view.findViewById(R.id.toolbar)
@@ -268,7 +364,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                 .commit()
         }
 
-        size = itemList["Item1"]?.size ?: 0
+        size = itemList[param1]?.size ?: 0
         add_button=view.findViewById(R.id.add_btn)
 
         calendarView = view.findViewById(R.id.CalendarView)
@@ -283,34 +379,8 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
         val daysFromMonday = if (currentDayOfWeek == Calendar.SUNDAY) 6 else currentDayOfWeek - 2
         val weekStart = currentTimeMillis - daysFromMonday * 24 * 60 * 60 * 1000
         val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
-        // Set the minimum and maximum dates for the calendar view to show only the current week
 
-//        calendarView.minDate = weekStart
-//        calendarView.maxDate = weekEnd
-//        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-//            selectedDate = Calendar.getInstance().apply {
-//                set(year, month, dayOfMonth)
-//            }.time
-//            val calendar = Calendar.getInstance()
-//            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
-//            Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
-//            Log.d("list", (itemList[param2]?.filter {
-//                calendar.time = it.itemDate
-//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-//                        calendar.get(Calendar.MONTH) == selectedDate.month /*&&
-//                        calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
-//            adapter = AdapterExercise(itemList[param2]?.filter {
-//                val calendar = Calendar.getInstance()
-//                calendar.time = it.itemDate
-//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-//                        calendar.get(Calendar.MONTH) == selectedDate.month &&
-//                        calendar.get(Calendar.YEAR) == selectedDate.year+1900
-//            } as MutableList<Exercise>?)
-//            adapter.notifyDataSetChanged()
-//            recyclerView.adapter = adapter
-//            setupListeners()
-//
-//        }
+
 
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)

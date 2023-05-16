@@ -43,10 +43,10 @@ class MainActivity: AppCompatActivity()  {
         "Anton",
         "Alexey")
 
-    var GroupsList = arrayListOf<Group>(
+    /*var GroupsList = arrayListOf<Group>(
         Group("Item 1", "Item 1", temp),
         Group("Item 2", "Item 2", temp)
-    )
+    )*/
 
     var tmp = arrayListOf<Exercise>(
 

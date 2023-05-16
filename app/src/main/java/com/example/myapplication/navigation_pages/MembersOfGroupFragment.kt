@@ -19,6 +19,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Item
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -41,6 +49,7 @@ class MembersOfGroupFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var itemList: MutableList<Item>
+    private lateinit var database: DatabaseReference
     private var size : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +77,53 @@ class MembersOfGroupFragment : Fragment() {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        itemList = (requireActivity() as MainActivity).sportsmensList
+        database = Firebase.database.reference
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+
+        var membersArray = mutableListOf<String>()
+        database.child("groups").child(email.split("@")[0]).child(param1.toString())
+            .child("members").get().addOnSuccessListener {
+                if (it.exists()){
+                    var children = it.children
+                    children.forEach {
+                        membersArray.add(it.getValue().toString())
+                    }
+                }else{
+                    membersArray = mutableListOf<String>()
+                }
+            }
+
+        var tempList = mutableListOf<Item>()
+        membersArray.forEach {
+            database.child("users").child(it).addListenerForSingleValueEvent(object :
+                ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val random = Random()
+                    val randomNumber = random.nextInt(1000)
+                    val children = snapshot.children
+                    children.forEach {
+                        val value = it.getValue()
+                        val item = Item(
+                            value.toString(),
+                            "https://picsum.photos/200?random=$randomNumber",
+                            value.toString()
+                        )
+                        tempList.add(item)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+        }
+
+        itemList = tempList
         size = itemList.size+1
         recyclerView = view.findViewById(R.id.recycler_sportsmens)
         layoutManager = LinearLayoutManager(activity)
@@ -146,6 +201,11 @@ class MembersOfGroupFragment : Fragment() {
 
     fun ConfirmDelete(position: Int){
         val builder = AlertDialog.Builder(requireContext())
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
         with(builder){
             setTitle("Подтвердите удаление")
             setPositiveButton("Подтвердить"){dialog, which->
@@ -155,6 +215,9 @@ class MembersOfGroupFragment : Fragment() {
                 Log.d("SportsmensFragment position", position.toString())
                 Log.d("SportsmensFragment size", adapter.itemCount.toString())
                 Log.d("SportsmensFragment elements", "Item list: $itemList")
+                itemList.removeAt(position)
+                database.child("groups").child(email.split("@")[0]).child(param1.toString())
+                    .child("members").setValue(itemList)
                 adapter.removeItem(position)
                 //adapter.notifyItemRemoved(position)
                 //recyclerView.adapter?.notifyItemRemoved(position)

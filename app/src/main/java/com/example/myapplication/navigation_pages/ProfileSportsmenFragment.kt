@@ -38,7 +38,7 @@ class ProfileSportsmenFragment : Fragment(), DatePickerDialog.OnDateSetListener 
     private lateinit var profile_login: TextView
     private lateinit var profile_coach: TextView
     private lateinit var name: EditText
-    private lateinit var delete_btn: EditText
+    private lateinit var delete_btn: TextView
     private lateinit var datebirth: EditText
     private lateinit var logout_btn: TextView
     private lateinit var itemList: ArrayMap<String, String>

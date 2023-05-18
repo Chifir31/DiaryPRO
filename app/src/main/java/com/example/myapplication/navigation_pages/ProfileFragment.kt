@@ -43,7 +43,7 @@ class ProfileFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
     private lateinit var database: DatabaseReference
-    private lateinit var delete_btn: EditText
+    private lateinit var delete_btn: TextView
 override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

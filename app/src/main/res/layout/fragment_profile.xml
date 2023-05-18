@@ -204,6 +204,6 @@
         android:paddingVertical="25dp"
         android:text="Удалить профиль"
         android:textColor="@color/red"
-        android:layout_marginBottom="40sp"/>
+        android:layout_marginBottom="110sp"/>
 
 </RelativeLayout>

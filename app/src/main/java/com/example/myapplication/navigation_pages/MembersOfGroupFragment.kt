@@ -140,14 +140,18 @@ class MembersOfGroupFragment : Fragment() {
         recyclerView.adapter = adapter
 
         add_button = view.findViewById(R.id.add_button)
+        Log.d("new","F")
         add_button.setOnClickListener{
+            Log.d("new","D")
             val builder = AlertDialog.Builder(requireContext())
             val inflater = requireActivity().layoutInflater
             val dialogLayout = inflater.inflate(R.layout.c_activity_input, null)
             val edit = dialogLayout.findViewById<EditText>(R.id.input)
             with(builder){
+                Log.d("new","A")
                 setTitle("Введите ID спортсмена")
                 setPositiveButton("Добавить") { dialog, which ->
+                    Log.d("new","B")
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
                     database.child("users").child(edit.text.toString()).get().addOnSuccessListener{
@@ -174,6 +178,8 @@ class MembersOfGroupFragment : Fragment() {
                     }
                 }
             }
+            builder.setView(dialogLayout)
+            builder.show()
         }
 
         adapter.setOnDeleteClickListener(object : AdapterSportsmens.OnDeleteClickListener {

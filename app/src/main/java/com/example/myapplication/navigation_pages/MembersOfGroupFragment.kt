@@ -86,14 +86,16 @@ class MembersOfGroupFragment : Fragment() {
             email = it.email.toString()
         }
 
+        Log.d("param",param1.toString())
         var membersArray = mutableListOf<String>()
         database.child("groups").child(email.split("@")[0]).child(param1.toString())
             .child("members").get().addOnSuccessListener {
                 if (it.exists()){
                     var children = it.children
                     children.forEach {
-                        val member = it.getValue().toString()
-                        database.child("users").child(it.getValue().toString()).get().addOnSuccessListener {
+                        Log.d("param",it.child("name").getValue().toString())
+                        val member = it.child("name").getValue().toString()
+                        database.child("users").child(it.child("name").getValue().toString()).get().addOnSuccessListener {
                             if (it.exists()){
                                 membersArray.add(member)
                             }
@@ -130,6 +132,7 @@ class MembersOfGroupFragment : Fragment() {
 
             })
         }
+        Log.d("size",tempList.size.toString())
 
         itemList = tempList
         size = itemList.size+1
@@ -177,6 +180,7 @@ class MembersOfGroupFragment : Fragment() {
                         }
                     }
                 }
+                setNegativeButton("Отмена"){dialog, which-> Log.d("Main","Negative")}
             }
             builder.setView(dialogLayout)
             builder.show()

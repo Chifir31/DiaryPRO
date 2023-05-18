@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
@@ -90,7 +92,13 @@ class MembersOfGroupFragment : Fragment() {
                 if (it.exists()){
                     var children = it.children
                     children.forEach {
-                        membersArray.add(it.getValue().toString())
+                        val member = it.getValue().toString()
+                        database.child("users").child(it.getValue().toString()).get().addOnSuccessListener {
+                            if (it.exists()){
+                                membersArray.add(member)
+                            }
+                        }
+
                     }
                 }else{
                     membersArray = mutableListOf<String>()
@@ -130,6 +138,43 @@ class MembersOfGroupFragment : Fragment() {
         adapter = AdapterSportsmens(itemList)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
+
+        add_button = view.findViewById(R.id.add_button)
+        add_button.setOnClickListener{
+            val builder = AlertDialog.Builder(requireContext())
+            val inflater = requireActivity().layoutInflater
+            val dialogLayout = inflater.inflate(R.layout.c_activity_input, null)
+            val edit = dialogLayout.findViewById<EditText>(R.id.input)
+            with(builder){
+                setTitle("Введите ID спортсмена")
+                setPositiveButton("Добавить") { dialog, which ->
+                    val random = Random()
+                    val randomNumber = random.nextInt(1000)
+                    database.child("users").child(edit.text.toString()).get().addOnSuccessListener{
+                        if(it.exists()){
+                            val role = it.child("role").value.toString()
+                            if(role == "S"){
+                                val currentUser = Firebase.auth.currentUser
+                                lateinit var email: String
+                                currentUser?.let {
+                                    email = it.email.toString()
+                                }
+
+                                itemList.add(Item(
+                                    edit.text.toString(),
+                                    "https://picsum.photos/200?random=$randomNumber",
+                                    "Item " + (size++).toString()
+                                ))
+
+                                database.child("groups").child(email.split("@")[0])
+                                    .child(param1.toString()).child("members").setValue(itemList)
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         adapter.setOnDeleteClickListener(object : AdapterSportsmens.OnDeleteClickListener {
             override fun onDeleteClick(position: Int) {

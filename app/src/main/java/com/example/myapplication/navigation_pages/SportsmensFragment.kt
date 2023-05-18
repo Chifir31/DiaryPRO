@@ -87,12 +87,17 @@ class SportsmensFragment : Fragment() {
                             val children = snapshot!!.children
                             children.forEach {
                                 val value = it.getValue()
-                                val item = Item(
-                                    value.toString(),
-                                    "https://picsum.photos/200?random=$randomNumber",
-                                    value.toString()
-                                )
-                                tempList.add(item)
+                                database.child(value.toString()).get().addOnSuccessListener {
+                                    if (it.exists()){
+                                        val item = Item(
+                                            value.toString(),
+                                            "https://picsum.photos/200?random=$randomNumber",
+                                            value.toString()
+                                        )
+                                        tempList.add(item)
+                                    }
+                                }
+
                             }
                         }
 
@@ -237,7 +242,7 @@ class SportsmensFragment : Fragment() {
                                                 database.child(email.split("@")[0])
                                                     .child("list_of_sportsmen")
                                                     .push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
-                                            sportsmen_list.setValue(edit.text.toString())
+                                            //sportsmen_list.setValue(edit.text.toString())
                                             itemList.add(
                                                 Item(
                                                     edit.text.toString(),
@@ -245,6 +250,7 @@ class SportsmensFragment : Fragment() {
                                                     "Item " + (size++).toString()
                                              )
                                             )
+                                            sportsmen_list.setValue(itemList)
                                             adapter.notifyItemInserted(itemList.size)
                                             editor.putString("sportsmensList", Gson().toJson(itemList))
                                             editor.apply()

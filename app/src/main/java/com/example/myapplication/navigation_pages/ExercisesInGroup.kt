@@ -439,7 +439,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
         calendarView.layoutManager =
             GridLayoutManager(requireActivity(), 7 )
         calendarView.adapter = adapter_calendar
-        adapter_calendar.fillWeekList(Calendar.getInstance())
+        adapter_calendar.fillWeekList(Calendar.getInstance(), allExercise = itemList, itGroup = true)
 
         val currentWeek = view?.findViewById<TextView>(R.id.current_week)
         view?.findViewById<ImageButton>(R.id.prevWeek)

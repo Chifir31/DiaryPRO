@@ -120,11 +120,18 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
     fun fillStatusList(){
         var weekMapDate = ArrayMap<String, String>()
         val sdf = SimpleDateFormat("dd/MM/yyyy")
+        val weekDateList = ArrayList<String>()
         var position = -1
-        if (currentDay !in weekList){
-            val dayStr = SimpleDateFormat("dd/MM/yy", Locale("ru")).format(weekList[6])
-            val currDayStr =  SimpleDateFormat("dd/MM/yy", Locale("ru")).format(currentDay)
 
+        for (i in 0 until weekList.size){
+            val date = SimpleDateFormat("dd/MM/yy", Locale("ru")).format(weekList[i])
+            weekDateList.add(date)
+            weekMapDate[date] = "n"
+        }
+
+        val currDayStr =  SimpleDateFormat("dd/MM/yy", Locale("ru")).format(currentDay)
+        if (currDayStr !in weekMapDate.keys){
+            val dayStr = SimpleDateFormat("dd/MM/yy", Locale("ru")).format(weekList[6])
             val firstDate: Date = sdf.parse(dayStr) as Date
             val secondDate: Date = sdf.parse(currDayStr) as Date
             val cmp = firstDate.compareTo(secondDate)
@@ -132,6 +139,7 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
                 cmp > 0 -> {
                     while (statusList.size != 7) {
                         statusList.add("p")
+                        Log.d("Я тут!", "Так ведь?")
                     }
                     return
                 }
@@ -143,11 +151,9 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
 //                }
             }
         } else{
-            position = weekList.indexOf(currentDay)
+            position = weekDateList.indexOf(currDayStr)
         }
-        for (i in 0 until weekList.size){
-            weekMapDate[SimpleDateFormat("dd/MM/yy", Locale("ru")).format(weekList[i])] = "n"
-        }
+
         weekMapDate = getStatusWeek(weekMapDate)
         for (i in 0 until weekList.size){
             var status = weekMapDate[SimpleDateFormat("dd/MM/yy", Locale("ru")).format(weekList[i])]

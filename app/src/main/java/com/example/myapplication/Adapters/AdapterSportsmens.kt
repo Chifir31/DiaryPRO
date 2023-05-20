@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -16,7 +17,7 @@ import com.example.myapplication.navigation_pages.SportsmensFragmentDialog
 import java.util.*
 
 
-class AdapterSportsmens(private val itemList: MutableList<Item>) : RecyclerView.Adapter<AdapterSportsmens.ItemViewHolder>() {
+class AdapterSportsmens(private val itemList: MutableList<Item>, private val isOpenButtonEnabled: Boolean) : RecyclerView.Adapter<AdapterSportsmens.ItemViewHolder>() {
     val deleteButtonsVisible = mutableSetOf<String>()
     private var onDeleteClickListener: OnDeleteClickListener? = null
     interface OnDeleteClickListener {
@@ -42,16 +43,22 @@ class AdapterSportsmens(private val itemList: MutableList<Item>) : RecyclerView.
             .transform(CircleCrop())
             .into(holder.itemPicture)
         //holder.itemPicture.setImageResource(currentItem.)
-        holder.itemOpenButton.setOnClickListener {
-            Log.d("TAG", itemList.size.toString())
-            val exercise = itemList[position]
-            Log.d("check", currentItem.name.toString() + " " + currentItem.itemId.toString())
-            val fragment = SportsmensFragmentDialog.newInstance(currentItem.name, currentItem.itemId)
-            val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
-            fragmentManager.beginTransaction()
-                .replace(R.id.fragment_sportsmens, fragment)
-                .addToBackStack(null)
-                .commit()
+        if (isOpenButtonEnabled) {
+            holder.itemOpenButton.setOnClickListener {
+                Log.d("TAG", itemList.size.toString())
+                val exercise = itemList[position]
+                Log.d("check", currentItem.name.toString() + " " + currentItem.itemId.toString())
+                val fragment = SportsmensFragmentDialog.newInstance(currentItem.name, currentItem.itemId)
+                val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
+                fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_sportsmens, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        } else {
+            holder.itemOpenButton.setOnClickListener(null) // Disable the listener
+            holder.itemOpenButton.isEnabled = false // Optionally disable the button visually
+            holder.itemOpenButton.isVisible = false
         }
         holder.itemDeleteButton.setOnClickListener {
             // Delete item from list and update RecyclerView

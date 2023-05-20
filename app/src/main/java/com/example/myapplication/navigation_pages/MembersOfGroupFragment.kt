@@ -95,7 +95,7 @@ class MembersOfGroupFragment : Fragment() {
         size = itemList.size+1
         recyclerView = view.findViewById(R.id.recycler_sportsmens)
         layoutManager = LinearLayoutManager(activity)
-        adapter = AdapterSportsmens(itemList)
+        adapter = AdapterSportsmens(itemList, false)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
 

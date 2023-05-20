@@ -90,7 +90,6 @@ class MembersOfGroupFragment : Fragment() {
         database = Firebase.database.reference
         showInput()
         itemList = getMembers()
-
         Log.d("itemList",itemList.size.toString())
         size = itemList.size+1
         recyclerView = view.findViewById(R.id.recycler_sportsmens)
@@ -214,7 +213,6 @@ class MembersOfGroupFragment : Fragment() {
         val random = Random()
         val randomNumber = random.nextInt(1000)
         var membersArray = mutableListOf<Item>()
-        val task = CoroutineScope(IO).launch {
             val currentUser = Firebase.auth.currentUser
             lateinit var email: String
             currentUser?.let {
@@ -240,20 +238,14 @@ class MembersOfGroupFragment : Fragment() {
                                         )
                                     )
                                     Log.d("member", membersArray.size.toString())
+                                    adapter.notifyDataSetChanged()
                                 }
                             }
-
                         }
                     } else {
                         membersArray = mutableListOf<Item>()
                     }
                 }
-        }
-
-        runBlocking {
-            task.join()
-        }
-
         return membersArray
     }
 

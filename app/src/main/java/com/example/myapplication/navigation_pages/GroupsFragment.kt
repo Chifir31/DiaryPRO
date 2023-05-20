@@ -278,6 +278,7 @@ class GroupsFragment : Fragment() {
                         membersArray.add(it.getValue().toString())
                     }
                     groupsArrayList.add(Group(name,itemId, mutableListOf<String>(), mutableListOf<Exercise>()))
+                    adapter.notifyDataSetChanged()
                 }
             }
         }

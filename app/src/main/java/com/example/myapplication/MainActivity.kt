@@ -81,6 +81,8 @@ class MainActivity: AppCompatActivity()  {
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
 
 //        var editor = preferences.edit()
+//        editor.putBoolean("isLoggedIn", false)
+//        editor.apply()
 //        editor.putString("exerciseList", Gson().toJson(exerciseList1))
 //        editor.putString("sportsmensList", Gson().toJson(sportsmensList1))
 //        editor.apply()

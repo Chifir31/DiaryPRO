@@ -223,28 +223,38 @@ class SportsmensFragment : Fragment() {
                         if (it.exists()) {
                             //user = it.child("role").value.toString()
                             val role = it.child("role").value.toString()
-                            if (role == "S"){
+                            //database.child(edit.text.toString()).child("coach").setValue("")
+                            val coach = it.child("coach").value
+                            Log.d("coach", coach.toString())
+                            if (role == "S" && coach == ""){
                                 //Добавление спортсмена к тренеру
                                 val currentUser = Firebase.auth.currentUser
                                 lateinit var email: String
                                 currentUser?.let {
                                     email = it.email.toString()
                                 }
+                                database.child(edit.text.toString()).child("coach").setValue (email.split("@")[0])
                                 database.child(email.split("@")[0]).get()
                                     .addOnSuccessListener {
                                         if (it.exists()) {
                                             val sportsmen_list =
                                                 database.child(email.split("@")[0])
                                                     .child("list_of_sportsmen")
-                                                    .push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
-                                            sportsmen_list.setValue(edit.text.toString())
+                                                    //.push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
+                                            val sportsmanListKey = sportsmen_list.push().key.toString()
+                                            //sportsmen_list.setValue(edit.text.toString())
                                             itemList.add(
                                                 Item(
                                                     edit.text.toString(),
                                                     "https://picsum.photos/200?random=$randomNumber",
-                                                    "Item " + (size++).toString()
+                                                    sportsmanListKey
                                              )
                                             )
+                                            sportsmen_list.child(edit.text.toString()).setValue(Item(
+                                                edit.text.toString(),
+                                                "https://picsum.photos/200?random=$randomNumber",
+                                                sportsmanListKey
+                                            ))
                                             adapter.notifyItemInserted(itemList.size)
                                             editor.putString("sportsmensList", Gson().toJson(itemList))
                                             editor.apply()
@@ -260,6 +270,9 @@ class SportsmensFragment : Fragment() {
                                 Log.d("SportsmensFragment size", adapter.itemCount.toString())
                                 Log.d("SportsmensFragment elements", "Item list: $itemList")
 
+                            }
+                            else {
+                                Toast.makeText(requireContext(), "Занято", Toast.LENGTH_LONG).show()
                             }
                         }else{
                             Log.d("H","No sportsmen with such login")//Добавить вывод сообщения об ошибки
@@ -285,6 +298,8 @@ class SportsmensFragment : Fragment() {
     and the position, size, and elements of the itemList are logged for debugging purposes.*/
     fun ConfirmDelete(position: Int){
         val builder = AlertDialog.Builder(requireContext())
+        Log.d("SportsmensFragment elements", "Item list: $itemList")
+        Log.d("check", itemList[position].name)
         with(builder){
             setTitle("Подтвердите удаление")
             setPositiveButton("Подтвердить"){dialog, which->
@@ -294,10 +309,27 @@ class SportsmensFragment : Fragment() {
                 Log.d("SportsmensFragment position", position.toString())
                 Log.d("SportsmensFragment size", adapter.itemCount.toString())
                 Log.d("SportsmensFragment elements", "Item list: $itemList")
-                adapter.removeItem(position)
-                Log.d("SportsmensFragment elements", "Item list: $itemList")
-                editor.putString("sportsmensList", Gson().toJson(itemList))
-                editor.apply()
+                val currentUser = Firebase.auth.currentUser
+                lateinit var email: String
+                currentUser?.let {
+                    email = it.email.toString()
+                }
+                database.child(itemList[position].name).get().addOnSuccessListener {
+                    if (it.exists()) {
+                        Log.d("Suck", "SUCKSUCK")
+                        database.child(itemList[position].name).child("coach").setValue("")
+                        database.child(email.split("@")[0]).get().addOnSuccessListener {
+                            if (it.exists()) {
+                                Log.d("Suck", "SUCK")
+                                database.child(email.split("@")[0]).child("list_of_sportsmen").child(itemList[position].name).removeValue()
+                                adapter.removeItem(position)
+                                Log.d("SportsmensFragment elements", "Item list: $itemList")
+                                editor.putString("sportsmensList", Gson().toJson(itemList))
+                                editor.apply()
+                            }
+                        }
+                    }
+                }
                 //adapter.notifyItemRemoved(position)
                 //recyclerView.adapter?.notifyItemRemoved(position)
             }

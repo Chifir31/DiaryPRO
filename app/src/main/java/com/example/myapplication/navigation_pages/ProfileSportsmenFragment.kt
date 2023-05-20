@@ -19,7 +19,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -37,6 +41,7 @@ class ProfileSportsmenFragment : Fragment(), DatePickerDialog.OnDateSetListener 
     private lateinit var name: EditText
     private lateinit var datebirth: EditText
     private lateinit var logout_btn: TextView
+    private lateinit var unsign_btn: TextView
     private lateinit var itemList: ArrayMap<String, String>
     private lateinit var height: EditText
     private lateinit var weight: EditText
@@ -54,6 +59,8 @@ override fun onCreateView(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        database = Firebase.database.reference
+        database = database.child("users")
         preferences= requireContext().getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
         editor= preferences.edit()
         itemList = (requireActivity() as MainActivity).profileList
@@ -74,6 +81,7 @@ override fun onCreateView(
         options_btn = view.findViewById(R.id.options_button)
         edit_btn = view.findViewById(R.id.edit_button)
         logout_btn = view.findViewById(R.id.logout_btn)
+        unsign_btn = view.findViewById(R.id.unsign_btn)
         height = view.findViewById(R.id.profile_heightedit)
         weight = view.findViewById(R.id.profile_weightedit)
         css = view.findViewById(R.id.profile_pulseedit)
@@ -144,8 +152,7 @@ override fun onCreateView(
                     tmp1=1
                 css.setText((220 - ((1900+Date().year)- year!! -tmp1)).toString())
                 itemList["css"]=css.text.toString()
-                database = Firebase.database.reference
-                database.child("users").child(itemList["id"].toString()).setValue(itemList).addOnCompleteListener {
+                database.child(itemList["id"].toString()).setValue(itemList).addOnCompleteListener {
                     Toast.makeText(requireContext(),"Insert done", Toast.LENGTH_LONG).show()
                     Log.d("R","REG")
                 }.addOnFailureListener{err ->
@@ -166,7 +173,34 @@ override fun onCreateView(
                 weight.isFocusableInTouchMode = false
             }
         }
+        unsign_btn.setOnClickListener {
+            val currentUser = Firebase.auth.currentUser
+            lateinit var email: String
+            currentUser?.let {
+                email = it.email.toString()
+            }
+            val reference = database.child(email.split("@")[0]).child("coach")
+            reference.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(snapshotError: DatabaseError) {
+                    TODO("not implemented")
+                }
 
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        val value = snapshot.getValue()
+                        //var coach = database.child(email.split("@")[0]).child("coach").get()
+                        Log.d("check", value.toString())
+                        Log.d("check", email.split("@")[0])
+                        Log.d("check", database.child(email.split("@")[0]).toString())
+                        database.child(value.toString()).child("list_of_sportsmen")
+                            .child(email.split("@")[0]).removeValue()
+                        database.child(email.split("@")[0]).child("coach").setValue("")
+                    } else {
+                        // Key doesn't exist in the database
+                    }
+                }
+            })
+        }
     }
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         datebirth.setText("$dayOfMonth/$month/$year")

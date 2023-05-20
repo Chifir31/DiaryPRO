@@ -115,7 +115,7 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                                             database = Firebase.database.reference
                                             if (role == "S"){
                                                 val user = Sportsmen(lastname.text.toString(),firstname.text.toString(),
-                                                    username.text.toString(),editdate.text.toString(),role,"0","")
+                                                    username.text.toString(),editdate.text.toString(),role,"0","0", "", "")
                                                 database.child("users").child(username.text.toString().split("@")[0]).setValue(user).addOnCompleteListener {
                                                     Toast.makeText(this,"Insert done",Toast.LENGTH_LONG).show()
                                                     Log.d("R","REG")

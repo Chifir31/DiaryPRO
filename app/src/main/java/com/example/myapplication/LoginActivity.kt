@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         val btn_login: Button = findViewById(R.id.LoginBtn)
         email_field = findViewById(R.id.Email_field)
         pwd_field = findViewById(R.id.Pwd_field)
-        AMLAZYTOLOGIN(true)
+        AMLAZYTOLOGIN(false)
 
         btn_register.setOnClickListener{
             val intent = Intent(this, RegisterActivity::class.java)
@@ -124,7 +124,7 @@ class LoginActivity : AppCompatActivity() {
     }
     fun AMLAZYTOLOGIN(boolean: Boolean){
         if(boolean){
-            email_field.setText("abc@gmail.com")
+            email_field.setText("coach@gmail.com")
             pwd_field.setText("123456")}
         else {
             email_field.setText("def@gmail.com")

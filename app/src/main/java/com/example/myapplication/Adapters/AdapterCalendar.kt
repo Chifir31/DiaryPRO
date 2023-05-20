@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.databinding.CalendarCellBinding
@@ -91,8 +92,6 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
         }
         var date = now.getTime()
 
-        Log.d("FFF", now.get(Calendar.DAY_OF_WEEK).toString() )
-        Log.d("FFF", weekday.toString())
         if (now.get(Calendar.DAY_OF_WEEK) == weekday){
             fillStatusList()
         } else {
@@ -123,6 +122,11 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
         }
     }
 
+    fun setFirstLastDaysOfWeek(): String {
+        val firstDay = SimpleDateFormat("dd.MM.yy", Locale("ru")).format(weekList[0])
+        val lastDay = SimpleDateFormat("dd.MM.yy", Locale("ru")).format(weekList[6])
+        return "$firstDay - $lastDay"
+    }
 
     interface Listener{
         fun onClick(day: Date)

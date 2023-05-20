@@ -44,69 +44,33 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="match_parent"
+                <ImageButton
+                    android:id = "@+id/prevWeek"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:textAlignment="center"
-                    android:paddingVertical="5dp"
-                    android:text="ПН"/>
-                <TextView
-                    android:layout_width="match_parent"
+                    android:src="@drawable/baseline_arrow_left_24"
+                    android:background="@android:color/transparent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/current_week"
+                android:text="Текущая неделя"
+                android:gravity="center"
+                android:layout_weight="2"
+                android:textColor="@color/teal_200"
+                android:textSize="20sp"
+                android:paddingVertical="10dp"
+                />
+
+                <ImageButton
+                    android:id = "@+id/nextWeek"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:textAlignment="center"
-                    android:paddingVertical="5dp"
-                    android:text="ВТ"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:textAlignment="center"
-                    android:paddingVertical="5dp"
-                    android:text="СР"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:textAlignment="center"
-                    android:paddingVertical="5dp"
-                    android:text="ЧТ"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:textAlignment="center"
-                    android:paddingVertical="5dp"
-                    android:text="ПТ"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:textAlignment="center"
-                    android:paddingVertical="5dp"
-                    android:text="СБ"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:textAlignment="center"
-                    android:paddingVertical="5dp"
-                    android:text="ВС"/>
+                    android:src="@drawable/baseline_arrow_right_24"
+                    android:background="@android:color/transparent"/>
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -118,41 +82,17 @@
                 tools:listitem="@layout/calendar_cell" />
         </LinearLayout>
 
-
-        <LinearLayout
+        <TextView
+            android:id = "@+id/full_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id = "@+id/prevWeek"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/baseline_arrow_left_24"
-                android:background="@android:color/transparent" />
-
-            <TextView
-                android:id = "@+id/full_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Месяц д1-д1, год"
-                android:textSize="20sp"
-                android:layout_weight="2"
-                android:textStyle="bold"
-                android:textColor="@color/teal_200"
-                android:textAlignment="center"
-                android:paddingVertical="10dp"
-                />
-
-            <ImageButton
-                android:id = "@+id/nextWeek"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/baseline_arrow_right_24"
-                android:background="@android:color/transparent"/>
-        </LinearLayout>
+            android:text="Месяц д1-д1, год"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/teal_200"
+            android:gravity="center"
+            android:paddingVertical="10dp"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_sportsmens_dialog"

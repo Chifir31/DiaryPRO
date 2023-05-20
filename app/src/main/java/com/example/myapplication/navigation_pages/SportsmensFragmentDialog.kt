@@ -561,23 +561,35 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
             }
         })
     }
+
     private fun initCalendar() {
 
         val dateFormat = SimpleDateFormat("d MMM yyyy, EE", Locale("ru"))
         val date = dateFormat.format(Date())
 
         val fullDate = view?.findViewById<TextView>(R.id.full_date)
-        calendarView.layoutManager =
-            GridLayoutManager(requireActivity(), 7 )
-        calendarView.adapter = adapter_calendar
         if (fullDate != null) {
             fullDate.text = date
         }
+        calendarView.layoutManager =
+            GridLayoutManager(requireActivity(), 7 )
+        calendarView.adapter = adapter_calendar
         adapter_calendar.fillWeekList(Calendar.getInstance())
+
+        val currentWeek = view?.findViewById<TextView>(R.id.current_week)
         view?.findViewById<ImageButton>(R.id.prevWeek)
-            ?.setOnClickListener { adapter_calendar.previousWeekAction() }
+            ?.setOnClickListener { adapter_calendar.previousWeekAction()
+                if (currentWeek != null) {
+                    currentWeek.text = adapter_calendar.setFirstLastDaysOfWeek()
+                }}
         view?.findViewById<ImageButton>(R.id.nextWeek)
-            ?.setOnClickListener { adapter_calendar.nextWeekAction() }
+            ?.setOnClickListener { adapter_calendar.nextWeekAction()
+                if (currentWeek != null) {
+                    currentWeek.text = adapter_calendar.setFirstLastDaysOfWeek()
+                }}
+        if (currentWeek != null) {
+            currentWeek.text = adapter_calendar.setFirstLastDaysOfWeek()
+        }
     }
 
     override fun onClick(day: Date) {

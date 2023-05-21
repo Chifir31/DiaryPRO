@@ -245,16 +245,21 @@ class SportsmensFragment : Fragment() {
                                             val sportsmen_list =
                                                 database.child(email.split("@")[0])
                                                     .child("list_of_sportsmen")
-                                                    .push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
+                                            //.push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
+                                            val sportsmanListKey = sportsmen_list.push().key.toString()
                                             //sportsmen_list.setValue(edit.text.toString())
                                             itemList.add(
                                                 Item(
                                                     edit.text.toString(),
                                                     "https://picsum.photos/200?random=$randomNumber",
                                                     sportsmanListKey
-                                             )
+                                                )
                                             )
-                                            sportsmen_list.setValue(itemList)
+                                            sportsmen_list.child(edit.text.toString()).setValue(Item(
+                                                edit.text.toString(),
+                                                "https://picsum.photos/200?random=$randomNumber",
+                                                sportsmanListKey
+                                            ))
                                             adapter.notifyItemInserted(itemList.size)
                                             editor.putString("sportsmensList", Gson().toJson(itemList))
                                             editor.apply()

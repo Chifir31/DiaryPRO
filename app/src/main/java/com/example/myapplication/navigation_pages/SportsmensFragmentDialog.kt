@@ -97,7 +97,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                 Log.d("SportsmensFragmentDialog size", adapter.itemCount.toString())
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
                 itemList[param2]?.removeAt(position)
-                param1?.let { adapter.removeItem(position, it) }
+                param1?.let { adapter.removeItem(position) }
                 editor.putString("exerciseList", Gson().toJson(itemList))
                 editor.apply()
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")

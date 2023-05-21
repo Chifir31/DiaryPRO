@@ -473,7 +473,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                         else -> dX
                     }
                     super.onChildDraw(c, recyclerView, viewHolder, limitedDX, dY, actionState, isCurrentlyActive)
-                    }
+                }
             }
         }
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)

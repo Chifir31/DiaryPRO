@@ -102,7 +102,7 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
         val itemOpenButton: TextView = itemView.findViewById(R.id.item_open_button)
         val itemDeleteButton: TextView = itemView.findViewById(R.id.item_delete_button)
     }
-    fun removeItem(position: Int, user: String) {
+    fun removeItem(position: Int) {
         hideDeleteButton(position)
         Log.d("Check", itemList.toString())
 

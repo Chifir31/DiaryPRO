@@ -34,6 +34,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class SportsmensFragment : Fragment() {
     private lateinit var toolbar: Toolbar
@@ -87,17 +88,16 @@ class SportsmensFragment : Fragment() {
                             val children = snapshot!!.children
                             children.forEach {
                                 val value = it.getValue()
-                                database.child(value.toString()).get().addOnSuccessListener {
+                                Log.d("check",value.toString().split(",")[2].split("=")[1].split(")")[0])
                                     if (it.exists()){
                                         val item = Item(
-                                            value.toString(),
+                                            value.toString().split(",")[2].split("=")[1].substring(0,
+                                                value.toString().split(",")[2].split("=")[1].length-2),//Супер тупой костыль без которого крашимся ¯\_(ツ)_/¯
                                             "https://picsum.photos/200?random=$randomNumber",
-                                            value.toString()
+                                            value.toString().split(",")[0].split("=")[1]
                                         )
                                         tempList.add(item)
                                     }
-                                }
-
                             }
                         }
 

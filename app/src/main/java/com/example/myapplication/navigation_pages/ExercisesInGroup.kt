@@ -221,7 +221,8 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
                     var newExercise = Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected.time.toString(), plan.text.toString(),"p", "", "Item "+(size++).toString())
-                    itemList[param2]?.add(newExercise)
+                    itemList[param1]?.add(newExercise)
+                    Log.d("exec",itemList[param1]?.size.toString())
                     val currentUser = Firebase.auth.currentUser
                     lateinit var email: String
                     currentUser?.let {
@@ -229,8 +230,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                     }
                     database.child("groups").child(email.split("@")[0]).child(param1.toString())
                         .child("exercises").setValue(itemList[param1])
-
-                    addExercises(newExercise)
+                    Log.d("exec",newExercise.text)
 
                     adapter = AdapterExercise(itemList[param2]?.filter {
                         val calendar = Calendar.getInstance()
@@ -244,6 +244,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                     setupListeners()
                     Log.d("SportsmensFragment size", adapter.itemCount.toString())
                     Log.d("SportsmensFragment elements", "Item list: $itemList")
+                    addExercises(newExercise)
                 }//Log.d("Main","Positive")}
                 setNegativeButton("Отмена"){dialog, which-> Log.d("Main","Negative")}
             }
@@ -258,7 +259,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
         currentUser?.let {
             email = it.email.toString()
         }
-
+        Log.d("exec","check fun")
         var membersArray = mutableListOf<String>()
         database.child("groups").child(email.split("@")[0]).child(param1.toString())
             .child("members").get().addOnSuccessListener {
@@ -271,7 +272,9 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                     membersArray = mutableListOf<String>()
                 }
             }
+        Log.d("exec",membersArray.size.toString())
         membersArray.forEach {
+            Log.d("exec",it)
             database.child("Exercise").child(it).child(database.push().key.toString()).setValue(newExercise)
         }
     }

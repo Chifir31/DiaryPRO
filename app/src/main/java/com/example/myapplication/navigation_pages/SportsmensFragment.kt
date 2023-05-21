@@ -34,6 +34,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class SportsmensFragment : Fragment() {
     private lateinit var toolbar: Toolbar
@@ -87,12 +88,16 @@ class SportsmensFragment : Fragment() {
                             val children = snapshot!!.children
                             children.forEach {
                                 val value = it.getValue()
-                                val item = Item(
-                                    value.toString(),
-                                    "https://picsum.photos/200?random=$randomNumber",
-                                    value.toString()
-                                )
-                                tempList.add(item)
+                                Log.d("check",value.toString().split(",")[2].split("=")[1].split(")")[0])
+                                    if (it.exists()){
+                                        val item = Item(
+                                            value.toString().split(",")[2].split("=")[1].substring(0,
+                                                value.toString().split(",")[2].split("=")[1].length-2),//Супер тупой костыль без которого крашимся ¯\_(ツ)_/¯
+                                            "https://picsum.photos/200?random=$randomNumber",
+                                            value.toString().split(",")[0].split("=")[1]
+                                        )
+                                        tempList.add(item)
+                                    }
                             }
                         }
 
@@ -107,7 +112,7 @@ class SportsmensFragment : Fragment() {
         size = itemList.size+1
         recyclerView = view.findViewById(R.id.recycler_sportsmens)
         layoutManager = LinearLayoutManager(activity)
-        adapter = AdapterSportsmens(itemList)
+        adapter = AdapterSportsmens(itemList, true)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
         ShowInput()
@@ -240,8 +245,7 @@ class SportsmensFragment : Fragment() {
                                             val sportsmen_list =
                                                 database.child(email.split("@")[0])
                                                     .child("list_of_sportsmen")
-                                                    //.push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
-                                            val sportsmanListKey = sportsmen_list.push().key.toString()
+                                                    .push() //Хз нужен ли здесь push, но он должен фиксть ошибки с одновременным обращением к элементу
                                             //sportsmen_list.setValue(edit.text.toString())
                                             itemList.add(
                                                 Item(
@@ -250,11 +254,7 @@ class SportsmensFragment : Fragment() {
                                                     sportsmanListKey
                                              )
                                             )
-                                            sportsmen_list.child(edit.text.toString()).setValue(Item(
-                                                edit.text.toString(),
-                                                "https://picsum.photos/200?random=$randomNumber",
-                                                sportsmanListKey
-                                            ))
+                                            sportsmen_list.setValue(itemList)
                                             adapter.notifyItemInserted(itemList.size)
                                             editor.putString("sportsmensList", Gson().toJson(itemList))
                                             editor.apply()

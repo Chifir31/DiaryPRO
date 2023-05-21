@@ -17,11 +17,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.myapplication.MainActivity
+import com.example.myapplication.data.Exercise
 import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.*
@@ -76,39 +78,7 @@ class GroupsFragment : Fragment() {
         adapter = GroupsAdapter(groupsArrayList)
 
         recyclerView.adapter = adapter
-        //old
-        /*val swipeToDeleteCallback = object : SwipeGesture(){
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.absoluteAdapterPosition
-                ConfirmDelete(position)
-            }
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
 
-                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    // Set the delete button visibility based on the swipe direction
-                    val itemView = viewHolder.itemView
-                    val deleteBtn = itemView.findViewById<Button>(R.id.group_delete_button)
-                    if (dX > 0) {
-                        deleteBtn.visibility= View.VISIBLE
-                    } else if (dX < 0) {
-                        deleteBtn.visibility = View.GONE
-                    }
-                    itemView.translationX = dX
-                    // Draw the swipe background color
-                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                }
-            }
-        }
-
-        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)*/
         //new
         adapter.setOnDeleteClickListener(object : GroupsAdapter.OnDeleteClickListener {
             override fun onDeleteClick(position: Int) {
@@ -211,6 +181,17 @@ class GroupsFragment : Fragment() {
             setTitle("Подтвердите удаление")
             setPositiveButton("Подтвердить"){dialog, which->
                 Log.d("Main","Pos")
+                //groupsArrayList.removeAt(position)
+                //recyclerView.adapter?.notifyItemRemoved(position)
+                database = Firebase.database.reference
+
+                val currentUser = Firebase.auth.currentUser
+                lateinit var email: String
+                currentUser?.let {
+                    email = it.email.toString()
+                }
+
+                database.child("groups").child(email.split("@")[0]).child(groupsArrayList[position].name).removeValue()
                 groupsArrayList.removeAt(position)
                 recyclerView.adapter?.notifyItemRemoved(position)
             }
@@ -218,6 +199,7 @@ class GroupsFragment : Fragment() {
                 dialog.dismiss()
                 recyclerView.adapter?.notifyDataSetChanged()
             }
+
             builder.show()
         }
     }
@@ -255,14 +237,20 @@ class GroupsFragment : Fragment() {
         //val newGroup = Group(name,name)
         //new
         //val newGroup = Item(name,"https://picsum.photos/200?random",name)
-        val newGroup = Group(name,name,arrayListOf<String>())
+        val newGroup = Group(name,name,arrayListOf<String>(), mutableListOf<Exercise>())
         groupsArrayList.add(0,newGroup)
         adapter.notifyItemInserted(0)
 
         //rootNode = FirebaseDatabase.getInstance()
         database = Firebase.database.reference
 
-        database.child("groups").child(name).setValue(newGroup)
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
+
+        database.child("groups").child(email.split("@")[0]).child(name).setValue(newGroup)
     }
 
     /**
@@ -270,7 +258,29 @@ class GroupsFragment : Fragment() {
      * @author Севастьянов Иван
      */
     private fun dataInit(){
-        groupsArrayList = (requireActivity() as MainActivity).GroupsList
+        groupsArrayList = mutableListOf<Group>()
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
 
+        database = Firebase.database.reference
+        database.child("groups").child(email.split("@")[0]).get().addOnSuccessListener {
+            if(it.exists()){
+                var children = it.children
+                children.forEach{
+                    var name = it.child("name").getValue().toString()
+                    var itemId = it.child("itemId").getValue().toString()
+                    var membersArray = mutableListOf<String>()
+                    var members = it.child("members").children
+                    members.forEach {
+                        membersArray.add(it.getValue().toString())
+                    }
+                    groupsArrayList.add(Group(name,itemId, mutableListOf<String>(), mutableListOf<Exercise>()))
+                    adapter.notifyDataSetChanged()
+                }
+            }
+        }
     }
 }

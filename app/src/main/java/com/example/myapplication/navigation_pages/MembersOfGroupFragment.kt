@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Item
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -41,6 +58,7 @@ class MembersOfGroupFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var itemList: MutableList<Item>
+    private lateinit var database: DatabaseReference
     private var size : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,14 +85,19 @@ class MembersOfGroupFragment : Fragment() {
         toolbar_text.setText("Список спортсменов\n"+param1.toString())
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+        add_button = view.findViewById(R.id.add_button)
 
-        itemList = (requireActivity() as MainActivity).sportsmensList
+        database = Firebase.database.reference
+        showInput()
+        itemList = getMembers()
+        Log.d("itemList",itemList.size.toString())
         size = itemList.size+1
         recyclerView = view.findViewById(R.id.recycler_sportsmens)
         layoutManager = LinearLayoutManager(activity)
-        adapter = AdapterSportsmens(itemList)
+        adapter = AdapterSportsmens(itemList, false)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
+
 
         adapter.setOnDeleteClickListener(object : AdapterSportsmens.OnDeleteClickListener {
             override fun onDeleteClick(position: Int) {
@@ -144,8 +167,95 @@ class MembersOfGroupFragment : Fragment() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
+    private fun showInput(){
+        add_button.setOnClickListener{
+            val builder = AlertDialog.Builder(requireContext())
+            val inflater = requireActivity().layoutInflater
+            val dialogLayout = inflater.inflate(R.layout.c_activity_input, null)
+            val edit = dialogLayout.findViewById<EditText>(R.id.input)
+            with(builder){
+                setTitle("Введите ID спортсмена")
+                setPositiveButton("Добавить") { dialog, which ->
+                    Log.d("new","B")
+                    val random = Random()
+                    val randomNumber = random.nextInt(1000)
+                    database.child("users").child(edit.text.toString()).get().addOnSuccessListener{
+                        if(it.exists()){
+                            val role = it.child("role").value.toString()
+                            if(role == "S"){
+                                val currentUser = Firebase.auth.currentUser
+                                lateinit var email: String
+                                currentUser?.let {
+                                    email = it.email.toString()
+                                }
+
+                                itemList.add(Item(
+                                    edit.text.toString(),
+                                    "https://picsum.photos/200?random=$randomNumber",
+                                    "Item " + (size++).toString()
+                                ))
+
+                                database.child("groups").child(email.split("@")[0])
+                                    .child(param1.toString()).child("members").setValue(itemList)
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                }
+                setNegativeButton("Отмена"){dialog, which-> Log.d("Main","Negative")}
+            }
+            builder.setView(dialogLayout)
+            builder.show()
+        }
+    }
+
+    private fun getMembers(): MutableList<Item>{
+        val random = Random()
+        val randomNumber = random.nextInt(1000)
+        var membersArray = mutableListOf<Item>()
+            val currentUser = Firebase.auth.currentUser
+            lateinit var email: String
+            currentUser?.let {
+                email = it.email.toString()
+            }
+
+            Log.d("param", param1.toString())
+            database.child("groups").child(email.split("@")[0]).child(param1.toString())
+                .child("members").get().addOnSuccessListener {
+                    if (it.exists()) {
+                        var children = it.children
+                        children.forEach {
+                            Log.d("param", it.child("name").getValue().toString())
+                            val member = it.child("name").getValue().toString()
+                            database.child("users").child(member).get().addOnSuccessListener {
+                                if (it.exists()) {
+                                    Log.d("member", member)
+                                    membersArray.add(
+                                        Item(
+                                            member,
+                                            "https://picsum.photos/200?random=$randomNumber",
+                                            member
+                                        )
+                                    )
+                                    Log.d("member", membersArray.size.toString())
+                                    adapter.notifyDataSetChanged()
+                                }
+                            }
+                        }
+                    } else {
+                        membersArray = mutableListOf<Item>()
+                    }
+                }
+        return membersArray
+    }
+
     fun ConfirmDelete(position: Int){
         val builder = AlertDialog.Builder(requireContext())
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
         with(builder){
             setTitle("Подтвердите удаление")
             setPositiveButton("Подтвердить"){dialog, which->
@@ -155,8 +265,11 @@ class MembersOfGroupFragment : Fragment() {
                 Log.d("SportsmensFragment position", position.toString())
                 Log.d("SportsmensFragment size", adapter.itemCount.toString())
                 Log.d("SportsmensFragment elements", "Item list: $itemList")
-                adapter.removeItem(position)
-                //adapter.notifyItemRemoved(position)
+                itemList.removeAt(position)
+                database.child("groups").child(email.split("@")[0]).child(param1.toString())
+                    .child("members").setValue(itemList)
+                //adapter.removeItem(position)
+                adapter.notifyDataSetChanged()
                 //recyclerView.adapter?.notifyItemRemoved(position)
             }
             setNegativeButton("Отмена"){dialog, which->

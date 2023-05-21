@@ -22,6 +22,9 @@ import com.example.myapplication.R
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.example.myapplication.data.Exercise
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
@@ -39,6 +42,7 @@ class ProfileSportsmenFragment : Fragment(), DatePickerDialog.OnDateSetListener 
     private lateinit var profile_login: TextView
     private lateinit var profile_coach: TextView
     private lateinit var name: EditText
+    private lateinit var delete_btn: TextView
     private lateinit var datebirth: EditText
     private lateinit var logout_btn: TextView
     private lateinit var unsign_btn: TextView
@@ -82,6 +86,7 @@ override fun onCreateView(
         edit_btn = view.findViewById(R.id.edit_button)
         logout_btn = view.findViewById(R.id.logout_btn)
         unsign_btn = view.findViewById(R.id.unsign_btn)
+        delete_btn = view.findViewById(R.id.delete_btn)
         height = view.findViewById(R.id.profile_heightedit)
         weight = view.findViewById(R.id.profile_weightedit)
         css = view.findViewById(R.id.profile_pulseedit)
@@ -105,7 +110,7 @@ override fun onCreateView(
         weight.setText(itemList["weight"].toString())
         css.setText((220 - ((1900+Date().year)- year!! -tmp1)).toString())
         logout_btn.setOnClickListener {
-            //FirebaseAuth.getInstance().signOut() - Отключено на время отладки и разработки
+            FirebaseAuth.getInstance().signOut()
             val preferences = requireContext().getSharedPreferences("my_prefs", MODE_PRIVATE)
             val editor = preferences.edit()
             editor.putBoolean("isLoggedIn", false)
@@ -114,6 +119,20 @@ override fun onCreateView(
             val intent = Intent(requireContext(), MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
+        }
+        delete_btn.setOnClickListener{
+            val user = Firebase.auth.currentUser!!
+
+            var email = user.email!!
+            database.child("users").child(email.split("@")[0]).removeValue()
+            database.child("Exercise").child(email.split("@")[0]).removeValue()
+
+            user.delete().addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("delete", "User account deleted.")
+                    }
+                }
+
         }
         options_btn.setOnClickListener {
             Log.d("check", "works")

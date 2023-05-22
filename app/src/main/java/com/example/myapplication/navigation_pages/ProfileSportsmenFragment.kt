@@ -106,6 +106,7 @@ override fun onCreateView(
         lastname.setText(itemList["lastName"].toString())
         profile_id.setText(itemList["id"].toString())
         profile_login.setText(itemList["login"].toString())
+        profile_coach.setText("Тренер: "+itemList["coach"].toString())
         name.setText(itemList["firstName"].toString())
         datebirth.setText(itemList["birthDate"].toString())
         height.setText(itemList["height"].toString())

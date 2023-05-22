@@ -100,6 +100,10 @@ class ExerciseFragment : Fragment() {
                 }
 
 
+            }else{
+                tempList[email.split("@")[0]]?.add(
+                    Exercise("text","0","0","0","0","0","0")
+                )
             }
             itemList = tempList
             Log.d("size1",itemList.size.toString())

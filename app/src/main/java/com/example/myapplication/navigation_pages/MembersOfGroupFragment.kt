@@ -89,82 +89,138 @@ class MembersOfGroupFragment : Fragment() {
 
         database = Firebase.database.reference
         showInput()
-        itemList = getMembers()
-        Log.d("itemList",itemList.size.toString())
-        size = itemList.size+1
-        recyclerView = view.findViewById(R.id.recycler_sportsmens)
-        layoutManager = LinearLayoutManager(activity)
-        adapter = AdapterSportsmens(itemList, false)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = adapter
 
-
-        adapter.setOnDeleteClickListener(object : AdapterSportsmens.OnDeleteClickListener {
-            override fun onDeleteClick(position: Int) {
-                Log.d("Pos", "$position")
-                ConfirmDelete(position)
-            }
-        })
-        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
-            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-                // disable item removal based on swipe gesture
-                return Float.MAX_VALUE
-            }
-            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-                val dragFlags = 0
-                val swipeFlags = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-                return makeMovementFlags(dragFlags, swipeFlags)
-            }
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                // Do nothing, we don't support drag and drop
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                // Remove the item from the dataset
-                val position = viewHolder.absoluteAdapterPosition
-                //adapter.ItemViewHolder(viewHolder.itemView).itemDeleteButton.visibility=VISIBLE
-                //adapter.removeItem(position)
-                if (direction== ItemTouchHelper.RIGHT) {
-                    //deleteBtn.visibility= VISIBLE
-                    adapter.showDeleteButton(position)
-                } else if (direction== ItemTouchHelper.LEFT) {
-                    //deleteBtn.visibility = GONE
-                    adapter.hideDeleteButton(position)
-                }
-                Log.d("TAG", "Item swiped")
-                adapter.notifyDataSetChanged()//viewHolder.absoluteAdapterPosition)
-            }
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {//Log.d("SportsmensFragment", "onChildDraw called")
-
-                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    // Set the delete button visibility based on the swipe direction
-                    //Log.d("SportsmensFragment", "onChildDraw surely called")
-                    val itemView = viewHolder.itemView
-                    itemView.translationY = 0f
-                    // deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
-
-                    itemView.translationX = dX
-                    // Draw the swipe background color
-
-                }
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-            }
+        val random = Random()
+        val randomNumber = random.nextInt(1000)
+        var membersArray = mutableListOf<Item>()
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
         }
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
+
+        Log.d("param", param1.toString())
+        database.child("groups").child(email.split("@")[0]).child(param1.toString())
+            .child("members").get().addOnSuccessListener {
+                if (it.exists()) {
+                    var children = it.children
+                    children.forEach {
+                        Log.d("param", it.child("name").getValue().toString())
+                        val member = it.child("name").getValue().toString()
+                        database.child("users").child(member).get().addOnSuccessListener {
+                            if (it.exists()) {
+                                Log.d("member", member)
+                                membersArray.add(
+                                    Item(
+                                        member,
+                                        "https://picsum.photos/200?random=$randomNumber",
+                                        member
+                                    )
+                                )
+                                Log.d("member", membersArray.size.toString())
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                } else {
+                    membersArray = mutableListOf<Item>()
+                }
+
+
+                itemList = membersArray
+                Log.d("itemList", itemList.size.toString())
+                size = itemList.size + 1
+                recyclerView = view.findViewById(R.id.recycler_sportsmens)
+                layoutManager = LinearLayoutManager(activity)
+                adapter = AdapterSportsmens(itemList, false)
+                recyclerView.layoutManager = layoutManager
+                recyclerView.adapter = adapter
+
+
+                adapter.setOnDeleteClickListener(object : AdapterSportsmens.OnDeleteClickListener {
+                    override fun onDeleteClick(position: Int) {
+                        Log.d("Pos", "$position")
+                        ConfirmDelete(position)
+                    }
+                })
+                val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
+                    0,
+                    ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT
+                ) {
+                    override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+                        // disable item removal based on swipe gesture
+                        return Float.MAX_VALUE
+                    }
+
+                    override fun getMovementFlags(
+                        recyclerView: RecyclerView,
+                        viewHolder: RecyclerView.ViewHolder
+                    ): Int {
+                        val dragFlags = 0
+                        val swipeFlags = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                        return makeMovementFlags(dragFlags, swipeFlags)
+                    }
+
+                    override fun onMove(
+                        recyclerView: RecyclerView,
+                        viewHolder: RecyclerView.ViewHolder,
+                        target: RecyclerView.ViewHolder
+                    ): Boolean {
+                        // Do nothing, we don't support drag and drop
+                        return false
+                    }
+
+                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                        // Remove the item from the dataset
+                        val position = viewHolder.absoluteAdapterPosition
+                        //adapter.ItemViewHolder(viewHolder.itemView).itemDeleteButton.visibility=VISIBLE
+                        //adapter.removeItem(position)
+                        if (direction == ItemTouchHelper.RIGHT) {
+                            //deleteBtn.visibility= VISIBLE
+                            adapter.showDeleteButton(position)
+                        } else if (direction == ItemTouchHelper.LEFT) {
+                            //deleteBtn.visibility = GONE
+                            adapter.hideDeleteButton(position)
+                        }
+                        Log.d("TAG", "Item swiped")
+                        adapter.notifyDataSetChanged()//viewHolder.absoluteAdapterPosition)
+                    }
+
+                    override fun onChildDraw(
+                        c: Canvas,
+                        recyclerView: RecyclerView,
+                        viewHolder: RecyclerView.ViewHolder,
+                        dX: Float,
+                        dY: Float,
+                        actionState: Int,
+                        isCurrentlyActive: Boolean
+                    ) {//Log.d("SportsmensFragment", "onChildDraw called")
+
+                        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                            // Set the delete button visibility based on the swipe direction
+                            //Log.d("SportsmensFragment", "onChildDraw surely called")
+                            val itemView = viewHolder.itemView
+                            itemView.translationY = 0f
+                            // deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
+
+                            itemView.translationX = dX
+                            // Draw the swipe background color
+
+                        }
+                        super.onChildDraw(
+                            c,
+                            recyclerView,
+                            viewHolder,
+                            dX,
+                            dY,
+                            actionState,
+                            isCurrentlyActive
+                        )
+                    }
+                }
+                val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+                itemTouchHelper.attachToRecyclerView(recyclerView)
+            }
     }
 
     private fun showInput(){

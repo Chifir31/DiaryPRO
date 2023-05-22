@@ -135,7 +135,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
         val adapterspinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
         // Set the adapter for the Spinner
         type.adapter = adapterspinner
-        sportsmen.text=param1.toString()
+        sportsmen.text=param2.toString()
         val calendar = Calendar.getInstance()
         val year = calendar.get(android.icu.util.Calendar.YEAR)
         val month = calendar.get(android.icu.util.Calendar.MONTH)
@@ -221,15 +221,16 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
                     var newExercise = Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected.time.toString(), plan.text.toString(),"p", "", "Item "+(size++).toString())
-                    itemList[param1]?.add(newExercise)
+                    itemList[param2]?.add(newExercise)
                     Log.d("exec",itemList[param1]?.size.toString())
                     val currentUser = Firebase.auth.currentUser
                     lateinit var email: String
                     currentUser?.let {
                         email = it.email.toString()
                     }
-                    database.child("groups").child(email.split("@")[0]).child(param1.toString())
-                        .child("exercises").setValue(itemList[param1])
+                    Log.d("param2",param2.toString())
+                    database.child("groups").child(email.split("@")[0]).child(param2.toString())
+                        .child("exercises").setValue(itemList[param2])
                     Log.d("exec",newExercise.text)
 
                     adapter = AdapterExercise(itemList[param2]?.filter {
@@ -263,20 +264,23 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
         var membersArray = mutableListOf<String>()
         database.child("groups").child(email.split("@")[0]).child(param1.toString())
             .child("members").get().addOnSuccessListener {
-                if (it.exists()){
+                if (it.exists()) {
                     var children = it.children
                     children.forEach {
                         membersArray.add(it.getValue().toString())
                     }
-                }else{
+                } else {
                     membersArray = mutableListOf<String>()
                 }
             }
-        Log.d("exec",membersArray.size.toString())
-        membersArray.forEach {
-            Log.d("exec",it)
-            database.child("Exercise").child(it).child(database.push().key.toString()).setValue(newExercise)
-        }
+
+                Log.d("exec", membersArray.size.toString())
+                membersArray.forEach {
+                    Log.d("exec1", it.split(",")[2].split("=")[1].substring(0,it.length-1))
+                    database.child("Exercise").child(it.split(",")[2]
+                        .split("=")[1].substring(0,it.length-1)).child(database.push().key.toString())
+                        .setValue(newExercise)
+                }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

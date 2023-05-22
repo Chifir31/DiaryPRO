@@ -108,6 +108,7 @@ override fun onCreateView(
         datebirth.setText(itemList["birthDate"].toString())
         height.setText(itemList["height"].toString())
         weight.setText(itemList["weight"].toString())
+        delete_btn.visibility = GONE
         css.setText((220 - ((1900+Date().year)- year!! -tmp1)).toString())
         logout_btn.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
@@ -137,6 +138,8 @@ override fun onCreateView(
         options_btn.setOnClickListener {
             Log.d("check", "works")
             options_btn.visibility = GONE
+            logout_btn.visibility = GONE
+            delete_btn.visibility = VISIBLE
             edit_btn.visibility = VISIBLE
             lastname.isFocusable = true
             lastname.isFocusableInTouchMode = true
@@ -181,6 +184,8 @@ override fun onCreateView(
                 editor.apply()
                 options_btn.visibility = VISIBLE
                 edit_btn.visibility = GONE
+                delete_btn.visibility = GONE
+                logout_btn.visibility = VISIBLE
                 lastname.isFocusable = false
                 lastname.isFocusableInTouchMode = false
                 name.isFocusable = false

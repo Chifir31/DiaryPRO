@@ -111,8 +111,9 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
         val itemOpenButton: TextView = itemView.findViewById(R.id.item_open_button)
         val itemDeleteButton: TextView = itemView.findViewById(R.id.item_delete_button)
     }
-    fun removeItem(position: Int) {
+    fun removeItem(position: Int, user: String) {
         hideDeleteButton(position)
+        Log.d("Check", itemList.toString())
 
         val currentUser = Firebase.auth.currentUser
         lateinit var email: String
@@ -121,21 +122,19 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
         }
         val database = Firebase.database.reference
         itemList?.let {
-            database.child("Exercise").child(email.split("@")[0])
-                .child(it[position].itemId).addListenerForSingleValueEvent(object: ValueEventListener{
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        itemList?.removeAt(position)
-                        notifyDataSetChanged()
-                        snapshot.ref.removeValue()
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
-                    }
-
-                })
-            Log.d("Del",it[position].itemId)
+            Log.d("What", it.toString())
+            it[position].itemId
+            database.child("Exercise").child(user)
+                .child(it[position].itemId).ref.removeValue().addOnSuccessListener {
+                    // Value removed successfully
+                    Log.d("S", "S")
+                }.addOnFailureListener{
+                    Log.d("F", "F")
+                }
+            Log.d("checking", "email " + user + "item " + it[position].itemId + ", " + database.child("Exercise").child(user).child(it[position].itemId).toString())
         }
-
+        itemList?.removeAt(position)
+        Log.d("Check", itemList.toString())
+        notifyDataSetChanged()
     }
 }

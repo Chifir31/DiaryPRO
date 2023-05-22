@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         val btn_login: Button = findViewById(R.id.LoginBtn)
         email_field = findViewById(R.id.Email_field)
         pwd_field = findViewById(R.id.Pwd_field)
-        AMLAZYTOLOGIN(false)
+        AMLAZYTOLOGIN(true)
 
         btn_register.setOnClickListener{
             val intent = Intent(this, RegisterActivity::class.java)
@@ -55,10 +55,6 @@ class LoginActivity : AppCompatActivity() {
             email_field.text.toString().isNotEmpty() && pwd_field.text.toString().isNotEmpty() -> {
                 if (email_field.text.toString().matches(Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"))) {
                     if (pwd_field.text.toString().length >= 5) {
-                        val preferences = getSharedPreferences("my_prefs", MODE_PRIVATE)
-                        val editor = preferences.edit()
-                        editor.putBoolean("isLoggedIn", true)
-                        editor.apply()
                         //val intent = Intent(this, MainActivity::class.java)
                         //startActivity(intent)
                         firebaseAuth.signInWithEmailAndPassword(
@@ -66,6 +62,8 @@ class LoginActivity : AppCompatActivity() {
                             pwd_field.text.toString()
                         ).addOnCompleteListener {
                             if (it.isSuccessful) {
+                                val preferences = getSharedPreferences("my_prefs", MODE_PRIVATE)
+                                val editor = preferences.edit()
                                 database = Firebase.database.reference
                                 var user = ""
                                 Log.d("check", email_field.text.split("@")[0])
@@ -81,6 +79,7 @@ class LoginActivity : AppCompatActivity() {
                                                 put("login", it.child("login").value.toString())
                                                 put("id", email_field.text.split("@")[0])
                                             }
+                                            editor.putBoolean("isLoggedIn", true)
                                             editor.putString("profileList", Gson().toJson(profileList))
                                             editor.apply()
                                             val intent = Intent(this, MainActivity::class.java)
@@ -99,6 +98,7 @@ class LoginActivity : AppCompatActivity() {
                                                 put("css", it.child("css").value.toString())
                                                 put("coach", it.child("coach").value.toString())
                                             }
+                                            editor.putBoolean("isLoggedIn", true)
                                             editor.putString("profileList", Gson().toJson(profileList))
                                             editor.apply()
                                             val intent = Intent(this, MainActivity::class.java)
@@ -124,7 +124,7 @@ class LoginActivity : AppCompatActivity() {
     }
     fun AMLAZYTOLOGIN(boolean: Boolean){
         if(boolean){
-            email_field.setText("coach@gmail.com")
+            email_field.setText("coach1@gmail.com")
             pwd_field.setText("123456")}
         else {
             email_field.setText("def@gmail.com")

@@ -45,7 +45,7 @@ class MyAdapter(private val itemList: MutableList<Item>) : RecyclerView.Adapter<
             .load(currentItem.img)
             .transform(CircleCrop())
             .into(holder.itemPicture)
-        //holder.itemPicture.setImageResource(currentItem.)
+
         holder.itemOpenButton.setOnClickListener {
             // Open separate window
             Log.d("TAG", itemList.size.toString())
@@ -53,10 +53,6 @@ class MyAdapter(private val itemList: MutableList<Item>) : RecyclerView.Adapter<
         holder.itemDeleteButton.setOnClickListener {
             // Delete item from list and update RecyclerView
             onDeleteClickListener?.onDeleteClick(position)
-            //removeItem(position)
-            //deleteButtonsVisible.remove(position)
-            //notifyItemRemoved(position)
-            //holder.itemDeleteButton.visibility=GONE
         }
         holder.itemDeleteButton.visibility = if (deleteButtonsVisible.contains(getItem(position))) VISIBLE else GONE
 
@@ -64,21 +60,16 @@ class MyAdapter(private val itemList: MutableList<Item>) : RecyclerView.Adapter<
     // Return the size of the list
     override fun getItemCount() = itemList.size
     fun getItem(position: Int): String {
-        Log.d("Id: ",itemList[position].itemId)
         return itemList[position].itemId
     }
     fun showDeleteButton(position: Int) {
         deleteButtonsVisible.add(getItem(position))
         notifyItemChanged(position)
-        //Log.d("Id: ",getItem(position))
-        //Log.d("Set: ","$deleteButtonsVisible")
     }
 
     fun hideDeleteButton(position: Int) {
         deleteButtonsVisible.remove(getItem(position))
         notifyItemChanged(position)
-        //Log.d("Id: ",getItem(position))
-        //Log.d("Set: ","$deleteButtonsVisible")
     }
 
     // Define the view holder class
@@ -94,5 +85,4 @@ class MyAdapter(private val itemList: MutableList<Item>) : RecyclerView.Adapter<
         itemList.removeAt(position)
         notifyDataSetChanged()
     }
-    //class ClipData.Item(val text: String, val imageResourceId: Int, var itemId: String)
 }

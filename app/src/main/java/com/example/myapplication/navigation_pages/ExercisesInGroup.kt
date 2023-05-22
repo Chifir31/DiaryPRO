@@ -101,7 +101,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                 Log.d("SportsmensFragmentDialog size", adapter.itemCount.toString())
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
                 itemList[param1]?.removeAt(position)
-                adapter.removeItem(position)
+                param1?.let { adapter.removeItem(position, it) }
                 val currentUser = Firebase.auth.currentUser
                 lateinit var email: String
                 currentUser?.let {
@@ -135,7 +135,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
         val adapterspinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, array)
         // Set the adapter for the Spinner
         type.adapter = adapterspinner
-        sportsmen.text=param1.toString()
+        sportsmen.text=param2.toString()
         val calendar = Calendar.getInstance()
         val year = calendar.get(android.icu.util.Calendar.YEAR)
         val month = calendar.get(android.icu.util.Calendar.MONTH)

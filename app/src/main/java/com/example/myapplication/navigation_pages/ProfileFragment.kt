@@ -13,7 +13,9 @@ import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -81,27 +83,50 @@ override fun onCreateView(
         profile_login.setText(itemList["login"].toString())
         name.setText(itemList["firstName"].toString())
         datebirth.setText(itemList["birthDate"].toString())
+
         logout_btn.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            val preferences = requireContext().getSharedPreferences("my_prefs", MODE_PRIVATE)
-            val editor = preferences.edit()
-            editor.putBoolean("isLoggedIn", false)
-            editor.apply()
-            val intent = Intent(requireContext(), MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            val builder = AlertDialog.Builder(requireContext())
+            with(builder){
+                setTitle("Выйти?")
+                setPositiveButton("Да"){dialog, which->
+                    FirebaseAuth.getInstance().signOut()
+                    val preferences = requireContext().getSharedPreferences("my_prefs", MODE_PRIVATE)
+                    val editor = preferences.edit()
+                    editor.putBoolean("isLoggedIn", false)
+                    editor.apply()
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
+                setNegativeButton("Нет"){dialog, which->
+                    dialog.dismiss()
+                }
+                builder.show()
+            }
+
         }
         delete_btn.setOnClickListener{
-            val user = Firebase.auth.currentUser!!
+            val builder = AlertDialog.Builder(requireContext())
+            with(builder){
+                setTitle("Вы точно хотите удалить аккаунт?")
+                setPositiveButton("Да"){dialog, which->
+                    val user = Firebase.auth.currentUser!!
 
-            var email = user.email!!
-            database.child("users").child(email.split("@")[0]).removeValue()
+                    var email = user.email!!
+                    database.child("users").child(email.split("@")[0]).removeValue()
 
-            user.delete().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("delete", "User account deleted.")
+                    user.delete().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Log.d("delete", "User account deleted.")
+                        }
+                    }
                 }
+                setNegativeButton("Нет"){dialog, which->
+                    dialog.dismiss()
+                }
+                builder.show()
             }
+
         }
         options_btn.setOnClickListener {
             Log.d("check", "works")

@@ -14,13 +14,12 @@ import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
 import com.example.myapplication.data.User
 import com.example.myapplication.navigation_pages.*
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -33,20 +32,7 @@ class MainActivity: AppCompatActivity()  {
     val random = Random()
     val randomNumber = random.nextInt(1000)
 
-    /*var sportsmensList1 = arrayListOf<Item>(
-       Item("Item 1", "https://picsum.photos/200?random=$randomNumber", "Item 1"),
-       Item("Item 2", "https://picsum.photos/200?random=$randomNumber+1", "Item 2"),
-       Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
-       Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
-       Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
-    var temp = arrayListOf<String>(
-        "Anton",
-        "Alexey")
-
-    /*var GroupsList = arrayListOf<Group>(
-        Group("Item 1", "Item 1", temp),
-        Group("Item 2", "Item 2", temp)
-    )*/
+    var sportsmensList1 = arrayListOf<Item>()
 
     var tmp = arrayListOf<Exercise>(
 
@@ -58,14 +44,11 @@ class MainActivity: AppCompatActivity()  {
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date().toString(), "DO IT", "p", "", "Item 2"),
         Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+10", Date().toString(), "HAPATA", "p", "", "Item 3")
     )
-    var exerciseList1 = ArrayMap<String, MutableList<Exercise>>().apply{
-        put("Item 1", tmp)
-        put("Item 2", tmp1)
-    }
 
     lateinit var preferences: SharedPreferences
     lateinit var sportsmensList: MutableList<Item>
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
+    var exerciseList1 = ArrayMap<String, MutableList<Exercise>>()
     lateinit var profileList: ArrayMap<String, String>
     lateinit var user: String
 
@@ -80,12 +63,6 @@ class MainActivity: AppCompatActivity()  {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
 
-//        var editor = preferences.edit()
-//        editor.putBoolean("isLoggedIn", false)
-//        editor.apply()
-//        editor.putString("exerciseList", Gson().toJson(exerciseList1))
-//        editor.putString("sportsmensList", Gson().toJson(sportsmensList1))
-//        editor.apply()
         user = ""
         val sportsmensListJson = (preferences.getString("sportsmensList", null))
         sportsmensList = sportsmensListJson?.let {
@@ -99,11 +76,9 @@ class MainActivity: AppCompatActivity()  {
         profileList =  profileListJson?.let {
             Gson().fromJson<ArrayMap<String, String>>(it, object : TypeToken<ArrayMap<String, String>>() {}.type)
         } ?: ArrayMap()
-        database = FirebaseDatabase.getInstance().getReference("users")
         val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
         if (!isLoggedIn) {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
-            //getRole()
             startActivity(intent)
             finish()
         } else {
@@ -112,7 +87,6 @@ class MainActivity: AppCompatActivity()  {
             editor.putString("sportsmensList", Gson().toJson(sportsmensList))
             Log.d("check", sportsmensList.toString())
             editor.apply()
-            //getRole()
             val currentUser = Firebase.auth.currentUser
             lateinit var email:String
             var role = ""
@@ -120,41 +94,120 @@ class MainActivity: AppCompatActivity()  {
                 email = it.email.toString()
             }
             database = Firebase.database.reference
+            database = database.child("users")
             Log.d("User",email.split("@")[0])
-            database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
+            database.child(email.split("@")[0]).get().addOnSuccessListener {
                 if (it.exists()){
                     role = it.child("role").value.toString()
                     Log.d("User",role)
                     user = role
                     if (user == "C") {
-                        setContentView(R.layout.c_activity_main)
-                        navView = findViewById(R.id.c_bottom_navigation)
-                        loadFragment(SportsmensFragment())
-                        navView?.setOnItemSelectedListener {
-                            when (it.itemId) {
-                                R.id.sportsmens -> loadFragment(SportsmensFragment())
-                                R.id.groups -> loadFragment(GroupsFragment())
-                                R.id.profile -> loadFragment(ProfileFragment())
-                                else -> {
+                        val reference = database.child(email.split("@")[0]).child("list_of_sportsmen")
+                        reference.get().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Log.d("child1", task.toString())
+                                val children = task.result!!.children
+                                var totalChildren = children.count()
+                                var completedChildren = 0
+                                for (it in task.result!!.children) {
+                                    val random = Random()
+                                    val randomNumber = random.nextInt(1000)
+                                    Log.d("child1", completedChildren.toString())
+                                        val value = it.getValue()
+                                        val item = Item(
+                                            value.toString().split(",")[2].split("=")[1].substring(0,
+                                                value.toString().split(",")[2].split("=")[1].length-1),//Супер тупой костыль без которого крашимся ¯\_(ツ)_/¯
+                                            "https://picsum.photos/200?random=$randomNumber",
+                                            value.toString().split(",")[0].split("=")[1]
+                                        )
+                                        sportsmensList1.add(item)
+                                        completedChildren++
+                                    }
+                                if (completedChildren == totalChildren) {
+                                    Log.d("child2", completedChildren.toString())
+                                    editor.putString(
+                                        "sportsmensList",
+                                        Gson().toJson(sportsmensList1)
+                                    )
+                                    editor.apply()
+                                    val sportsmensListJson = (preferences.getString("sportsmensList", null))
+                                    sportsmensList = sportsmensListJson?.let {
+                                        Gson().fromJson(it, object : TypeToken<ArrayList<Item>>() {}.type)
+                                    } ?: arrayListOf()
+                                    setContentView(R.layout.c_activity_main)
+                                    navView = findViewById(R.id.c_bottom_navigation)
+                                    loadFragment(SportsmensFragment())
+                                    navView?.setOnItemSelectedListener {
+                                        when (it.itemId) {
+                                            R.id.sportsmens -> loadFragment(SportsmensFragment())
+                                            R.id.groups -> loadFragment(GroupsFragment())
+                                            R.id.profile -> loadFragment(ProfileFragment())
+                                            else -> {
 
+                                            }
+                                        }
+                                        true
+                                    }
                                 }
+
                             }
-                            true
+                            else {
+                                task.exception!!.message?.let { it1 -> Log.d("TAG", it1) } // Never ignore potential errors!
+                            }
                         }
                     } else if (user == "S") {
-                        setContentView(R.layout.s_activity_main)
-                        navView = findViewById(R.id.s_bottom_navigation)
-                        loadFragment(ExerciseFragment())
-                        navView?.setOnItemSelectedListener {
-                            when (it.itemId) {
-                                R.id.exercise -> loadFragment(ExerciseFragment())
-                                R.id.diary -> loadFragment(DiaryFragment())
-                                R.id.profile -> loadFragment(ProfileSportsmenFragment())
-                                else -> {
-
+                        val reference = Firebase.database.reference.child("Exercise").child(email.split("@")[0])
+                        reference.get().addOnCompleteListener { task ->
+                            val tempList = arrayListOf<Exercise>()
+                            if (task.isSuccessful) {
+                                Log.d("child1", task.toString())
+                                val children = task.result!!.children
+                                var totalChildren = children.count()
+                                var completedChildren = 0
+                                for (it in task.result!!.children) {
+                                    val random = Random()
+                                    val randomNumber = random.nextInt(1000)
+                                    Log.d("child1", completedChildren.toString())
+                                    val img = it.child("img").getValue().toString()
+                                    val itemComm = it.child("itemComm").getValue().toString()
+                                    val itemDate = it.child("itemDate").getValue().toString()
+                                    val itemDesc = it.child("itemDesc").getValue().toString()
+                                    val itemId = it.child("itemId").getValue().toString()
+                                    val itemState = it.child("itemState").getValue().toString()
+                                    val text = it.child("text").getValue().toString()
+                                    val item = Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                                    tempList.add(item)
+                                    //exerciseList1.put( email.split("@")[0],item)
+                                    completedChildren++
                                 }
+                                if (completedChildren == totalChildren) {
+                                    exerciseList1.put( email.split("@")[0],tempList)
+                                    Log.d("child2", completedChildren.toString())
+                                    editor.putString(
+                                        "exerciseList",
+                                        Gson().toJson(exerciseList1)
+                                    )
+                                    editor.apply()
+                                    val exerciseListJson = (preferences.getString("exerciseList", null))
+                                    exerciseList =  exerciseListJson?.let {
+                                        Gson().fromJson<ArrayMap<String, MutableList<Exercise>>>(it, object : TypeToken<ArrayMap<String, MutableList<Exercise>>>() {}.type)
+                                    } ?: ArrayMap()
+                                }
+                                    setContentView(R.layout.s_activity_main)
+                                    navView = findViewById(R.id.s_bottom_navigation)
+                                    loadFragment(ExerciseFragment())
+                                    navView?.setOnItemSelectedListener {
+                                        when (it.itemId) {
+                                            R.id.exercise -> loadFragment(ExerciseFragment())
+                                            R.id.diary -> loadFragment(DiaryFragment())
+                                            R.id.profile -> loadFragment(ProfileSportsmenFragment())
+                                            else -> {
+
+                                            }
+                                        }
+                                        true
+                                    }
                             }
-                            true
                         }
                     }
 
@@ -164,30 +217,11 @@ class MainActivity: AppCompatActivity()  {
             }.addOnFailureListener{
                 Log.d("F","Failed fairbase")
             }
-            //Log.d("User",role)
             print(role)
             Log.d("User",user)
-            //user = role
         }
     }
-    /*fun getRole(){
-        val currentUser = Firebase.auth.currentUser
-        lateinit var email:String
-        currentUser?.let {
-            email = it.email.toString()
-        }
-        database = Firebase.database.reference
-        database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
-            if (it.exists()){
-                user = it.child("role").value.toString()
 
-            }else{
-                Log.d("F","User does not exist")
-            }
-        }.addOnFailureListener{
-            Log.d("F","Failed fairbase")
-        }
-    }*/
     override fun onBackPressed() {
         var currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
         var currentFragment1 = supportFragmentManager.findFragmentById(R.id.fragment_groups)

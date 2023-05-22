@@ -97,7 +97,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                 Log.d("SportsmensFragmentDialog size", adapter.itemCount.toString())
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
                 itemList[param2]?.removeAt(position)
-                param1?.let { adapter.removeItem(position) }
+                param1?.let { adapter.removeItem(position, it) }
                 editor.putString("exerciseList", Gson().toJson(itemList))
                 editor.apply()
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
@@ -145,12 +145,12 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
                     val ts = dateSelected.getTime()
-                    if(itemList[param2]==null){
+                    if(itemList[param1]==null){
                         var newsize = size++
                         var newKey = database.push().key
                         itemList.apply {
                             put(
-                                param2.toString(),
+                                param1.toString(),
                                 mutableListOf(
                                     Exercise(
                                         type.selectedItem.toString(),
@@ -168,7 +168,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                         }
                     else {
                         var newKey = database.push().key
-                        itemList[param2]?.add(
+                        itemList[param1]?.add(
                             Exercise(
                                 type.selectedItem.toString(),
                                 "https://picsum.photos/200?random=$randomNumber",
@@ -258,7 +258,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
             dpd.datePicker.minDate = calendar.timeInMillis
             dpd.show()
         }
-        var tmp = (itemList[param2]?.filter {
+        var tmp = (itemList[param1]?.filter {
             val calendar = Calendar.getInstance()
             calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
@@ -292,7 +292,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                 tmp?.get(position)?.img = "https://picsum.photos/200?random=$randomNumber"
                 tmp?.get(position)?.itemDate = dateSelected.time.toString()
                 tmp?.get(position)?.itemDesc = plan.text.toString()
-                tmp?.get(position)?.itemId = "Item " + (size++).toString()
+                //tmp?.get(position)?.itemId = "Item " + (size++).toString()
                 //(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString())
                 //itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString()))
                 adapter = AdapterExercise(itemList[param2]?.filter {
@@ -302,7 +302,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                             calendar.get(Calendar.MONTH) == selectedDate.month &&
                             calendar.get(Calendar.YEAR) == selectedDate.year + 1900
                 } as MutableList<Exercise>?)
-                adapter.notifyItemInserted(itemList[param2]?.size ?: 0)
+                adapter.notifyItemInserted(itemList[param1]?.size ?: 0)
                 recyclerView.adapter = adapter
                 setupListeners()
                 editor.putString("exerciseList", Gson().toJson(itemList))
@@ -339,191 +339,187 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        preferences= requireContext().getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
-        editor= preferences.edit()
+        preferences =
+            requireContext().getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
+        editor = preferences.edit()
 
-        val tempList = ArrayMap<String, MutableList<Exercise>>()
+        var tempList = ArrayMap<String, MutableList<Exercise>>()
         database = Firebase.database.reference
-        database.child("Exercise").child(param1.toString())
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onCancelled(snapshotError: DatabaseError) {
-                    TODO("not implemented")
-                }
+        database.child("Exercise").child(param1.toString()).get().addOnSuccessListener {
+            if (it.exists()) {
+                val children = it.children
+                children.forEach {
+                    val img = it.child("img").getValue().toString()
+                    val itemComm = it.child("itemComm").getValue().toString()
+                    val itemDate = it.child("itemDate").getValue().toString()
+                    val itemDesc = it.child("itemDesc").getValue().toString()
+                    val itemId = it.child("itemId").getValue().toString()
+                    val itemState = it.child("itemState").getValue().toString()
+                    val text = it.child("text").getValue().toString()
 
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val children = snapshot!!.children
-                    children!!.forEach{
-                        val img = it.child("img").getValue().toString()
-                        val itemComm = it.child("itemComm").getValue().toString()
-                        val itemDate = it.child("itemDate").getValue().toString()
-                        val itemDesc = it.child("itemDesc").getValue().toString()
-                        val itemId = it.child("itemId").getValue().toString()
-                        val itemState = it.child("itemState").getValue().toString()
-                        val text = it.child("text").getValue().toString()
-                        if(tempList[param2]==null){
-                            var newsize = size++
-                            tempList.apply {
-                                put(
-                                    param2.toString(),
-                                    mutableListOf(
-                                        Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                    if (tempList[param1.toString()] == null) {
+                        tempList.apply {
+                            put(
+                                param1.toString(),
+                                mutableListOf(
+                                    Exercise(
+                                        text,
+                                        img,
+                                        itemDate,
+                                        itemDesc,
+                                        itemState,
+                                        itemComm,
+                                        itemId
                                     )
                                 )
-
-                            }
-                        }
-                        else {
-                            tempList[param2]?.add(
-                                Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
                             )
+
                         }
+                    } else {
+                        tempList[param1.toString()]?.add(
+                            Exercise(text, img, itemDate, itemDesc, itemState, itemComm, itemId)
+                        )
                     }
                 }
+            } else {
+                tempList = ArrayMap<String, MutableList<Exercise>>()
             }
-            )
 
-        itemList = tempList
-        //Log.d("Check param", param1.toString() + " "+ param2.toString())
-        //Log.d("Check getting list\n", itemList[param2].toString())
-        toolbar = view.findViewById(R.id.toolbar)
-        toolbar_text=view.findViewById(R.id.toolbar_text)
-        toolbar_text.setText("Дневник тренировок\n"+param1.toString())
-        size = itemList["Item1"]?.size ?: 0
-        add_button=view.findViewById(R.id.add_btn)
 
-        calendarView = view.findViewById(R.id.CalendarView)
-        initCalendar()
+            itemList = tempList
+            //Log.d("Check param", param1.toString() + " "+ param2.toString())
+            //Log.d("Check getting list\n", itemList[param2].toString())
+            toolbar = view.findViewById(R.id.toolbar)
+            toolbar_text = view.findViewById(R.id.toolbar_text)
+            toolbar_text.setText("Дневник тренировок\n" + param1.toString())
+            size = itemList["Item1"]?.size ?: 0
+            add_button = view.findViewById(R.id.add_btn)
 
-        stateList = (requireActivity() as MainActivity).statemap
-        // Get the current time in milliseconds
-        val currentTimeMillis = System.currentTimeMillis()
-        val calendar = Calendar.getInstance()
-        val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-        // Calculate the start and end times for the current week
-        val daysFromMonday = if (currentDayOfWeek == Calendar.SUNDAY) 6 else currentDayOfWeek - 2
-        val weekStart = currentTimeMillis - daysFromMonday * 24 * 60 * 60 * 1000
-        val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
-        // Set the minimum and maximum dates for the calendar view to show only the current week
+            calendarView = view.findViewById(R.id.CalendarView)
+            initCalendar()
 
-        //calendarView.minDate = weekStart
-        //calendarView.maxDate = weekEnd
-//        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-//            selectedDate = Calendar.getInstance().apply {
-//                set(year, month, dayOfMonth)
-//            }.time
-//            val calendar = Calendar.getInstance()
-//            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
-//            Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
-//            Log.d("list", (itemList[param2]?.filter {
-//                calendar.time = it.itemDate
-//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-//                        calendar.get(Calendar.MONTH) == selectedDate.month /*&&
-//                        calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
-//            adapter = AdapterExercise(itemList[param2]?.filter {
-//                val calendar = Calendar.getInstance()
-//                calendar.time = it.itemDate
-//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-//                        calendar.get(Calendar.MONTH) == selectedDate.month &&
-//                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
-//            } as MutableList<Exercise>?)
-//            adapter.notifyDataSetChanged()
-//            recyclerView.adapter = adapter
-//            setupListeners()
-//
-//        }
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        setHasOptionsMenu(true)
-        recyclerView = view.findViewById(R.id.recycler_sportsmens_dialog)
-        layoutManager = LinearLayoutManager(activity)
-        adapter = AdapterExercise(itemList[param2]?.filter {
+            stateList = (requireActivity() as MainActivity).statemap
+            // Get the current time in milliseconds
+            val currentTimeMillis = System.currentTimeMillis()
             val calendar = Calendar.getInstance()
-            calendar.time = Date(it.itemDate)
-            calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
-                    calendar.get(Calendar.MONTH) == selectedDate.month &&
-                    calendar.get(Calendar.YEAR) == selectedDate.year+1900
-        } as MutableList<Exercise>?)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = adapter
-        print(itemList[param2]?.get(0)?.itemDate)
-        ShowInput()
-        setupListeners()
-        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
-            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-                // disable item removal based on swipe gesture
-                return 0.5f
-            }
-            override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-                val dragFlags = 0
-                val swipeFlags = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-                return makeMovementFlags(dragFlags, swipeFlags)
-            }
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                // Do nothing, we don't support drag and drop
-                return false
-            }
-            override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
-                // Adjust the swipe velocity threshold here (default is 2000f)
-                return 1000f
-            }
+            val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+            // Calculate the start and end times for the current week
+            val daysFromMonday =
+                if (currentDayOfWeek == Calendar.SUNDAY) 6 else currentDayOfWeek - 2
+            val weekStart = currentTimeMillis - daysFromMonday * 24 * 60 * 60 * 1000
+            val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                // Remove the item from the dataset
-                val position = viewHolder.absoluteAdapterPosition
-                //adapter.ItemViewHolder(viewHolder.itemView).itemDeleteButton.visibility=VISIBLE
-                //adapter.removeItem(position)
-                if (direction==ItemTouchHelper.RIGHT) {
-                    //deleteBtn.visibility= VISIBLE
-                    adapter.showDeleteButton(position)
-                } else if (direction==ItemTouchHelper.LEFT) {
-                    //deleteBtn.visibility = GONE
-                    adapter.hideDeleteButton(position)
+            (activity as AppCompatActivity).setSupportActionBar(toolbar)
+            (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
+            setHasOptionsMenu(true)
+            recyclerView = view.findViewById(R.id.recycler_sportsmens_dialog)
+            layoutManager = LinearLayoutManager(activity)
+            adapter = AdapterExercise(itemList[param2]?.filter {
+                val calendar = Calendar.getInstance()
+                calendar.time = Date(it.itemDate)
+                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+                        calendar.get(Calendar.MONTH) == selectedDate.month &&
+                        calendar.get(Calendar.YEAR) == selectedDate.year + 1900
+            } as MutableList<Exercise>?)
+            recyclerView.layoutManager = layoutManager
+            recyclerView.adapter = adapter
+            print(itemList[param2]?.get(0)?.itemDate)
+            ShowInput()
+            setupListeners()
+            val itemTouchHelperCallback = object :
+                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
+                override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+                    // disable item removal based on swipe gesture
+                    return 0.5f
                 }
-                Log.d("TAG", "Item swiped")
-                adapter.notifyDataSetChanged()//viewHolder.absoluteAdapterPosition)
-            }
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {//Log.d("SportsmensFragment", "onChildDraw called")
 
-                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    // Adjust the maximum swipe distance here
-                    val maxSwipeDistance = 400f  // Set your desired distance
-                    //Log.d("SportsmensFragment", "onChildDraw surely called")
-                    val itemView = viewHolder.itemView
-                    val itemPosition = viewHolder.absoluteAdapterPosition
-                    val deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
-                    // Set the delete button visibility based on the swipe direction
-                    if (dX > 0) {
-                        deleteBtn.visibility = VISIBLE
-                    } else if (dX <= 0) {
-                        deleteBtn.visibility = GONE
-                    }
-                    //In case when deleteButton still in set when swipe to the right was weak
-                    if(adapter.getVisibility(itemPosition))
-                        deleteBtn.visibility = VISIBLE
+                override fun getMovementFlags(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder
+                ): Int {
+                    val dragFlags = 0
+                    val swipeFlags = ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                    return makeMovementFlags(dragFlags, swipeFlags)
+                }
 
-                    // Restrict the item movement to the defined maximum swipe distance
-                    val limitedDX = when {
-                        dX > maxSwipeDistance -> maxSwipeDistance
-                        dX < -maxSwipeDistance -> -maxSwipeDistance
-                        else -> dX
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    // Do nothing, we don't support drag and drop
+                    return false
+                }
+
+                override fun getSwipeEscapeVelocity(defaultValue: Float): Float {
+                    // Adjust the swipe velocity threshold here (default is 2000f)
+                    return 1000f
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    // Remove the item from the dataset
+                    val position = viewHolder.absoluteAdapterPosition
+                    //adapter.ItemViewHolder(viewHolder.itemView).itemDeleteButton.visibility=VISIBLE
+                    //adapter.removeItem(position)
+                    if (direction == ItemTouchHelper.RIGHT) {
+                        //deleteBtn.visibility= VISIBLE
+                        adapter.showDeleteButton(position)
+                    } else if (direction == ItemTouchHelper.LEFT) {
+                        //deleteBtn.visibility = GONE
+                        adapter.hideDeleteButton(position)
                     }
-                    super.onChildDraw(c, recyclerView, viewHolder, limitedDX, dY, actionState, isCurrentlyActive)}
+                    Log.d("TAG", "Item swiped")
+                    adapter.notifyDataSetChanged()//viewHolder.absoluteAdapterPosition)
+                }
+
+                override fun onChildDraw(
+                    c: Canvas,
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    dX: Float,
+                    dY: Float,
+                    actionState: Int,
+                    isCurrentlyActive: Boolean
+                ) {//Log.d("SportsmensFragment", "onChildDraw called")
+
+                    if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                        // Adjust the maximum swipe distance here
+                        val maxSwipeDistance = 400f  // Set your desired distance
+                        //Log.d("SportsmensFragment", "onChildDraw surely called")
+                        val itemView = viewHolder.itemView
+                        val itemPosition = viewHolder.absoluteAdapterPosition
+                        val deleteBtn = itemView.findViewById<TextView>(R.id.item_delete_button)
+                        // Set the delete button visibility based on the swipe direction
+                        if (dX > 0) {
+                            deleteBtn.visibility = VISIBLE
+                        } else if (dX <= 0) {
+                            deleteBtn.visibility = GONE
+                        }
+                        //In case when deleteButton still in set when swipe to the right was weak
+                        if (adapter.getVisibility(itemPosition))
+                            deleteBtn.visibility = VISIBLE
+
+                        // Restrict the item movement to the defined maximum swipe distance
+                        val limitedDX = when {
+                            dX > maxSwipeDistance -> maxSwipeDistance
+                            dX < -maxSwipeDistance -> -maxSwipeDistance
+                            else -> dX
+                        }
+                        super.onChildDraw(
+                            c,
+                            recyclerView,
+                            viewHolder,
+                            limitedDX,
+                            dY,
+                            actionState,
+                            isCurrentlyActive
+                        )
+                    }
+                }
             }
+            val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+            itemTouchHelper.attachToRecyclerView(recyclerView)
         }
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     companion object {
@@ -600,7 +596,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
         }
 
         Log.d("Day", day.date.toString() + " " +day.month.toString() + " " + day.year.toString()+1900)
-        adapter = AdapterExercise(itemList[param2]?.filter {
+        adapter = AdapterExercise(itemList[param1]?.filter {
             val calendar = Calendar.getInstance()
             calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == day.date &&

@@ -145,11 +145,75 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
             val weekStart = currentTimeMillis - daysFromMonday * 24 * 60 * 60 * 1000
             val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
 
+            // Set the minimum and maximum dates for the calendar view to show only the current week
+            //calendarView.minDate = weekStart
+            //calendarView.maxDate = weekEnd
 
         }
     }
 
+    /*itemList = tempList
+    val layoutManager = LinearLayoutManager(context)
+    recyclerView = view.findViewById(R.id.list)
+    recyclerView.layoutManager = layoutManager
+    val date = Date()
 
+    calendarView = view.findViewById(R.id.CalendarView)
+    initCalendar()
+
+
+    adapter = AdapterExercise(itemList[email.split("@")[0]]).filter{
+        val calendar = Calendar.getInstance()
+        calendar.time = it.itemDate
+        calendar.get(Calendar.DAY_OF_MONTH) == date.date &&
+                calendar.get(Calendar.MONTH) == date.month &&
+                calendar.get(Calendar.YEAR) == date.year + 1900
+    } as MutableList<Exercise>)
+
+    recyclerView.adapter = adapter
+    stateList = (requireActivity() as MainActivity).statemap
+    val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
+    calendarView = view.findViewById(R.id.CalendarView )
+    // Get the current time in milliseconds
+    val currentTimeMillis = System.currentTimeMillis()
+    val calendar = Calendar.getInstance()
+    val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+    setupListeners()
+
+
+    // Calculate the start and end times for the current week
+    val daysFromMonday = if (currentDayOfWeek == Calendar.SUNDAY) 6 else currentDayOfWeek - 2
+    val weekStart = currentTimeMillis - daysFromMonday * 24 * 60 * 60 * 1000
+    val weekEnd = weekStart + 6 * 24 * 60 * 60 * 1000
+//        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+//            selectedDate = Calendar.getInstance().apply {
+//                set(year, month, dayOfMonth)
+//            }.time
+//            val calendar = Calendar.getInstance()
+//            calendar.time = itemList[param2]?.get(0)?.itemDate ?: Date()
+//            Log.d("Dates", selectedDate.toString() + " " +selectedDate.date.toString() +" "+  selectedDate.month.toString() +" "+selectedDate.year.toString() + " a " + itemList[param2]?.get(0)?.itemDate?.toString() +" " +calendar.get(Calendar.DAY_OF_MONTH)+ " " +calendar.get(Calendar.MONTH) + " " +calendar.get(Calendar.YEAR))
+//            Log.d("list", (itemList[param2]?.filter {
+//                calendar.time = it.itemDate
+//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+//                        calendar.get(Calendar.MONTH) == selectedDate.month /*&&
+//                        calendar.get(Calendar.YEAR) == selectedDate.year*/ } as MutableList<Exercise>?).toString())
+//            adapter = AdapterExercise(itemList[param2]?.filter {
+//                val calendar = Calendar.getInstance()
+//                calendar.time = it.itemDate
+//                calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+//                        calendar.get(Calendar.MONTH) == selectedDate.month &&
+//                        calendar.get(Calendar.YEAR) == selectedDate.year+1900
+//            } as MutableList<Exercise>?)
+//            adapter.notifyDataSetChanged()
+//            recyclerView.adapter = adapter
+//            setupListeners()
+//
+//        }
+//        // Set the minimum and maximum dates for the calendar view to show only the current week
+//        calendarView.minDate = weekStart
+//        calendarView.maxDate = weekEnd
+}
+*/
     fun EditWindow(position: Int){
         val builder = AlertDialog.Builder(requireContext(), android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen)
         val inflater = requireActivity().layoutInflater
@@ -187,8 +251,8 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
                 requireContext(),
                 DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
                     calendar.set(year, monthOfYear, dayOfMonth)
-                        dateSelected = calendar.time
-                        date.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(dateSelected!!)
+                    dateSelected = calendar.time
+                    date.text = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(dateSelected!!)
                     date.setError(null)
                 },
                 year,
@@ -198,11 +262,11 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
             dpd.datePicker.minDate = calendar.timeInMillis
             dpd.show()
         }
-            val currentUser = Firebase.auth.currentUser
-            lateinit var email: String
-            currentUser?.let {
-                email = it.email.toString()
-            }
+        val currentUser = Firebase.auth.currentUser
+        lateinit var email: String
+        currentUser?.let {
+            email = it.email.toString()
+        }
         var tmp = (itemList[email.split("@")[0]]?.filter {
             val calendar = Calendar.getInstance()
             calendar.time = Date(it.itemDate.toLong())

@@ -33,20 +33,6 @@ class MainActivity: AppCompatActivity()  {
     val random = Random()
     val randomNumber = random.nextInt(1000)
 
-    /*var sportsmensList1 = arrayListOf<Item>(
-       Item("Item 1", "https://picsum.photos/200?random=$randomNumber", "Item 1"),
-       Item("Item 2", "https://picsum.photos/200?random=$randomNumber+1", "Item 2"),
-       Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
-       Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
-       Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
-    var temp = arrayListOf<String>(
-        "Anton",
-        "Alexey")
-
-    /*var GroupsList = arrayListOf<Group>(
-        Group("Item 1", "Item 1", temp),
-        Group("Item 2", "Item 2", temp)
-    )*/
 
     var tmp = arrayListOf<Exercise>(
 
@@ -58,10 +44,6 @@ class MainActivity: AppCompatActivity()  {
         Exercise("Плавание", "https://picsum.photos/200?random=$randomNumber+9", Date().toString(), "DO IT", "p", "", "Item 2"),
         Exercise("Бег", "https://picsum.photos/200?random=$randomNumber+10", Date().toString(), "HAPATA", "p", "", "Item 3")
     )
-    var exerciseList1 = ArrayMap<String, MutableList<Exercise>>().apply{
-        put("Item 1", tmp)
-        put("Item 2", tmp1)
-    }
 
     lateinit var preferences: SharedPreferences
     lateinit var sportsmensList: MutableList<Item>
@@ -80,12 +62,6 @@ class MainActivity: AppCompatActivity()  {
         super.onCreate(savedInstanceState)
         preferences = getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
 
-//        var editor = preferences.edit()
-//        editor.putBoolean("isLoggedIn", false)
-//        editor.apply()
-//        editor.putString("exerciseList", Gson().toJson(exerciseList1))
-//        editor.putString("sportsmensList", Gson().toJson(sportsmensList1))
-//        editor.apply()
         user = ""
         val sportsmensListJson = (preferences.getString("sportsmensList", null))
         sportsmensList = sportsmensListJson?.let {
@@ -103,7 +79,6 @@ class MainActivity: AppCompatActivity()  {
         val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
         if (!isLoggedIn) {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
-            //getRole()
             startActivity(intent)
             finish()
         } else {
@@ -112,7 +87,6 @@ class MainActivity: AppCompatActivity()  {
             editor.putString("sportsmensList", Gson().toJson(sportsmensList))
             Log.d("check", sportsmensList.toString())
             editor.apply()
-            //getRole()
             val currentUser = Firebase.auth.currentUser
             lateinit var email:String
             var role = ""
@@ -164,30 +138,11 @@ class MainActivity: AppCompatActivity()  {
             }.addOnFailureListener{
                 Log.d("F","Failed fairbase")
             }
-            //Log.d("User",role)
             print(role)
             Log.d("User",user)
-            //user = role
         }
     }
-    /*fun getRole(){
-        val currentUser = Firebase.auth.currentUser
-        lateinit var email:String
-        currentUser?.let {
-            email = it.email.toString()
-        }
-        database = Firebase.database.reference
-        database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
-            if (it.exists()){
-                user = it.child("role").value.toString()
 
-            }else{
-                Log.d("F","User does not exist")
-            }
-        }.addOnFailureListener{
-            Log.d("F","Failed fairbase")
-        }
-    }*/
     override fun onBackPressed() {
         var currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_sportsmens)
         var currentFragment1 = supportFragmentManager.findFragmentById(R.id.fragment_groups)

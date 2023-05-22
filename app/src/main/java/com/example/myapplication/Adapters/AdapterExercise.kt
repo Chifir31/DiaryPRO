@@ -57,15 +57,12 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
         //holder.itemPicture.setImageResource(currentItem.)
         holder.itemOpenButton.setOnClickListener {
             // Open separate window
-            Log.d("TAG", itemList?.size.toString())
             onOpenClickListener?.onOpenClick(position)
         }
         holder.itemDeleteButton.setOnClickListener {
             // Delete item from list and update RecyclerView
-            Log.d("Check", itemList.toString() + " "+ currentItem.toString())
             onDeleteClickListener?.onDeleteClick(position)
         }
-        Log.d("Set check", deleteButtonsVisible.toString())
         holder.itemDeleteButton.visibility = if (deleteButtonsVisible.contains(getItem(position))) VISIBLE else GONE
 
     }
@@ -73,7 +70,6 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
     override fun getItemCount() = itemList?.size ?: 0
     fun getItem(position: Int): String {
         itemList?.let {
-            Log.d("Id: ", it[position].itemId)
             return it[position].itemId
         }
         return ""
@@ -84,15 +80,11 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
     fun showDeleteButton(position: Int) {
         deleteButtonsVisible.add(getItem(position))
         notifyItemChanged(position)
-        //Log.d("Id: ",getItem(position))
-        //Log.d("Set: ","$deleteButtonsVisible")
     }
 
     fun hideDeleteButton(position: Int) {
         deleteButtonsVisible.remove(getItem(position))
         notifyItemChanged(position)
-        //Log.d("Id: ",getItem(position))
-        //Log.d("Set: ","$deleteButtonsVisible")
     }
 
     // Define the view holder class
@@ -104,7 +96,6 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
     }
     fun removeItem(position: Int) {
         hideDeleteButton(position)
-        Log.d("Check", itemList.toString())
 
         val currentUser = Firebase.auth.currentUser
         lateinit var email: String
@@ -113,12 +104,10 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
         }
         val database = Firebase.database.reference
         itemList?.let {
-            //it[position].itemId
             database.child("Exercise").child(email.split("@")[0])
                 .child(it[position].itemId).addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         itemList?.removeAt(position)
-                        Log.d("Check", itemList.toString())
                         notifyDataSetChanged()
                         snapshot.ref.removeValue()
                     }

@@ -24,7 +24,6 @@ import com.example.myapplication.navigation_pages.ExercisesInGroup
  */
 class GroupsAdapter(
     private val groupsList: MutableList<Group>): RecyclerView.Adapter<GroupsAdapter.GroupsView>() {
-    //new
     private val deleteButtonsVisible = mutableSetOf<String>()
     private var onDeleteClickListener: OnDeleteClickListener? = null
     interface OnDeleteClickListener {
@@ -42,9 +41,6 @@ class GroupsAdapter(
      * @author Севастьянов Иван
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupsView {
-        //old
-        // val itemView = LayoutInflater.from(parent.context).inflate(R.layout.group_item,parent,false)
-        //new
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.group_item_layout_example,parent,false)
         return  GroupsView(itemView)
     }
@@ -57,9 +53,8 @@ class GroupsAdapter(
     override fun getItemCount(): Int {
         return groupsList.size
     }
-    //new
+
     fun getItem(position: Int): String {
-        //Log.d("Id: ",itemList[position].itemId)
         return groupsList[position].itemId
     }
     fun getVisibility(position: Int) : Boolean{
@@ -87,9 +82,6 @@ class GroupsAdapter(
         holder.detailsBtn.tag = currentItem
 
         holder.detailsBtn.setOnClickListener{
-            //old
-            //val fragment = ExercisesInGroup.newInstance(currentItem.name,currentItem.name)
-            //new
             val fragment = ExercisesInGroup.newInstance(currentItem.name, currentItem.itemId)
             val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
             fragmentManager.beginTransaction()
@@ -97,23 +89,17 @@ class GroupsAdapter(
                 .addToBackStack(null)
                 .commit()
         }
-        //new
+
         holder.itemDeleteButton.setOnClickListener {
             // Delete item from list and update RecyclerView
             onDeleteClickListener?.onDeleteClick(position)
         }
         holder.itemDeleteButton.visibility = if (deleteButtonsVisible.contains(getItem(position))) View.VISIBLE else GONE
-        Log.d("deleteButtonsVisible", deleteButtonsVisible.toString())
     }
 
 
     class GroupsView(itemView: View):RecyclerView.ViewHolder(itemView){
-        //old
-        // val groupName: TextView = itemView.findViewById(R.id.groupName)
-        //val detailsBtn: ImageButton = itemView.findViewById(R.id.options)
-        //new
         val groupName: TextView = itemView.findViewById(R.id.item_text)
-        //val itemPicture: ImageView = itemView.findViewById(R.id.item_image)
         val detailsBtn: TextView = itemView.findViewById(R.id.item_open_button)
         val itemDeleteButton: TextView = itemView.findViewById(R.id.item_delete_button)
     }

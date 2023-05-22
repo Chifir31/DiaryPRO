@@ -45,9 +45,7 @@ class AdapterSportsmens(private val itemList: MutableList<Item>, private val isO
         //holder.itemPicture.setImageResource(currentItem.)
         if (isOpenButtonEnabled) {
             holder.itemOpenButton.setOnClickListener {
-                Log.d("TAG", itemList.size.toString())
                 val exercise = itemList[position]
-                Log.d("check", currentItem.name.toString() + " " + currentItem.itemId.toString())
                 val fragment = SportsmensFragmentDialog.newInstance(currentItem.name, currentItem.itemId)
                 val fragmentManager = (holder.itemView.context as AppCompatActivity).supportFragmentManager
                 fragmentManager.beginTransaction()
@@ -65,12 +63,10 @@ class AdapterSportsmens(private val itemList: MutableList<Item>, private val isO
             onDeleteClickListener?.onDeleteClick(position)
         }
         holder.itemDeleteButton.visibility = if (deleteButtonsVisible.contains(getItem(position))) VISIBLE else GONE
-        Log.d("deleteButtonsVisible", deleteButtonsVisible.toString())
     }
     // Return the size of the list
     override fun getItemCount() = itemList.size
     fun getItem(position: Int): String {
-        //Log.d("Id: ",itemList[position].itemId)
         return itemList[position].itemId
     }
     fun getVisibility(position: Int) : Boolean{
@@ -98,5 +94,5 @@ class AdapterSportsmens(private val itemList: MutableList<Item>, private val isO
         itemList.removeAt(position)
         notifyDataSetChanged()
     }
-    //class ClipData.Item(val text: String, val imageResourceId: Int, var itemId: String)
+
 }

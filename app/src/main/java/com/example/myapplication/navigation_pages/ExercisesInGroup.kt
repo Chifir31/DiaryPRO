@@ -229,6 +229,7 @@ class ExercisesInGroup : Fragment(), AdapterCalendar.Listener {
                         email = it.email.toString()
                     }
                     Log.d("param2",param2.toString())
+                    Log.d("size check",itemList[param2]?.size.toString())
                     database.child("groups").child(email.split("@")[0]).child(param2.toString())
                         .child("exercises").setValue(itemList[param2])
                     Log.d("exec",newExercise.text)

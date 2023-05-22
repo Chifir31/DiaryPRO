@@ -92,7 +92,7 @@ class SportsmensFragment : Fragment() {
                                     if (it.exists()){
                                         val item = Item(
                                             value.toString().split(",")[2].split("=")[1].substring(0,
-                                                value.toString().split(",")[2].split("=")[1].length-2),//Супер тупой костыль без которого крашимся ¯\_(ツ)_/¯
+                                                value.toString().split(",")[2].split("=")[1].length-1),//Супер тупой костыль без которого крашимся ¯\_(ツ)_/¯
                                             "https://picsum.photos/200?random=$randomNumber",
                                             value.toString().split(",")[0].split("=")[1]
                                         )

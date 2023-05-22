@@ -79,6 +79,7 @@ class ExerciseFragment : Fragment() {
                     val itemId = it.child("itemId").getValue().toString()
                     val itemState = it.child("itemState").getValue().toString()
                     val text = it.child("text").getValue().toString()
+                    Log.d("null",text)
 
                     Log.d("kill me2",itemDate)
                     if(tempList[email.split("@")[0]]==null){
@@ -93,6 +94,7 @@ class ExerciseFragment : Fragment() {
                         }
 
                     }else{
+                        Log.d("kill me4","check fun")
                         tempList[email.split("@")[0]]?.add(
                             Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
                         )
@@ -116,6 +118,7 @@ class ExerciseFragment : Fragment() {
             //itemList = tempList
             Log.d("Eee",itemList.size.toString())
             stateList = (requireActivity() as MainActivity).statemap
+            Log.d("email",email.split("@")[0])
             itemList1 = (itemList[email.split("@")[0]]?.filter {
                 val calendar = Calendar.getInstance()
                 calendar.time = Date(it.itemDate.toLong())

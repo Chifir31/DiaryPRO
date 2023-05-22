@@ -70,7 +70,6 @@ class SportsmensFragment : Fragment() {
         dateTextView.text = dateFormat.format(currentDate)
 
         //Загружаем список спортсменов
-        val tempList = arrayListOf<Item>()
 //        if (tempList.size == 0) {
 //            //database = Firebase.database.reference
 //            val currentUser = Firebase.auth.currentUser
@@ -196,6 +195,7 @@ class SportsmensFragment : Fragment() {
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
         swipeRefreshLayout.setOnRefreshListener {
+            val tempList = arrayListOf<Item>()
             // Refresh the data here
             // Call your data update function or fetch new data from the server
             val reference = database.child(email.split("@")[0]).child("list_of_sportsmen")

@@ -14,13 +14,12 @@ import com.example.myapplication.data.Group
 import com.example.myapplication.data.Item
 import com.example.myapplication.data.User
 import com.example.myapplication.navigation_pages.*
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -33,12 +32,7 @@ class MainActivity: AppCompatActivity()  {
     val random = Random()
     val randomNumber = random.nextInt(1000)
 
-    /*var sportsmensList1 = arrayListOf<Item>(
-       Item("Item 1", "https://picsum.photos/200?random=$randomNumber", "Item 1"),
-       Item("Item 2", "https://picsum.photos/200?random=$randomNumber+1", "Item 2"),
-       Item("Item 3", "https://picsum.photos/200?random=$randomNumber+2", "Item 3"),
-       Item("Item 4", "https://picsum.photos/200?random=$randomNumber+3", "Item 4"),
-       Item("Item 5", "https://picsum.photos/200?random=$randomNumber+4", "Item 5"))*/
+    var sportsmensList1 = arrayListOf<Item>()
     var temp = arrayListOf<String>(
         "Anton",
         "Alexey")
@@ -99,7 +93,6 @@ class MainActivity: AppCompatActivity()  {
         profileList =  profileListJson?.let {
             Gson().fromJson<ArrayMap<String, String>>(it, object : TypeToken<ArrayMap<String, String>>() {}.type)
         } ?: ArrayMap()
-        database = FirebaseDatabase.getInstance().getReference("users")
         val isLoggedIn = preferences.getBoolean("isLoggedIn", false)
         if (!isLoggedIn) {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
@@ -120,26 +113,66 @@ class MainActivity: AppCompatActivity()  {
                 email = it.email.toString()
             }
             database = Firebase.database.reference
+            database = database.child("users")
             Log.d("User",email.split("@")[0])
-            database.child("users").child(email.split("@")[0]).get().addOnSuccessListener {
+            database.child(email.split("@")[0]).get().addOnSuccessListener {
                 if (it.exists()){
                     role = it.child("role").value.toString()
                     Log.d("User",role)
                     user = role
                     if (user == "C") {
-                        setContentView(R.layout.c_activity_main)
-                        navView = findViewById(R.id.c_bottom_navigation)
-                        loadFragment(SportsmensFragment())
-                        navView?.setOnItemSelectedListener {
-                            when (it.itemId) {
-                                R.id.sportsmens -> loadFragment(SportsmensFragment())
-                                R.id.groups -> loadFragment(GroupsFragment())
-                                R.id.profile -> loadFragment(ProfileFragment())
-                                else -> {
+                        val reference = database.child(email.split("@")[0]).child("list_of_sportsmen")
+                        reference.get().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Log.d("child1", task.toString())
+                                val children = task.result!!.children
+                                var totalChildren = children.count()
+                                var completedChildren = 0
+                                for (it in task.result!!.children) {
+                                    val random = Random()
+                                    val randomNumber = random.nextInt(1000)
+                                    Log.d("child1", completedChildren.toString())
+                                        val value = it.getValue()
+                                        val item = Item(
+                                            value.toString().split(",")[2].split("=")[1].substring(0,
+                                                value.toString().split(",")[2].split("=")[1].length-1),//Супер тупой костыль без которого крашимся ¯\_(ツ)_/¯
+                                            "https://picsum.photos/200?random=$randomNumber",
+                                            value.toString().split(",")[0].split("=")[1]
+                                        )
+                                        sportsmensList1.add(item)
+                                        completedChildren++
+                                        if (completedChildren == totalChildren) {
+                                            Log.d("child2", completedChildren.toString())
+                                            editor.putString(
+                                                "sportsmensList",
+                                                Gson().toJson(sportsmensList1)
+                                            )
+                                            editor.apply()
+                                            val sportsmensListJson = (preferences.getString("sportsmensList", null))
+                                            sportsmensList = sportsmensListJson?.let {
+                                                Gson().fromJson(it, object : TypeToken<ArrayList<Item>>() {}.type)
+                                            } ?: arrayListOf()
+                                            setContentView(R.layout.c_activity_main)
+                                            navView = findViewById(R.id.c_bottom_navigation)
+                                            loadFragment(SportsmensFragment())
+                                            navView?.setOnItemSelectedListener {
+                                                when (it.itemId) {
+                                                    R.id.sportsmens -> loadFragment(SportsmensFragment())
+                                                    R.id.groups -> loadFragment(GroupsFragment())
+                                                    R.id.profile -> loadFragment(ProfileFragment())
+                                                    else -> {
 
-                                }
+                                                    }
+                                                }
+                                                true
+                                            }
+                                        }
+                                    }
+
                             }
-                            true
+                            else {
+                                task.exception!!.message?.let { it1 -> Log.d("TAG", it1) } // Never ignore potential errors!
+                            }
                         }
                     } else if (user == "S") {
                         setContentView(R.layout.s_activity_main)

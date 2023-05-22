@@ -34,6 +34,12 @@
             android:background="@android:color/transparent"
             />
     </androidx.appcompat.widget.Toolbar>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:layout_marginBottom="90dp">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_sportsmens"
         android:layout_below="@id/toolbar"
@@ -42,5 +48,6 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="90dp">
     </androidx.recyclerview.widget.RecyclerView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

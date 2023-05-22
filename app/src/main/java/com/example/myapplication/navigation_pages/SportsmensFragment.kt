@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Group
@@ -32,6 +33,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -48,6 +50,8 @@ class SportsmensFragment : Fragment() {
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
     private lateinit  var database: DatabaseReference
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    lateinit var email: String
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Set up the listener for back stack changes
@@ -57,6 +61,7 @@ class SportsmensFragment : Fragment() {
 
         dateTextView = view.findViewById(R.id.date_textview)
         add_button=view.findViewById(R.id.add_button)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         (activity as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         setHasOptionsMenu(true)
@@ -65,50 +70,50 @@ class SportsmensFragment : Fragment() {
         dateTextView.text = dateFormat.format(currentDate)
 
         //Загружаем список спортсменов
-        val tempList = (requireActivity() as MainActivity).sportsmensList
-        if (tempList.size == 0) {
-            //database = Firebase.database.reference
-            val currentUser = Firebase.auth.currentUser
-            lateinit var email: String
-            currentUser?.let {
-                email = it.email.toString()
-            }
-            database.child(email.split("@")[0]).get().addOnSuccessListener {
-                if (it.exists()) {
-                    val reference = database.child(email.split("@")[0])
-                        .child("list_of_sportsmen")
-                    reference.addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onCancelled(snapshotError: DatabaseError) {
-                            TODO("not implemented")
-                        }
+        val tempList = arrayListOf<Item>()
+//        if (tempList.size == 0) {
+//            //database = Firebase.database.reference
+//            val currentUser = Firebase.auth.currentUser
+//            lateinit var email: String
+//            currentUser?.let {
+//                email = it.email.toString()
+//            }
+//            database.child(email.split("@")[0]).get().addOnSuccessListener {
+//                if (it.exists()) {
+//                    val reference = database.child(email.split("@")[0])
+//                        .child("list_of_sportsmen")
+//                    reference.addListenerForSingleValueEvent(object : ValueEventListener {
+//                        override fun onCancelled(snapshotError: DatabaseError) {
+//                            TODO("not implemented")
+//                        }
+//
+//                        override fun onDataChange(snapshot: DataSnapshot) {
+//                            val random = Random()
+//                            val randomNumber = random.nextInt(1000)
+//                            val children = snapshot!!.children
+//                            children.forEach {
+//                                val value = it.getValue()
+//                                Log.d("check",value.toString().split(",")[2].split("=")[1].split(")")[0])
+//                                    if (it.exists()){
+//                                        val item = Item(
+//                                            value.toString().split(",")[2].split("=")[1].substring(0,
+//                                                value.toString().split(",")[2].split("=")[1].length-2),//Супер тупой костыль без которого крашимся ¯\_(ツ)_/¯
+//                                            "https://picsum.photos/200?random=$randomNumber",
+//                                            value.toString().split(",")[0].split("=")[1]
+//                                        )
+//                                        tempList.add(item)
+//                                    }
+//                            }
+//                        }
+//
+//                    })
+//                } else {
+//                    Log.d("S", "User does not exist")
+//                }
+//            }
+//        }
 
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            val random = Random()
-                            val randomNumber = random.nextInt(1000)
-                            val children = snapshot!!.children
-                            children.forEach {
-                                val value = it.getValue()
-                                Log.d("check",value.toString().split(",")[2].split("=")[1].split(")")[0])
-                                    if (it.exists()){
-                                        val item = Item(
-                                            value.toString().split(",")[2].split("=")[1].substring(0,
-                                                value.toString().split(",")[2].split("=")[1].length-2),//Супер тупой костыль без которого крашимся ¯\_(ツ)_/¯
-                                            "https://picsum.photos/200?random=$randomNumber",
-                                            value.toString().split(",")[0].split("=")[1]
-                                        )
-                                        tempList.add(item)
-                                    }
-                            }
-                        }
-
-                    })
-                } else {
-                    Log.d("S", "User does not exist")
-                }
-            }
-        }
-
-        itemList = tempList
+        itemList = (requireActivity() as MainActivity).sportsmensList
         size = itemList.size+1
         recyclerView = view.findViewById(R.id.recycler_sportsmens)
         layoutManager = LinearLayoutManager(activity)
@@ -116,12 +121,7 @@ class SportsmensFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = adapter
         ShowInput()
-        adapter.setOnDeleteClickListener(object : AdapterSportsmens.OnDeleteClickListener {
-            override fun onDeleteClick(position: Int) {
-                //Log.d("Pos", "$position")
-                ConfirmDelete(position)
-            }
-        })
+        setupListeners()
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
                 return 0.5f
@@ -195,16 +195,55 @@ class SportsmensFragment : Fragment() {
         }
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
-    }
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        database = Firebase.database.reference
-        database = database.child("users")
-        val view = inflater.inflate(R.layout.fragment_sportsmens, container, false)
-        // Inflate the layout for this fragment
-        return view
+        swipeRefreshLayout.setOnRefreshListener {
+            // Refresh the data here
+            // Call your data update function or fetch new data from the server
+            val reference = database.child(email.split("@")[0]).child("list_of_sportsmen")
+            reference.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("child1", task.toString())
+                    val children = task.result!!.children
+                    var totalChildren = children.count()
+                    var completedChildren = 0
+                    for (it in task.result!!.children) {
+                        val random = Random()
+                        val randomNumber = random.nextInt(1000)
+                        Log.d("child1", completedChildren.toString())
+                        val value = it.getValue()
+                        val item = Item(
+                            value.toString().split(",")[2].split("=")[1].substring(0,
+                                value.toString().split(",")[2].split("=")[1].length-1),//Супер тупой костыль без которого крашимся ¯\_(ツ)_/¯
+                            "https://picsum.photos/200?random=$randomNumber",
+                            value.toString().split(",")[0].split("=")[1]
+                        )
+                        tempList.add(item)
+                        completedChildren++
+                        if (completedChildren == totalChildren) {
+                            Log.d("child2", completedChildren.toString())
+                            editor.putString(
+                                "sportsmensList",
+                                Gson().toJson(tempList)
+                            )
+                            editor.apply()
+                            val sportsmensListJson = (preferences.getString("sportsmensList", null))
+                            itemList = sportsmensListJson?.let {
+                                Gson().fromJson(it, object : TypeToken<java.util.ArrayList<Item>>() {}.type)
+                            } ?: arrayListOf()
+                            Log.d("itemList", itemList.toString())
+                            adapter = AdapterSportsmens(itemList, true)
+                            recyclerView.adapter = adapter
+                            setupListeners()
+                            swipeRefreshLayout.isRefreshing = false
+                            Toast.makeText(requireContext(), "Обновлено", Toast.LENGTH_LONG).show()
+                    }
+
+                }
+                }
+                else {
+                    task.exception!!.message?.let { it1 -> Log.d("TAG", it1) } // Never ignore potential errors!
+                }
+            }
+        }
     }
     /* This function shows an AlertDialog with an EditText view to allow the user to input data.
     The data is then added to the itemList and the adapter is notified of the change.
@@ -233,11 +272,6 @@ class SportsmensFragment : Fragment() {
                             Log.d("coach", coach.toString())
                             if (role == "S" && coach == ""){
                                 //Добавление спортсмена к тренеру
-                                val currentUser = Firebase.auth.currentUser
-                                lateinit var email: String
-                                currentUser?.let {
-                                    email = it.email.toString()
-                                }
                                 database.child(edit.text.toString()).child("coach").setValue (email.split("@")[0])
                                 database.child(email.split("@")[0]).get()
                                     .addOnSuccessListener {
@@ -345,7 +379,29 @@ class SportsmensFragment : Fragment() {
             builder.show()
         }
     }
+    fun setupListeners(){
+        adapter.setOnDeleteClickListener(object : AdapterSportsmens.OnDeleteClickListener {
+            override fun onDeleteClick(position: Int) {
+                ConfirmDelete(position)
+            }
+        })
+    }
+override fun onCreateView(
+    inflater: LayoutInflater, container: ViewGroup?,
+    savedInstanceState: Bundle?
+): View? {
+    database = Firebase.database.reference
+    database = database.child("users")
+    val currentUser = Firebase.auth.currentUser
+    currentUser?.let {
+        email = it.email.toString()
+    }
+    val view = inflater.inflate(R.layout.fragment_sportsmens, container, false)
+    // Inflate the layout for this fragment
+    return view
 }
+}
+
 // This is an InputActivity class that sets the content view to R.layout.c_activity_input.
 class InputActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

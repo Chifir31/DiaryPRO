@@ -44,16 +44,33 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
         return ItemViewHolder(view)
     }
 
+    fun setImage(trainingName: String): Int {
+        if (trainingName == "ОФП"){
+            return R.drawable.baseline_ofp_24
+        }
+        if (trainingName == "Плавание"){
+            return R.drawable.baseline_swim_24
+        }
+        if (trainingName == "Лыжи"){
+            return R.drawable.baseline_skiing_24
+        }
+        if (trainingName == "Велосипед"){
+            return R.drawable.baseline_bike_24
+        }
+        return R.drawable.baseline_running_24
+    }
     // Bind the data to the views in each item view holder
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val currentItem = itemList?.get(position)
         if (currentItem != null) {
             holder.itemName.text = currentItem.text
         }
+        val image = currentItem?.let { setImage(it.text) }
         Glide.with(holder.itemView)
-            .load(currentItem?.img)
-            .transform(CircleCrop())
+            .load(image)
+            .transform()
             .into(holder.itemPicture)
+        //CircleCrop()
         //holder.itemPicture.setImageResource(currentItem.)
         holder.itemOpenButton.setOnClickListener {
             // Open separate window

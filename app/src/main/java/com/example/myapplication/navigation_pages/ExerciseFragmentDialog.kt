@@ -92,6 +92,22 @@ class ExerciseFragmentDialog : Fragment() {
         return inflater.inflate(R.layout.fragment_exercise_dialog, container, false)
     }
 
+    fun setImage(trainingName: String): Int {
+        if (trainingName == "ОФП"){
+            return R.drawable.baseline_ofp_24
+        }
+        if (trainingName == "Плавание"){
+            return R.drawable.baseline_swim_24
+        }
+        if (trainingName == "Лыжи"){
+            return R.drawable.baseline_skiing_24
+        }
+        if (trainingName == "Велосипед"){
+            return R.drawable.baseline_bike_24
+        }
+        return R.drawable.baseline_running_24
+    }
+
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -115,16 +131,8 @@ class ExerciseFragmentDialog : Fragment() {
         comment_text = view.findViewById(R.id.com_text)
         comment1 = view.findViewById(R.id.com1_edit)
         comment1_text = view.findViewById(R.id.com1_text)
-        val randomImageUrl = "https://picsum.photos/200" // Replace with URL of your image
-        Glide.with(this)
-            .load(randomImageUrl)
-            .transform(CircleCrop())
-            .placeholder(R.drawable.circular_background) // placeholder image while the actual image loads
-            //.error(R.drawable.error_image) // image to display if there is an error loading the actual image
-            .into(img)
-        val random = Random()
-        val randomNumber = random.nextInt(1000)
-        var date = Date()
+
+        val date = Date()
 
         val currentUser = Firebase.auth.currentUser
         lateinit var email: String
@@ -165,6 +173,7 @@ class ExerciseFragmentDialog : Fragment() {
             }else{
                 tempList = ArrayMap<String, MutableList<Exercise>>()
             }
+
             itemList = tempList
             stateList = (requireActivity() as MainActivity).statemap
             itemList1 = (itemList[email.split("@")[0]]?.filter {
@@ -175,6 +184,11 @@ class ExerciseFragmentDialog : Fragment() {
                         calendar.get(Calendar.YEAR) == date.year+1900
             } as MutableList<Exercise>)
             toolbar_text.setText(param1.toString())
+            val image = setImage(param1.toString())
+            Glide.with(this)
+                .load(image)
+                .transform()
+                .into(img)
             plan.setText(param3?.let { itemList1.get(it).itemDesc}.toString())
             state.setText(stateList[param3?.let { itemList1.get(it).itemState }].toString())
             if(param3?.let { itemList1.get(it).itemState }!="p"){

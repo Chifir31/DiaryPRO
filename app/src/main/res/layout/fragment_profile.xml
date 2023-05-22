@@ -58,7 +58,7 @@
             android:layout_gravity="left"
             android:layout_marginTop="30sp"
             android:layout_marginStart="30sp"
-            android:background="@drawable/circular_background" />
+            android:background="@drawable/baseline_coach_24" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -193,7 +193,7 @@
             android:gravity="center"
             android:background="@android:color/transparent"
             android:textSize="20sp"
-            android:paddingVertical="25dp"
+            android:paddingVertical="10dp"
             android:text="Выйти"
             android:textColor="@color/red" />
         <TextView
@@ -203,7 +203,7 @@
             android:gravity="center"
             android:background="@android:color/transparent"
             android:textSize="20sp"
-            android:paddingVertical="25dp"
+            android:paddingVertical="10dp"
             android:text="Удалить профиль"
             android:textColor="@color/red"
            />

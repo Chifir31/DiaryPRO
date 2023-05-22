@@ -71,13 +71,13 @@ override fun onCreateView(
         editor= preferences.edit()
         itemList = (requireActivity() as MainActivity).profileList
         myImageView = view.findViewById(R.id.circle_image)
-        val randomImageUrl = "https://picsum.photos/200" // Replace with URL of your image
-        Glide.with(this)
-            .load(randomImageUrl)
-            .transform(CircleCrop())
-            .placeholder(R.drawable.circular_background) // placeholder image while the actual image loads
-            //.error(R.drawable.error_image) // image to display if there is an error loading the actual image
-            .into(myImageView)
+//        val randomImageUrl = "https://picsum.photos/200" // Replace with URL of your image
+//        Glide.with(this)
+//            .load(randomImageUrl)
+//            .transform(CircleCrop())
+//            .placeholder(R.drawable.circular_background) // placeholder image while the actual image loads
+//            //.error(R.drawable.error_image) // image to display if there is an error loading the actual image
+//            .into(myImageView)
         lastname = view.findViewById(R.id.profile_lastnameedit)
         profile_id = view.findViewById(R.id.profile_id)
         profile_login = view.findViewById(R.id.profile_login)

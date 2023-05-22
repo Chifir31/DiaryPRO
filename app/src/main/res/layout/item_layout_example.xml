@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="90dp"
+    android:orientation="horizontal"
     android:layout_marginBottom="10dp">
     <LinearLayout
         android:visibility="visible"
@@ -20,50 +21,40 @@
             android:layout_width="70dp"
             android:layout_height="match_parent"
             android:text="@string/delete"
+            android:layout_weight="0"
             android:textAlignment="center"
             android:paddingVertical="35dp"
             android:background="@color/red"
             android:textColor="@color/white"
-            ></TextView>
+            />
         <ImageView
             android:id="@+id/item_image"
             android:scaleType="fitXY"
             android:layout_width="75dp"
             android:layout_height="75dp"
+            android:layout_weight="0"
             android:layout_marginStart="10dp"
-            android:layout_gravity="center"
-            android:background="@drawable/circular_background">
+            android:layout_gravity="center">
         </ImageView>
         <TextView
             android:id="@+id/item_text"
             android:layout_marginStart="10dp"
-            android:layout_toRightOf="@id/item_image"
-            android:layout_width="170dp"
+            android:layout_width="match_parent"
             android:paddingVertical="30dp"
+            android:layout_weight="1"
             android:textColor="@color/gray"
             android:textStyle="bold"
             android:textSize="23sp"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
         </TextView>
-        
-    </LinearLayout>
-    <LinearLayout
-        android:visibility="visible"
-        android:id="@+id/view_foreground2"
-        android:background="@android:color/transparent"
-        android:orientation="horizontal"
-        android:layout_gravity="center_vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
         <TextView
             android:id="@+id/item_open_button"
             android:layout_width="80dp"
             android:layout_height="match_parent"
-
-            android:layout_marginStart="330dp"
-            android:drawableLeft="@drawable/baseline_arrow_btn_24"
+            android:layout_weight="0"
+            android:paddingStart="17dp"
+            android:drawableStart="@drawable/baseline_arrow_btn_24"
             android:background="@android:color/transparent"
-            ></TextView>
-</LinearLayout>
+            />
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

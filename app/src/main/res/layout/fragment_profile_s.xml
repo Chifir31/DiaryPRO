@@ -45,6 +45,7 @@
             />
     </androidx.appcompat.widget.Toolbar>
 
+
     <RelativeLayout
         android:id="@+id/photoAndID"
         android:layout_width="match_parent"
@@ -64,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_toRightOf="@id/circle_image"
-            android:paddingVertical="35dp"
+            android:gravity="center_vertical"
             android:layout_marginStart="50sp"
             android:orientation="vertical">
             <TextView
@@ -75,7 +76,6 @@
                 android:textSize="20sp"
                 android:textColor="@color/white"/>
             <TextView
-                android:layout_below="@id/profile_id"
                 android:id="@+id/profile_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -84,7 +84,6 @@
                 android:textColor="@color/white"/>
             <TextView
                 android:id="@+id/profile_coach"
-                android:layout_below="@id/profile_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Тренер:"
@@ -282,45 +281,48 @@
             android:background="@android:color/transparent"
             />
     </LinearLayout>
+
+
    <LinearLayout
-       android:layout_width="match_parent"
+       android:layout_width="wrap_content"
        android:layout_height="wrap_content"
+       android:layout_centerHorizontal="true"
        android:orientation="vertical"
        android:layout_alignParentBottom="true"
+       android:isScrollContainer="true"
        android:layout_marginBottom="90dp"
        >
+           <TextView
+               android:id="@+id/unsign_btn"
+               android:layout_width="match_parent"
+               android:gravity="center"
+               android:paddingVertical="5dp"
+               android:textSize="20sp"
+               android:layout_height="wrap_content"
+               android:background="@android:color/transparent"
+               android:text="Отписаться от тренера"
+               android:textColor="@color/red" />
+           <TextView
+               android:id="@+id/logout_btn"
+               android:layout_width="match_parent"
+               android:textSize="20sp"
+               android:gravity="center"
+               android:layout_height="wrap_content"
+               android:paddingVertical="5dp"
+               android:background="@android:color/transparent"
+               android:text="Выйти"
+               android:textColor="@color/red" />
+           <TextView
+               android:id="@+id/delete_btn"
+               android:layout_width="match_parent"
+               android:textSize="20sp"
+               android:gravity="center"
+               android:layout_height="wrap_content"
+               android:paddingVertical="5dp"
+               android:background="@android:color/transparent"
+               android:text="Удалить профиль"
+               android:textColor="@color/red" />
 
-       <TextView
-           android:id="@+id/unsign_btn"
-           android:layout_width="match_parent"
-           android:gravity="center"
-           android:paddingVertical="10dp"
-           android:textSize="20sp"
-           android:layout_height="wrap_content"
-           android:background="@android:color/transparent"
-           android:text="Отписаться от тренера"
-           android:textColor="@color/red"
-           android:layout_marginTop="10sp"/>
-       <TextView
-           android:id="@+id/logout_btn"
-           android:layout_width="match_parent"
-           android:textSize="20sp"
-           android:gravity="center"
-           android:layout_height="wrap_content"
-           android:paddingVertical="10dp"
-           android:background="@android:color/transparent"
-           android:text="Выйти"
-           android:textColor="@color/red" />
-       <TextView
-           android:id="@+id/delete_btn"
-           android:layout_width="match_parent"
-           android:textSize="20sp"
-           android:gravity="center"
-           android:layout_height="wrap_content"
-           android:paddingVertical="10dp"
-           android:background="@android:color/transparent"
-           android:text="Удалить профиль"
-           android:textColor="@color/red" />
    </LinearLayout>
 
 </RelativeLayout>

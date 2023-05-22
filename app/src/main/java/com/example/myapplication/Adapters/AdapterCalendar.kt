@@ -121,7 +121,6 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
         var weekMapDate = ArrayMap<String, String>()
         val sdf = SimpleDateFormat("dd/MM/yyyy")
         val weekDateList = ArrayList<String>()
-        var position = -1
 
         for (i in 0 until weekList.size){
             val date = SimpleDateFormat("dd/MM/yy", Locale("ru")).format(weekList[i])
@@ -139,35 +138,38 @@ class AdapterCalendar(val listener: Listener) : RecyclerView.Adapter<AdapterCale
                 cmp > 0 -> {
                     while (statusList.size != 7) {
                         statusList.add("p")
-                        Log.d("Я тут!", "Так ведь?")
                     }
                     return
                 }
-//                cmp < 0 -> {
-//
-//                }
+                cmp < 0 -> {
+                    weekMapDate = getStatusWeek(weekMapDate)
+                    for (i in 0 until weekList.size){
+                        var status = weekMapDate[SimpleDateFormat("dd/MM/yy", Locale("ru")).format(weekList[i])]
+                        if (status == "p"){
+                            status = "f"
+                        }
+                        statusList.add(status!!)
+                    }
+                }
 //                else -> {
 //
 //                }
             }
         } else{
-            position = weekDateList.indexOf(currDayStr)
-        }
-
-        weekMapDate = getStatusWeek(weekMapDate)
-        for (i in 0 until weekList.size){
-            var status = weekMapDate[SimpleDateFormat("dd/MM/yy", Locale("ru")).format(weekList[i])]
-            if (position != -1) {
-                if (i >= position){
-                    status = "p"
-                } else {
-                    if (status == "p"){
-                        status = "f"
+            val position = weekDateList.indexOf(currDayStr)
+            weekMapDate = getStatusWeek(weekMapDate)
+            for (i in 0 until weekList.size){
+                var status = weekMapDate[SimpleDateFormat("dd/MM/yy", Locale("ru")).format(weekList[i])]
+                if (position != -1) {
+                    if (i >= position){
+                        status = "p"
+                    } else {
+                        if (status == "p"){
+                            status = "f"
+                        }
                     }
                 }
-            }
-            if (status != null) {
-                statusList.add(status)
+                statusList.add(status!!)
             }
         }
     }

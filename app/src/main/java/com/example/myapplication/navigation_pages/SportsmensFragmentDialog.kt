@@ -292,7 +292,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                 tmp?.get(position)?.img = "https://picsum.photos/200?random=$randomNumber"
                 tmp?.get(position)?.itemDate = dateSelected.time.toString()
                 tmp?.get(position)?.itemDesc = plan.text.toString()
-                tmp?.get(position)?.itemId = "Item " + (size++).toString()
+                //tmp?.get(position)?.itemId = "Item " + (size++).toString()
                 //(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString())
                 //itemList[param2]?.add(Exercise(type.selectedItem.toString(), "https://picsum.photos/200?random=$randomNumber", dateSelected, plan.toString(), "Item "+(size++).toString()))
                 adapter = AdapterExercise(itemList[param2]?.filter {

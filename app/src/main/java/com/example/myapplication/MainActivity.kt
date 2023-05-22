@@ -48,6 +48,7 @@ class MainActivity: AppCompatActivity()  {
     lateinit var preferences: SharedPreferences
     lateinit var sportsmensList: MutableList<Item>
     lateinit var exerciseList: ArrayMap<String, MutableList<Exercise>>
+    var exerciseList1 = ArrayMap<String, MutableList<Exercise>>()
     lateinit var profileList: ArrayMap<String, String>
     lateinit var user: String
 
@@ -121,7 +122,6 @@ class MainActivity: AppCompatActivity()  {
                                         )
                                         sportsmensList1.add(item)
                                         completedChildren++
-
                                     }
                                 if (completedChildren == totalChildren) {
                                     Log.d("child2", completedChildren.toString())
@@ -156,19 +156,58 @@ class MainActivity: AppCompatActivity()  {
                             }
                         }
                     } else if (user == "S") {
-                        setContentView(R.layout.s_activity_main)
-                        navView = findViewById(R.id.s_bottom_navigation)
-                        loadFragment(ExerciseFragment())
-                        navView?.setOnItemSelectedListener {
-                            when (it.itemId) {
-                                R.id.exercise -> loadFragment(ExerciseFragment())
-                                R.id.diary -> loadFragment(DiaryFragment())
-                                R.id.profile -> loadFragment(ProfileSportsmenFragment())
-                                else -> {
-
+                        val reference = Firebase.database.reference.child("Exercise").child(email.split("@")[0])
+                        reference.get().addOnCompleteListener { task ->
+                            val tempList = arrayListOf<Exercise>()
+                            if (task.isSuccessful) {
+                                Log.d("child1", task.toString())
+                                val children = task.result!!.children
+                                var totalChildren = children.count()
+                                var completedChildren = 0
+                                for (it in task.result!!.children) {
+                                    val random = Random()
+                                    val randomNumber = random.nextInt(1000)
+                                    Log.d("child1", completedChildren.toString())
+                                    val img = it.child("img").getValue().toString()
+                                    val itemComm = it.child("itemComm").getValue().toString()
+                                    val itemDate = it.child("itemDate").getValue().toString()
+                                    val itemDesc = it.child("itemDesc").getValue().toString()
+                                    val itemId = it.child("itemId").getValue().toString()
+                                    val itemState = it.child("itemState").getValue().toString()
+                                    val text = it.child("text").getValue().toString()
+                                    val item = Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                                    tempList.add(item)
+                                    //exerciseList1.put( email.split("@")[0],item)
+                                    completedChildren++
                                 }
+                                if (completedChildren == totalChildren) {
+                                    exerciseList1.put( email.split("@")[0],tempList)
+                                    Log.d("child2", completedChildren.toString())
+                                    editor.putString(
+                                        "exerciseList",
+                                        Gson().toJson(exerciseList1)
+                                    )
+                                    editor.apply()
+                                    val exerciseListJson = (preferences.getString("exerciseList", null))
+                                    exerciseList =  exerciseListJson?.let {
+                                        Gson().fromJson<ArrayMap<String, MutableList<Exercise>>>(it, object : TypeToken<ArrayMap<String, MutableList<Exercise>>>() {}.type)
+                                    } ?: ArrayMap()
+                                }
+                                    setContentView(R.layout.s_activity_main)
+                                    navView = findViewById(R.id.s_bottom_navigation)
+                                    loadFragment(ExerciseFragment())
+                                    navView?.setOnItemSelectedListener {
+                                        when (it.itemId) {
+                                            R.id.exercise -> loadFragment(ExerciseFragment())
+                                            R.id.diary -> loadFragment(DiaryFragment())
+                                            R.id.profile -> loadFragment(ProfileSportsmenFragment())
+                                            else -> {
+
+                                            }
+                                        }
+                                        true
+                                    }
                             }
-                            true
                         }
                     }
 

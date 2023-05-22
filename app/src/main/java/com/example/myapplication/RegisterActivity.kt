@@ -13,6 +13,7 @@ import android.util.Log
 import android.widget.*
 import android.widget.Toast
 import com.example.myapplication.data.Coach
+import com.example.myapplication.data.Exercise
 import com.example.myapplication.data.Sportsmen
 import com.example.myapplication.data.User
 import com.google.firebase.auth.FirebaseAuth
@@ -122,6 +123,7 @@ class RegisterActivity: AppCompatActivity(), DatePickerDialog.OnDateSetListener 
                                                 }.addOnFailureListener{err ->
                                                     Toast.makeText(this,"Error ${err.message}",Toast.LENGTH_LONG).show()
                                                 }
+                                                database.child("Exercise").child(username.text.toString().split("@")[0]).setValue("")
                                             }else{
                                                 val user = Coach(lastname.text.toString(),firstname.text.toString(),
                                                     username.text.toString(),editdate.text.toString(),role, listOf<String>()

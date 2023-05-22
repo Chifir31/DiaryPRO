@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.toColor
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -39,8 +40,8 @@ class AdapterSportsmens(private val itemList: MutableList<Item>, private val isO
         val currentItem = itemList[position]
         holder.itemName.text = currentItem.name
         Glide.with(holder.itemView)
-            .load(currentItem.img)
-            .transform(CircleCrop())
+            .load(R.drawable.baseline_sportsmens_24)
+            .transform()
             .into(holder.itemPicture)
         //holder.itemPicture.setImageResource(currentItem.)
         if (isOpenButtonEnabled) {

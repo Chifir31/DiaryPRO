@@ -121,33 +121,34 @@ class MainActivity: AppCompatActivity()  {
                                         )
                                         sportsmensList1.add(item)
                                         completedChildren++
-                                        if (completedChildren == totalChildren) {
-                                            Log.d("child2", completedChildren.toString())
-                                            editor.putString(
-                                                "sportsmensList",
-                                                Gson().toJson(sportsmensList1)
-                                            )
-                                            editor.apply()
-                                            val sportsmensListJson = (preferences.getString("sportsmensList", null))
-                                            sportsmensList = sportsmensListJson?.let {
-                                                Gson().fromJson(it, object : TypeToken<ArrayList<Item>>() {}.type)
-                                            } ?: arrayListOf()
-                                            setContentView(R.layout.c_activity_main)
-                                            navView = findViewById(R.id.c_bottom_navigation)
-                                            loadFragment(SportsmensFragment())
-                                            navView?.setOnItemSelectedListener {
-                                                when (it.itemId) {
-                                                    R.id.sportsmens -> loadFragment(SportsmensFragment())
-                                                    R.id.groups -> loadFragment(GroupsFragment())
-                                                    R.id.profile -> loadFragment(ProfileFragment())
-                                                    else -> {
 
-                                                    }
-                                                }
-                                                true
+                                    }
+                                if (completedChildren == totalChildren) {
+                                    Log.d("child2", completedChildren.toString())
+                                    editor.putString(
+                                        "sportsmensList",
+                                        Gson().toJson(sportsmensList1)
+                                    )
+                                    editor.apply()
+                                    val sportsmensListJson = (preferences.getString("sportsmensList", null))
+                                    sportsmensList = sportsmensListJson?.let {
+                                        Gson().fromJson(it, object : TypeToken<ArrayList<Item>>() {}.type)
+                                    } ?: arrayListOf()
+                                    setContentView(R.layout.c_activity_main)
+                                    navView = findViewById(R.id.c_bottom_navigation)
+                                    loadFragment(SportsmensFragment())
+                                    navView?.setOnItemSelectedListener {
+                                        when (it.itemId) {
+                                            R.id.sportsmens -> loadFragment(SportsmensFragment())
+                                            R.id.groups -> loadFragment(GroupsFragment())
+                                            R.id.profile -> loadFragment(ProfileFragment())
+                                            else -> {
+
                                             }
                                         }
+                                        true
                                     }
+                                }
 
                             }
                             else {

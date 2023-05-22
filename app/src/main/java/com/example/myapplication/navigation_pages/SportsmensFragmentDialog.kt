@@ -145,12 +145,12 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                     val random = Random()
                     val randomNumber = random.nextInt(1000)
                     val ts = dateSelected.getTime()
-                    if(itemList[param2]==null){
+                    if(itemList[param1]==null){
                         var newsize = size++
                         var newKey = database.push().key
                         itemList.apply {
                             put(
-                                param2.toString(),
+                                param1.toString(),
                                 mutableListOf(
                                     Exercise(
                                         type.selectedItem.toString(),
@@ -168,7 +168,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                         }
                     else {
                         var newKey = database.push().key
-                        itemList[param2]?.add(
+                        itemList[param1]?.add(
                             Exercise(
                                 type.selectedItem.toString(),
                                 "https://picsum.photos/200?random=$randomNumber",
@@ -258,7 +258,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
             dpd.datePicker.minDate = calendar.timeInMillis
             dpd.show()
         }
-        var tmp = (itemList[param2]?.filter {
+        var tmp = (itemList[param1]?.filter {
             val calendar = Calendar.getInstance()
             calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
@@ -302,7 +302,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                             calendar.get(Calendar.MONTH) == selectedDate.month &&
                             calendar.get(Calendar.YEAR) == selectedDate.year + 1900
                 } as MutableList<Exercise>?)
-                adapter.notifyItemInserted(itemList[param2]?.size ?: 0)
+                adapter.notifyItemInserted(itemList[param1]?.size ?: 0)
                 recyclerView.adapter = adapter
                 setupListeners()
                 editor.putString("exerciseList", Gson().toJson(itemList))
@@ -596,7 +596,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
         }
 
         Log.d("Day", day.date.toString() + " " +day.month.toString() + " " + day.year.toString()+1900)
-        adapter = AdapterExercise(itemList[param2]?.filter {
+        adapter = AdapterExercise(itemList[param1]?.filter {
             val calendar = Calendar.getInstance()
             calendar.time = Date(it.itemDate.toLong())
             calendar.get(Calendar.DAY_OF_MONTH) == day.date &&

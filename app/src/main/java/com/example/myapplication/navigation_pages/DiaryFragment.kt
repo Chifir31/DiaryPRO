@@ -115,6 +115,7 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
 
             Log.d("Eee",itemList.size.toString())
             recyclerView = view.findViewById(R.id.list)
+            if(itemList[email.split("@")[0]]!=null){
             itemList1 = (itemList[email.split("@")[0]]?.filter {
                 val calendar = Calendar.getInstance()
                 calendar.time = Date(it.itemDate.toLong())
@@ -127,7 +128,7 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
             adapter = AdapterExercise(itemList1)
             recyclerView.adapter = adapter
             stateList = (requireActivity() as MainActivity).statemap
-            setupListeners()
+            setupListeners()}
             val currentDate = Date()
             val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
             //dateTextView.text = dateFormat.format(currentDate)

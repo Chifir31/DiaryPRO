@@ -39,7 +39,7 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
     private lateinit var itemList: ArrayMap<String, MutableList<Exercise>>
     private lateinit var itemList1: MutableList<Exercise>
     private  lateinit var  database: DatabaseReference
-    private lateinit var stateList: ArrayMap<Char, String>
+    private lateinit var stateList: ArrayMap<String, String>
     private lateinit var date: TextView
     private var selectedDate: Date = Date()
     private var param2="Item 1"
@@ -126,6 +126,7 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
             recyclerView.layoutManager = layoutManager
             adapter = AdapterExercise(itemList1)
             recyclerView.adapter = adapter
+            stateList = (requireActivity() as MainActivity).statemap
             setupListeners()
             val currentDate = Date()
             val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
@@ -280,7 +281,9 @@ class DiaryFragment : Fragment(),  AdapterCalendar.Listener{
                 1900
             )).toString()
         )
-        //state.setText(stateList[position?.let { tmp?.get(it)?.itemState }].toString())
+            Log.d("check", tmp?.get(position)?.itemState.toString())
+            Log.d("check", stateList[tmp?.get(position)?.itemState].toString())
+        state.setText(stateList[tmp?.get(position)?.itemState])
         //status.setText(stateList[tmp?.get(position)?.itemState])
         Log.d("item", tmp.toString())
         type.setSelection(adapterspinner.getPosition(tmp?.get(position)?.text))

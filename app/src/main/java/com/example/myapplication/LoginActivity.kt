@@ -124,7 +124,7 @@ class LoginActivity : AppCompatActivity() {
     }
     fun AMLAZYTOLOGIN(boolean: Boolean){
         if(boolean){
-            email_field.setText("coach@gmail.com")
+            email_field.setText("coach1@gmail.com")
             pwd_field.setText("123456")}
         else {
             email_field.setText("def@gmail.com")

@@ -203,6 +203,7 @@ class ExerciseFragmentDialog : Fragment() {
                     setTitle("Завершить тренировку?")
                     setPositiveButton("Да"){dialog, which->
                         ChangeVisibility(false)
+                        finish_btn.isVisible = false
                     }
                     setNegativeButton("Нет"){dialog, which->
                         dialog.dismiss()

@@ -22,10 +22,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.myapplication.Adapters.AdapterCalendar
 import com.example.myapplication.MainActivity
 import com.example.myapplication.R
 import com.example.myapplication.data.Exercise
+import com.example.myapplication.data.Item
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -38,6 +40,7 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 import com.example.myapplication.databinding.FragmentSportsmensDialogBinding
+import com.google.gson.reflect.TypeToken
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -69,6 +72,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
     lateinit var preferences: SharedPreferences
     lateinit var editor :  SharedPreferences.Editor
     private lateinit var database: DatabaseReference
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     lateinit var binding: FragmentSportsmensDialogBinding
     private lateinit var layoutManager_calendar: RecyclerView.LayoutManager
@@ -96,12 +100,23 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                 Log.d("SportsmensFragmentDialog position", position.toString())
                 Log.d("SportsmensFragmentDialog size", adapter.itemCount.toString())
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
-                itemList[param2]?.removeAt(position)
+                //itemList[param2]?.removeAt(position)
                 param1?.let { adapter.removeItem(position, it) }
+                adapter.notifyItemRemoved(position)
+                itemList[param1]?.removeAt(position)
+                adapter = AdapterExercise(itemList[param1]?.filter {
+                    val calendar = Calendar.getInstance()
+                    calendar.time = Date(it.itemDate.toLong())
+                    calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+                            calendar.get(Calendar.MONTH) == selectedDate.month &&
+                            calendar.get(Calendar.YEAR) == selectedDate.year+1900
+                } as MutableList<Exercise>?)
+                //adapter.notifyDataSetChanged()
+                recyclerView.adapter = adapter
+                setupListeners()
                 editor.putString("exerciseList", Gson().toJson(itemList))
                 editor.apply()
                 Log.d("SportsmensFragmentDialog elements", "Item list: $itemList")
-                //adapter.notifyItemRemoved(position)
                 //recyclerView.adapter?.notifyItemRemoved(position)
             }
             setNegativeButton("Отмена"){dialog, which->
@@ -342,51 +357,51 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
         preferences =
             requireContext().getSharedPreferences("my_prefs", AppCompatActivity.MODE_PRIVATE)
         editor = preferences.edit()
-
-        var tempList = ArrayMap<String, MutableList<Exercise>>()
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
+//        var tempList = ArrayMap<String, MutableList<Exercise>>()
         database = Firebase.database.reference
-        database.child("Exercise").child(param1.toString()).get().addOnSuccessListener {
-            if (it.exists()) {
-                val children = it.children
-                children.forEach {
-                    val img = it.child("img").getValue().toString()
-                    val itemComm = it.child("itemComm").getValue().toString()
-                    val itemDate = it.child("itemDate").getValue().toString()
-                    val itemDesc = it.child("itemDesc").getValue().toString()
-                    val itemId = it.child("itemId").getValue().toString()
-                    val itemState = it.child("itemState").getValue().toString()
-                    val text = it.child("text").getValue().toString()
+//        database.child("Exercise").child(param1.toString()).get().addOnSuccessListener {
+//            if (it.exists()) {
+//                val children = it.children
+//                children.forEach {
+//                    val img = it.child("img").getValue().toString()
+//                    val itemComm = it.child("itemComm").getValue().toString()
+//                    val itemDate = it.child("itemDate").getValue().toString()
+//                    val itemDesc = it.child("itemDesc").getValue().toString()
+//                    val itemId = it.child("itemId").getValue().toString()
+//                    val itemState = it.child("itemState").getValue().toString()
+//                    val text = it.child("text").getValue().toString()
+//
+//                    if (tempList[param1.toString()] == null) {
+//                        tempList.apply {
+//                            put(
+//                                param1.toString(),
+//                                mutableListOf(
+//                                    Exercise(
+//                                        text,
+//                                        img,
+//                                        itemDate,
+//                                        itemDesc,
+//                                        itemState,
+//                                        itemComm,
+//                                        itemId
+//                                    )
+//                                )
+//                            )
+//
+//                        }
+//                    } else {
+//                        tempList[param1.toString()]?.add(
+//                            Exercise(text, img, itemDate, itemDesc, itemState, itemComm, itemId)
+//                        )
+//                    }
+//                }
+//            } else {
+//                tempList = ArrayMap<String, MutableList<Exercise>>()
+//            }
 
-                    if (tempList[param1.toString()] == null) {
-                        tempList.apply {
-                            put(
-                                param1.toString(),
-                                mutableListOf(
-                                    Exercise(
-                                        text,
-                                        img,
-                                        itemDate,
-                                        itemDesc,
-                                        itemState,
-                                        itemComm,
-                                        itemId
-                                    )
-                                )
-                            )
-
-                        }
-                    } else {
-                        tempList[param1.toString()]?.add(
-                            Exercise(text, img, itemDate, itemDesc, itemState, itemComm, itemId)
-                        )
-                    }
-                }
-            } else {
-                tempList = ArrayMap<String, MutableList<Exercise>>()
-            }
-
-
-            itemList = tempList
+            itemList = (requireActivity() as MainActivity).exerciseList
+            //itemList = tempList
             //Log.d("Check param", param1.toString() + " "+ param2.toString())
             //Log.d("Check getting list\n", itemList[param2].toString())
             toolbar = view.findViewById(R.id.toolbar)
@@ -414,9 +429,9 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
             setHasOptionsMenu(true)
             recyclerView = view.findViewById(R.id.recycler_sportsmens_dialog)
             layoutManager = LinearLayoutManager(activity)
-            adapter = AdapterExercise(itemList[param2]?.filter {
+            adapter = AdapterExercise(itemList[param1]?.filter {
                 val calendar = Calendar.getInstance()
-                calendar.time = Date(it.itemDate)
+                calendar.time = Date(it.itemDate.toLong())
                 calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
                         calendar.get(Calendar.MONTH) == selectedDate.month &&
                         calendar.get(Calendar.YEAR) == selectedDate.year + 1900
@@ -519,7 +534,74 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
             }
             val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
             itemTouchHelper.attachToRecyclerView(recyclerView)
-        }
+            swipeRefreshLayout.setOnRefreshListener {
+                // Refresh the data here
+                // Call your data update function or fetch new data from the server
+
+                val reference =
+                    param1?.let { it1 -> Firebase.database.reference.child("Exercise").child(it1) }
+                if (reference != null) {
+                    reference.get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            var totalChildren = task.result!!.children.count()
+                            Log.d("children", totalChildren.toString())
+                            var completedChildren = 0
+                            val tempList = arrayListOf<Exercise>()
+                            for (it in task.result!!.children) {
+                                //val children = task.result!!.children
+                                val img = it.child("img").getValue().toString()
+                                val itemComm = it.child("itemComm").getValue().toString()
+                                val itemDate = it.child("itemDate").getValue().toString()
+                                val itemDesc = it.child("itemDesc").getValue().toString()
+                                val itemId = it.child("itemId").getValue().toString()
+                                val itemState = it.child("itemState").getValue().toString()
+                                val text = it.child("text").getValue().toString()
+                                val item = Exercise(
+                                    text,
+                                    img,
+                                    itemDate,
+                                    itemDesc,
+                                    itemState,
+                                    itemComm,
+                                    itemId
+                                )
+                                tempList.add(item)
+                                completedChildren++
+                            }
+                            if (completedChildren == totalChildren) {
+                                itemList[param1] = tempList
+                                editor.putString("exerciseList", Gson().toJson(itemList))
+                                editor.apply()
+                                val exerciseListJson = (preferences.getString("exerciseList", null))
+//                            itemList =  exerciseListJson?.let {
+//                                Gson().fromJson<ArrayMap<String, MutableList<Exercise>>>(it, object : TypeToken<ArrayMap<String, MutableList<Exercise>>>() {}.type)
+//                            } ?: ArrayMap()
+//                            Log.d("List", itemList.toString())
+                                adapter = AdapterExercise(itemList[param1]?.filter {
+                                    val calendar = Calendar.getInstance()
+                                    calendar.time = Date(it.itemDate.toLong())
+                                    calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.date &&
+                                            calendar.get(Calendar.MONTH) == selectedDate.month &&
+                                            calendar.get(Calendar.YEAR) == selectedDate.year + 1900
+                                } as MutableList<Exercise>)
+//                            adapter = AdapterExercise(itemList1)
+                                recyclerView.adapter = adapter
+                                setupListeners()
+                                swipeRefreshLayout.isRefreshing = false
+                                Toast.makeText(requireContext(), "Обновлено", Toast.LENGTH_LONG)
+                                    .show()
+                            } else {
+                                task.exception!!.message?.let { it1 ->
+                                    Log.d(
+                                        "TAG",
+                                        it1
+                                    )
+                                } // Never ignore potential errors!
+                            }
+                        }
+                    }
+                }
+            }
     }
 
     companion object {
@@ -603,7 +685,7 @@ class SportsmensFragmentDialog : Fragment(), DatePickerDialog.OnDateSetListener,
                     calendar.get(Calendar.MONTH) == day.month &&
                 calendar.get(Calendar.YEAR) == day.year+1900
         } as MutableList<Exercise>?)
-        adapter.notifyDataSetChanged()
+        //adapter.notifyDataSetChanged()
         recyclerView.adapter = adapter
         selectedDate=day
         setupListeners()

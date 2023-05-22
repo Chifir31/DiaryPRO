@@ -93,7 +93,11 @@
             android:gravity="center"
             android:paddingVertical="10dp"
             />
-
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/toolbar">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_sportsmens_dialog"
             android:scrollbars="vertical"
@@ -101,6 +105,7 @@
             android:layout_height="match_parent"
             >
         </androidx.recyclerview.widget.RecyclerView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 
     <LinearLayout

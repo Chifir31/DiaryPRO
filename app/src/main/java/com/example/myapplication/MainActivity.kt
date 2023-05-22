@@ -134,6 +134,57 @@ class MainActivity: AppCompatActivity()  {
                                     sportsmensList = sportsmensListJson?.let {
                                         Gson().fromJson(it, object : TypeToken<ArrayList<Item>>() {}.type)
                                     } ?: arrayListOf()
+                                    var totalChildren = sportsmensList.size
+                                    Log.d("children",totalChildren.toString())
+                                    var completedChildren = 0
+                                    for (sportsmen in sportsmensList){
+                                        val reference = Firebase.database.reference.child("Exercise").child(sportsmen.name)
+                                        reference.get().addOnCompleteListener { task ->
+                                            if (task.isSuccessful) {
+                                                val tempList = arrayListOf<Exercise>()
+                                                for (it in task.result!!.children){
+                                                //val children = task.result!!.children
+                                                val img = it.child("img").getValue().toString()
+                                                val itemComm = it.child("itemComm").getValue().toString()
+                                                val itemDate = it.child("itemDate").getValue().toString()
+                                                val itemDesc = it.child("itemDesc").getValue().toString()
+                                                val itemId = it.child("itemId").getValue().toString()
+                                                val itemState = it.child("itemState").getValue().toString()
+                                                val text = it.child("text").getValue().toString()
+                                                val item = Exercise(text,img,itemDate,itemDesc,itemState,itemComm,itemId)
+                                                tempList.add(item)
+                                                }
+                                                exerciseList1.put(sportsmen.name,tempList)
+                                                completedChildren++
+                                            }
+                                        if(completedChildren==totalChildren){
+                                            editor.putString("exerciseList", Gson().toJson(exerciseList1))
+                                            editor.apply()
+                                            val exerciseListJson = (preferences.getString("exerciseList", null))
+                                            exerciseList =  exerciseListJson?.let {
+                                                Gson().fromJson<ArrayMap<String, MutableList<Exercise>>>(it, object : TypeToken<ArrayMap<String, MutableList<Exercise>>>() {}.type)
+                                            } ?: ArrayMap()
+                                            Log.d("List", exerciseList.toString())
+                                            setContentView(R.layout.c_activity_main)
+                                            navView = findViewById(R.id.c_bottom_navigation)
+                                            loadFragment(SportsmensFragment())
+                                            navView?.setOnItemSelectedListener {
+                                                when (it.itemId) {
+                                                    R.id.sportsmens -> loadFragment(
+                                                        SportsmensFragment()
+                                                    )
+                                                    R.id.groups -> loadFragment(GroupsFragment())
+                                                    R.id.profile -> loadFragment(ProfileFragment())
+                                                    else -> {
+
+                                                    }
+                                                }
+                                                true
+                                            }
+                                        }
+                                    }
+                                    }
+                                    if(sportsmensList.size == 0){
                                     setContentView(R.layout.c_activity_main)
                                     navView = findViewById(R.id.c_bottom_navigation)
                                     loadFragment(SportsmensFragment())
@@ -143,10 +194,10 @@ class MainActivity: AppCompatActivity()  {
                                             R.id.groups -> loadFragment(GroupsFragment())
                                             R.id.profile -> loadFragment(ProfileFragment())
                                             else -> {
-
                                             }
                                         }
                                         true
+                                    }
                                     }
                                 }
 

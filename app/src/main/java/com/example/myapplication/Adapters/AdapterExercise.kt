@@ -122,7 +122,7 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
         }
         val database = Firebase.database.reference
         itemList?.let {
-            Log.d("What", it.toString())
+            Log.d("List Exercise", it.toString())
             it[position].itemId
             database.child("Exercise").child(user)
                 .child(it[position].itemId).ref.removeValue().addOnSuccessListener {
@@ -133,7 +133,9 @@ class AdapterExercise(private val itemList: MutableList<Exercise>?) : RecyclerVi
                 }
             Log.d("checking", "email " + user + "item " + it[position].itemId + ", " + database.child("Exercise").child(user).child(it[position].itemId).toString())
         }
+        Log.d("Check1", itemList.toString())
         itemList?.removeAt(position)
+        Log.d("Check1", itemList.toString())
         Log.d("Check", itemList.toString())
         notifyDataSetChanged()
     }
